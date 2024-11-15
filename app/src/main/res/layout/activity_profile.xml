@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Profile">
+
+    <!-- Header with a distinct background and color -->
+    <TextView
+        android:id="@+id/header"
+        android:layout_width="0dp"
+        android:layout_height="50dp"
+        android:text="🌟 Trang cá nhân 🌟"
+        android:textColor="@android:color/white"
+        android:background="@drawable/header_background"
+        android:textSize="22sp"
+        android:textAlignment="center"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:gravity="center" />
+
+    <!-- Profile Content Area -->
+    <LinearLayout
+        android:id="@+id/profileContent"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp"
+        app:layout_constraintTop_toBottomOf="@id/header"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent">
+
+        <TextView
+            android:id="@+id/fullname"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="👤 Họ và tên: Nguyễn Văn A"
+            android:textColor="@android:color/white"
+            android:background="@drawable/text_background"
+            android:textSize="16sp"
+            android:padding="10dp"
+            android:layout_marginBottom="8dp" />
+
+        <TextView
+            android:id="@+id/username"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="🔑 Username: @nguyenvana"
+            android:textColor="@android:color/white"
+            android:background="@drawable/text_background"
+            android:textSize="16sp"
+            android:padding="10dp"
+            android:layout_marginBottom="8dp" />
+
+        <TextView
+            android:id="@+id/diaChi"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="🏠 Địa chỉ: Ba Đình - Hà Nội"
+            android:textColor="@android:color/white"
+            android:background="@drawable/text_background"
+            android:textSize="16sp"
+            android:padding="10dp"
+            android:layout_marginBottom="8dp" />
+
+        <TextView
+            android:id="@+id/sdt"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="📞 Số điện thoại: 0987654321"
+            android:textColor="@android:color/white"
+            android:background="@drawable/text_background"
+            android:textSize="16sp"
+            android:padding="10dp"
+            android:layout_marginBottom="8dp" />
+
+        <TextView
+            android:id="@+id/email"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="📧 Email: william.henry.moody@my-own-personal-domain.com"
+            android:textColor="@android:color/white"
+            android:background="@drawable/text_background"
+            android:textSize="16sp"
+            android:padding="10dp"
+            android:layout_marginBottom="8dp" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="24dp">
+        <Button
+            android:id="@+id/btnback"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Trang Chủ"
+            android:textColor="@android:color/white"
+            android:background="@drawable/button_background"/>
+
+        <Button
+            android:id="@+id/btnEditProfile"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="✨ Sửa thông tin ✨"
+            android:textColor="@android:color/white"
+            android:background="@drawable/button_background_secondary"
+            android:layout_marginLeft="8dp"/>
+    </LinearLayout>
+
+    </LinearLayout>
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
