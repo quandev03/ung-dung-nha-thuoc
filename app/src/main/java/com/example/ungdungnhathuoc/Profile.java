@@ -50,6 +50,7 @@ public class Profile extends AppCompatActivity {
         tvPhone = findViewById(R.id.sdt);
         tvAddress = findViewById(R.id.diaChi);
         tvUsername = findViewById(R.id.username);
+        String accessToken = sharedPref.getString("accessToken", null);
 
 
 
@@ -59,7 +60,6 @@ public class Profile extends AppCompatActivity {
             return insets;
         });
 
-        String accessToken = sharedPref.getString("accsstoken");
 
         Request request = new Request.Builder()
                 .url("http://10.0.2.2:3000/auth/user-detail") // Thay bằng IP/Domain thực tế

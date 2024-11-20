@@ -5,6 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context=".MainActivity">
     <LinearLayout
         android:layout_width="match_parent"
@@ -18,11 +19,17 @@
             android:layout_height="wrap_content"
             android:hint="accessToken"
             android:minHeight="100dp" />
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Proflie"
-        android:id="@+id/openProfile"/>
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Proflie"
+            android:id="@+id/openProfile"/>
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Add Produce"
+            android:id="@+id/addProduce"/>
+
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

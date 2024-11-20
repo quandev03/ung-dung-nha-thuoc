@@ -1,6 +1,8 @@
 package com.example.ungdungnhathuoc;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -52,15 +54,16 @@ public class EditProfile extends AppCompatActivity {
         edtUsername = findViewById(R.id.edit_username);
         btnCancel = findViewById(R.id.btn_cancel);
         btnSave = findViewById(R.id.btn_save);
+        // get accessToken
+        SharedPreferences sharedPref = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
+        String accessToken = sharedPref.getString("accessToken", null);
 
-//        btnEditProfile = findViewById(R.id.btnEditProfile);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.edit_profile_layout), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
 
-        String accessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InF1YW5kZXYwMyIsInVzZXJJZCI6MSwicm9sZSI6ZmFsc2UsImlhdCI6MTczMTYzOTA4NiwiZXhwIjoxNzMxNjQyNjg2fQ.Ppinwj9TFS7Gr4Z12RB3s2zmNRlRS-oZJNaM3Sjb1rA";
 
         Request request = new Request.Builder()
                 .url("http://10.0.2.2:3000/auth/user-detail") // Thay bằng IP/Domain thực tế
@@ -148,7 +151,6 @@ public class EditProfile extends AppCompatActivity {
                 String jsonData = jsonAdapter.toJson(dataUpdate);
 
                 // Đảm bảo token không rỗng
-                String accessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InF1YW5kZXYwMyIsInVzZXJJZCI6MSwicm9sZSI6ZmFsc2UsImlhdCI6MTczMTYzOTA4NiwiZXhwIjoxNzMxNjQyNjg2fQ.Ppinwj9TFS7Gr4Z12RB3s2zmNRlRS-oZJNaM3Sjb1rA";
 
                 // Tạo RequestBody từ chuỗi JSON
                 MediaType JSON = MediaType.parse("application/json; charset=utf-8");
