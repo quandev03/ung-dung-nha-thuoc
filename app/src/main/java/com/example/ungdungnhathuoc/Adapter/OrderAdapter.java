@@ -11,9 +11,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.ungdungnhathuoc.Activity.ThongKeDonHangActivity;
 import com.example.ungdungnhathuoc.Activity.ThongTinDonHangNBActivity;
-import com.example.ungdungnhathuoc.Models.Order;
+import com.example.ungdungnhathuoc.Model.Order;
 import com.example.ungdungnhathuoc.R;
 
 import java.util.List;
