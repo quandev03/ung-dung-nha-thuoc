@@ -1,3 +1,12 @@
 <resources>
-    <string name="app_name">UngDungNhaThuoc</string>
+    <string name="app_name">Ứng dụng nhà thuốc</string>
+    <!-- res/values/strings.xml -->
+    <string name="order_id_label">Mã đơn: </string>
+    <string name="status_label">Trạng thái: </string>
+    <string name="total_price_label">Tổng tiền: </string>
+    <string name="order_date_label">Ngày mua: </string>
+    <string name="customer_name_label">Người mua: </string>
+    <string name="navigation_drawer_open">Open Navigation Drawer</string>
+    <string name="navigation_drawer_close">Close Navigation Drawer</string>
+
 </resources>
