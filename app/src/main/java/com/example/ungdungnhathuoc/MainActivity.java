@@ -46,12 +46,12 @@ public class MainActivity extends AppCompatActivity {
 
 
         // Cach hien thi anh
-        imageView = findViewById(R.id.imageView);
-        Picasso.get()
-                .load("https://drive.google.com/uc?id=1WK6C8cnWcOuG-R53X2Pbm-B1U-O7spUk")
-                .placeholder(R.drawable.placeholder)
-                .error(R.drawable.error_image)
-                .into(imageView);
+//        imageView = findViewById(R.id.imageView);
+//        Picasso.get()
+//                .load("https://drive.google.com/uc?id=1WK6C8cnWcOuG-R53X2Pbm-B1U-O7spUk")
+//                .placeholder(R.drawable.placeholder)
+//                .error(R.drawable.error_image)
+//                .into(imageView);
 
 
         // Enable edge-to-edge display
@@ -78,6 +78,31 @@ public class MainActivity extends AppCompatActivity {
 //        settingsnb.setOnClickListener(v -> navigateToSettings());
         thong_tin_don_hang_nb.setOnClickListener(v -> navigateToOrderInfo());
         thong_ke_don_hang_nb.setOnClickListener(v -> navigateToOrderStatistics());
+
+
+        btnProfile.setOnClickListener(view -> {
+            String accessTokenString = tvAccessToken.getText().toString().trim();
+            SharedPreferences sharedPref = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPref.edit();
+            editor.putString("accessToken", accessTokenString);
+            editor.apply();
+            Intent intent = new Intent(MainActivity.this, Profile.class);
+            startActivity(intent);
+        });
+
+        addProduce.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String accessTokenString = tvAccessToken.getText().toString().trim();
+                SharedPreferences sharedPref = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPref.edit();
+                editor.putString("accessToken", accessTokenString);
+                editor.apply();
+                Intent intent = new Intent(MainActivity.this, AddProduce.class);
+                startActivity(intent);
+            }
+        });
+
     }
 
     // Hàm điều hướng đến Home Activity
@@ -124,27 +149,5 @@ public class MainActivity extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
 
-        // Set up button click listener to open Profile activity
-        btnProfile.setOnClickListener(view -> {
-            String accessTokenString = tvAccessToken.getText().toString().trim();
-            SharedPreferences sharedPref = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
-            SharedPreferences.Editor editor = sharedPref.edit();
-            editor.putString("accessToken", accessTokenString);
-            editor.apply();
-            Intent intent = new Intent(MainActivity.this, Profile.class);
-            startActivity(intent);
-        });
-        addProduce.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String accessTokenString = tvAccessToken.getText().toString().trim();
-                SharedPreferences sharedPref = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
-                SharedPreferences.Editor editor = sharedPref.edit();
-                editor.putString("accessToken", accessTokenString);
-                editor.apply();
-                Intent intent = new Intent(MainActivity.this, AddProduce.class);
-                startActivity(intent);
-            }
-        });
-    }
-}
+//         Set up button click listener to open Profile activity    }
+}}

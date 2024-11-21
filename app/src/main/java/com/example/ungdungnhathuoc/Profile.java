@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.Button;
 import android.util.Log;
 import android.widget.TextView;
+import androidx.appcompat.widget.Toolbar;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
@@ -51,6 +52,10 @@ public class Profile extends AppCompatActivity {
         tvAddress = findViewById(R.id.diaChi);
         tvUsername = findViewById(R.id.username);
         btnBackHome = findViewById(R.id.btnback);
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+
         String accessToken = sharedPref.getString("accessToken", null);
 
 
@@ -92,19 +97,12 @@ public class Profile extends AppCompatActivity {
                         // Lấy thông tin từ data và hiển thị
                         Account user = responseData.getData();
                         if (user != null) {
-                            Log.i("User Info", "Username: " + user.getUsername() +
-                                    ", Fullname: " + user.getFullname() +
-                                    ", Email: " + user.getEmail() +
-                                    ", Phone: " + user.getPhone() +
-                                    ", Address: " + user.getAddress());
                             runOnUiThread(()->{
                                 tvFullname.setText("\uD83D\uDC64 Họ và tên: " +user.getFullname());
                                 tvEmail.setText("\uD83D\uDCE7 Email: " +user.getEmail());
                                 tvPhone.setText("\uD83D\uDCDE Số điện thoại: " +user.getPhone());
                                 tvAddress.setText("\uD83D\uDDFA Địa chỉ: " +user.getAddress());
                                 tvUsername.setText("\uD83D\uDC68 Tên đăng nhập: " +user.getUsername());
-
-
                             });
                         }
                     } else {
