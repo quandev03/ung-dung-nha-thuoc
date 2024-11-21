@@ -6,10 +6,9 @@
     android:layout_height="match_parent">
 
     <!-- Main content of the app -->
-    <RelativeLayout
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        >
+        android:layout_height="match_parent">
 
         <!-- Toolbar -->
         <androidx.appcompat.widget.Toolbar
@@ -28,87 +27,36 @@
             android:layout_height="match_parent"
             android:orientation="vertical"
             android:layout_marginTop="60dp">
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/toolbar"
-            android:layout_marginTop="16dp"
-            android:text="Chào mừng đến với cửa hàng thuốc"
-            android:textSize="18sp" />
-        <EditText
-            android:id="@+id/accessToken"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="accessToken"
-            android:minHeight="100dp" />
-        <Button
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Proflie"
-            android:id="@+id/openProfile"/>
-
-        <Button
-            android:id="@+id/addProduce"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Add Produce" />
-
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="Chào mừng đến với cửa hàng thuốc"
+                android:textSize="18sp" />
+            <EditText
+                android:id="@+id/accessToken"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="accessToken"
+                android:minHeight="100dp" />
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Proflie"
+                android:id="@+id/openProfile"/>
+            <Button
+                android:id="@+id/addProduce"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Add Produce" />
         </LinearLayout>
-
-
-    </RelativeLayout>
+    </FrameLayout>
 
     <!-- Navigation Drawer -->
-    <LinearLayout
-        android:id="@+id/nav_drawer"
-        android:layout_width="250dp"
+    <com.google.android.material.navigation.NavigationView
+        android:id="@+id/nav_view"
+        android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="start"
-        android:background="#FFFFFF"
-        android:orientation="vertical">
-
-        <!-- Navigation items in Drawer -->
-        <TextView
-            android:id="@+id/homenb"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Home"
-            android:padding="16dp"
-            android:textSize="18sp"
-            android:clickable="true"
-            android:focusable="true"/>
-
-        <TextView
-            android:id="@+id/settingsnb"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Settings"
-            android:padding="16dp"
-            android:textSize="18sp"
-            android:clickable="true"
-            android:focusable="true"/>
-        <TextView
-            android:id="@+id/thong_tin_don_hang_nb"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Thông tin đơn hàng"
-            android:padding="16dp"
-            android:textSize="18sp"
-            android:clickable="true"
-            android:focusable="true"/>
-        <TextView
-            android:id="@+id/thong_ke_don_hang_nb"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Thống kê đơn hàng"
-            android:padding="16dp"
-            android:textSize="18sp"
-            android:clickable="true"
-            android:focusable="true"/>
-
-
-        <!-- Other items in the drawer -->
-    </LinearLayout>
-
+        app:menu="@menu/drawer_menu" />
 </androidx.drawerlayout.widget.DrawerLayout>
-

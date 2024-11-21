@@ -10,7 +10,7 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.example.ungdungnhathuoc.R;
 
-public class homeActivity extends AppCompatActivity {
+public class homeActivity extends BaseActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

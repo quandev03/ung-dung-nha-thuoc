@@ -8,6 +8,4 @@
         android:orderInCategory="100"
         app:showAsAction="ifRoom" />
 
-
-
 </menu>

@@ -3,6 +3,10 @@
     <!-- res/values/strings.xml -->
     <string name="order_id_label">Mã đơn: </string>
     <string name="profile_label">🌟 Trang cá nhân 🌟</string>
+    <string name="thong_tin_don_hang">Thông tin đơn hàng</string>
+    <string name="thong_ke_don_hang">Thống kê đơn hàng</string>
+
+
     <string name="status_label">Trạng thái: </string>
     <string name="total_price_label">Tổng tiền: </string>
     <string name="order_date_label">Ngày mua: </string>

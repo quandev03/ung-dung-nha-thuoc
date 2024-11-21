@@ -1,4 +1,4 @@
-package com.example.ungdungnhathuoc.Models;
+package com.example.ungdungnhathuoc.Model;
 
 public class Order {
     private String orderId;

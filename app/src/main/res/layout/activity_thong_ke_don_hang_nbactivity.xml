@@ -13,7 +13,6 @@
         android:id="@+id/content_frame"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-        <!-- Nội dung của trang như RecyclerView, TextViews v.v. -->
         <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -26,10 +25,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
                 android:background="#388E3C"
-                android:title="Ứng dụng bán thuốc"
+                android:title="@string/thong_ke_don_hang"
                 android:titleTextColor="#FFFFFF"
-                app:titleTextColor="@color/white"
-                android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
+                app:titleTextColor="@color/white" />
 
             <!-- Thống kê tổng quan -->
             <TextView
