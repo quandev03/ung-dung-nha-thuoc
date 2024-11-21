@@ -29,7 +29,7 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 public class Profile extends AppCompatActivity {
-    private Button btnEditProfile;
+    private Button btnEditProfile, btnBackHome;
     private TextView tvFullname;
     private TextView tvEmail;
     private TextView tvPhone;
@@ -50,6 +50,7 @@ public class Profile extends AppCompatActivity {
         tvPhone = findViewById(R.id.sdt);
         tvAddress = findViewById(R.id.diaChi);
         tvUsername = findViewById(R.id.username);
+        btnBackHome = findViewById(R.id.btnback);
         String accessToken = sharedPref.getString("accessToken", null);
 
 
@@ -119,6 +120,13 @@ public class Profile extends AppCompatActivity {
         btnEditProfile.setOnClickListener(view -> {
             Intent intent = new Intent(Profile.this, EditProfile.class);
             startActivity(intent);
+        });
+        btnBackHome.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(Profile.this, MainActivity.class);
+                startActivity(intent);
+            }
         });
 
     }
