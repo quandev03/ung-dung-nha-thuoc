@@ -1,8 +1,17 @@
 <resources>
     <string name="app_name">UngDungNhaThuoc</string>
     <string-array name="options_array">
-        <item>Option 1</item>
-        <item>Option 2</item>
-        <item>Option 3</item>
+        <item>Thần Kinh Trí Não</item>
+        <item>Vitamin và Khoáng chất</item>
+        <item>Sức khoẻ tim mạch</item>
+        <item>Tăng sức đề kháng, miễn dịch</item>
+        <item>Hỗ Trợ tiêu hóa</item>
+        <item>Sinh lý - Nội tiết tố</item>
+        <item>Dinh Dưỡng</item>
+        <item>Giải pháp làn da</item>
+        <item>Chăm sóc da mặt</item>
+        <item>Hỗ trợ làm đẹp</item>
+        <item>Thuốc hỗ trợ điều trị</item>
+        <item>Thuốc giảm đau, hạ sốt</item>
     </string-array>
 </resources>

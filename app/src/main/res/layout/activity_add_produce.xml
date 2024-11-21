@@ -126,7 +126,6 @@
         android:text="Số lượng:"
         app:layout_constraintTop_toBottomOf="@id/spinner"
         app:layout_constraintStart_toStartOf="parent"
-        android:inputType="number"
         android:layout_marginTop="16dp" />
 
     <EditText
@@ -136,6 +135,7 @@
         android:layout_marginTop="8dp"
         android:background="@drawable/edittext_background"
         android:hint="Nhập số lượng"
+        android:inputType="number"
         android:minHeight="48dp"
         android:padding="8dp"
         app:layout_constraintEnd_toEndOf="parent"
