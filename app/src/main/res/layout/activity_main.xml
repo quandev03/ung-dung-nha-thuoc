@@ -29,6 +29,13 @@
             android:layout_height="wrap_content"
             android:text="Add Produce"
             android:id="@+id/addProduce"/>
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/imageView"
+            android:scaleType="centerCrop"
+            android:adjustViewBounds="true" />
+
 
     </LinearLayout>
 

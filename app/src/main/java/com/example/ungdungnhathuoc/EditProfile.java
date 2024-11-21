@@ -95,20 +95,12 @@ public class EditProfile extends AppCompatActivity {
                         // Lấy thông tin từ data và hiển thị
                         Account user = responseData.getData();
                         if (user != null) {
-                            Log.i("User Info", "Username: " + user.getUsername() +
-                                    ", Fullname: " + user.getFullname() +
-                                    ", Email: " + user.getEmail() +
-                                    ", Phone: " + user.getPhone() +
-                                    ", Address: " + user.getAddress());
                             runOnUiThread(()->{
                                 edtAddress.setText(user.getAddress());
                                 edtEmail.setText(user.getEmail());
                                 edtFullname.setText(user.getFullname());
                                 edtPhone.setText(user.getPhone());
                                 edtUsername.setText(user.getUsername());
-
-
-
                             });
                         }
                     } else {

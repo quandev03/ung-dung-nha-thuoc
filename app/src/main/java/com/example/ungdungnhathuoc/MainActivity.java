@@ -7,15 +7,20 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.squareup.picasso.Picasso;
+
+
 public class MainActivity extends AppCompatActivity {
     Button btnProfile, addProduce;
     EditText tvAccessToken;
+    ImageView imageView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,6 +31,15 @@ public class MainActivity extends AppCompatActivity {
         btnProfile = findViewById(R.id.openProfile);
         tvAccessToken = findViewById(R.id.accessToken);
         addProduce = findViewById(R.id.addProduce);
+
+
+        // Cach hien thi anh
+        imageView = findViewById(R.id.imageView);
+        Picasso.get()
+                .load("https://drive.google.com/uc?id=1WK6C8cnWcOuG-R53X2Pbm-B1U-O7spUk")
+                .placeholder(R.drawable.placeholder)
+                .error(R.drawable.error_image)
+                .into(imageView);
 
 
         // Enable edge-to-edge display

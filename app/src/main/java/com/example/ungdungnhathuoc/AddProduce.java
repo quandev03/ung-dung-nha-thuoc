@@ -62,7 +62,7 @@ public class AddProduce extends AppCompatActivity {
     EditText edtTenThuoc, edtCongDung, edtDonGia, slThuoc;
     Spinner spinner;
     Uri fileUriG;
-    String dataImage;
+//    String dataImage;
 
 
     // Declare ActivityResultLauncher to handle file picking
@@ -131,9 +131,9 @@ public class AddProduce extends AppCompatActivity {
 //                byte[] imageData = readFileToBufferFromPath(pathToFile);
 //                UploadFileInput uploadFile = new UploadFileInput(fileBuffer);
 
-                uploadImageToServer(fileUriG, accessToken);
 
-                Log.d("Data", dataImage);
+
+//                Log.d("Data", dataImage);
 
                 Log.d("AddProduce", "Add button clicked");
                 String tenThuoc = edtTenThuoc.getText().toString().trim();
@@ -145,55 +145,7 @@ public class AddProduce extends AppCompatActivity {
                 Integer donGia = Integer.parseInt(gia);
 
                 CreateProduceInput createProduceInput = new CreateProduceInput(tenThuoc, donGia, soLuong, congDung, null, loaiThuoc);
-
-
-                Moshi moshi = new Moshi.Builder().build();
-                JsonAdapter<CreateProduceInput> jsonAdapter = moshi.adapter(CreateProduceInput.class);
-                JsonAdapter<ResponceImageProduce> jsonAdapterRes = moshi.adapter(ResponceImageProduce.class);
-                String jsonData = jsonAdapter.toJson(createProduceInput);
-//
-                MediaType JSON = MediaType.parse("application/json; charset=utf-8");
-                RequestBody bodyFile = RequestBody.create(JSON, jsonData);
-
-                Request requestUploadFile = new Request.Builder()
-                        .url("http://10.0.2.2:3000/produce/create-produce")
-                        .addHeader("Authorization", "Bearer " + accessToken)
-                        .post(bodyFile)
-                        .build();
-//
-                OkHttpClient client = new OkHttpClient();
-                client.newCall(requestUploadFile).enqueue(new Callback() {
-                    @Override
-                    public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                        Log.e("Error", "Network Error");
-                    }
-
-                    @Override
-                    public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
-                        if (!response.isSuccessful()) {
-                            Log.e("Error", "Unexpected response code: " + response.code());
-                            return;
-                        }
-                        if (response.isSuccessful()) {
-                            // Xử lý phản hồi thành công
-                            String responseBody = response.body().string();
-                            Log.d("Data", responseBody);
-                            ResponceImageProduce responceImageProduce = jsonAdapterRes.fromJson(responseBody);
-                            Log.i("Data", responceImageProduce.toString());
-                            uploadImageToServer(fileUriG, accessToken);
-
-                            runOnUiThread(() -> {
-                                // Hiển thị thông báo khi thành công
-                                Toast.makeText(AddProduce.this, "Profile updated successfully", Toast.LENGTH_SHORT).show();
-                            });
-                        } else {
-                            // Xử lý nếu mã phản hồi không phải 2xx
-                            runOnUiThread(() -> Toast.makeText(AddProduce.this, "Failed to update profile", Toast.LENGTH_SHORT).show());
-                        }
-                    }
-                });
-
-
+                uploadImageToServer(fileUriG, accessToken, createProduceInput);
             }
         });
     }
@@ -237,7 +189,7 @@ public class AddProduce extends AppCompatActivity {
         }
     }
 
-    private void uploadImageToServer(Uri fileUri, String accessToken) {
+    private void uploadImageToServer(Uri fileUri, String accessToken, CreateProduceInput createProduceInput) {
         if (fileUri == null) {
             Log.e("Upload", "File URI is null, cannot upload");
             Toast.makeText(AddProduce.this, "No file selected to upload!", Toast.LENGTH_SHORT).show();
@@ -245,52 +197,33 @@ public class AddProduce extends AppCompatActivity {
         }
 
         try {
-            // Resolve InputStream
+            // Read file into byte array
             ContentResolver contentResolver = getContentResolver();
             InputStream inputStream = contentResolver.openInputStream(fileUri);
-
             if (inputStream == null) {
                 Log.e("Upload", "InputStream is null");
                 return;
             }
+            byte[] fileBytes = readInputStreamToByteArray(inputStream);
 
-            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-            byte[] buffer = new byte[1024];
-            int length;
-            while ((length = inputStream.read(buffer)) != -1) {
-                byteArrayOutputStream.write(buffer, 0, length);
-            }
-            byte[] fileBytes = byteArrayOutputStream.toByteArray();
-            inputStream.close();
-
-            // Log file details
             String fileName = getFileNameFromUri(contentResolver, fileUri);
             if (fileName == null) fileName = "image.jpg";
-            Log.d("Upload", "File name: " + fileName);
-            Log.d("Upload", "File size: " + fileBytes.length);
 
-            // Create OkHttpClient
-            OkHttpClient client = new OkHttpClient();
-
-            // Create RequestBody for file upload
+            // Build Multipart RequestBody for image upload
             RequestBody fileBody = RequestBody.create(MediaType.parse("image/jpeg"), fileBytes);
             MultipartBody requestBody = new MultipartBody.Builder()
                     .setType(MultipartBody.FORM)
                     .addFormDataPart("file", fileName, fileBody)
                     .build();
 
-            // Build Request
+            // Create Request for Image Upload
             Request request = new Request.Builder()
                     .url("http://10.0.2.2:3000/produce/upload-image-produce")
                     .post(requestBody)
                     .addHeader("Authorization", "Bearer " + accessToken)
                     .build();
 
-            // Log Request Details
-            Log.d("Upload", "Request URL: " + request.url());
-            Log.d("Upload", "Authorization: Bearer " + accessToken);
-
-            // Send Request
+            OkHttpClient client = new OkHttpClient();
             client.newCall(request).enqueue(new Callback() {
                 @Override
                 public void onFailure(Call call, IOException e) {
@@ -301,33 +234,87 @@ public class AddProduce extends AppCompatActivity {
                 @Override
                 public void onResponse(Call call, Response response) throws IOException {
                     if (response.isSuccessful()) {
-                        String responseBody = response.body().string();  // Get response body
+                        // Read response body once
+                        String responseBody = response.body() != null ? response.body().string() : null;
                         Log.d("Upload", "Upload thành công: " + responseBody);
 
-                        // Parse the response body (if required, assuming JSON response)
+                        // Update CreateProduceInput with image URL (assuming response body contains the URL)
                         Moshi moshi = new Moshi.Builder().build();
-                        JsonAdapter<ResponceImageProduce> jsonAdapterRes = moshi.adapter(ResponceImageProduce.class);
-                        ResponceImageProduce responseData = jsonAdapterRes.fromJson(responseBody);
+                        JsonAdapter<ResponceImageProduce> jsonAdapter = moshi.adapter(ResponceImageProduce.class);
 
-                        if (responseData != null) {
-                            Log.i("Data", "File ID: " + responseData.getFileInfo().getId());
-                            Log.i("Data", "File Name: " + responseData.getFileInfo().getName());
-                            Log.i("Data", "File Link: " + responseData.getLink());
+                        try {
+                            String imageResponse = responseBody;
+                                createProduceInput.setImage(imageResponse);
+                                // Proceed to create the produce record
+                                sendCreateProduceRequest(accessToken, createProduceInput);
+
+                        } catch (Exception e) {
+                            Log.e("Upload", "Error parsing image response: " + e.getMessage());
                         }
-
-                        runOnUiThread(() -> {
-                            Toast.makeText(AddProduce.this, "Upload thành công!", Toast.LENGTH_SHORT).show();
-                        });
                     } else {
                         Log.e("Upload", "Server error: " + response.code());
                         runOnUiThread(() -> Toast.makeText(AddProduce.this, "Server error: " + response.code(), Toast.LENGTH_SHORT).show());
                     }
                 }
             });
-
         } catch (IOException e) {
             Log.e("Upload", "Error: " + e.getMessage());
             Toast.makeText(AddProduce.this, "Error uploading file: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    // Utility to read InputStream into a byte array
+    private byte[] readInputStreamToByteArray(InputStream inputStream) throws IOException {
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        byte[] buffer = new byte[1024];
+        int length;
+        while ((length = inputStream.read(buffer)) != -1) {
+            byteArrayOutputStream.write(buffer, 0, length);
+        }
+        inputStream.close();
+        return byteArrayOutputStream.toByteArray();
+    }
+
+    // Method to send CreateProduce request
+    private void sendCreateProduceRequest(String accessToken, CreateProduceInput createProduceInput) {
+        try {
+            // Convert CreateProduceInput to JSON
+            Moshi moshi = new Moshi.Builder().build();
+            JsonAdapter<CreateProduceInput> jsonAdapter = moshi.adapter(CreateProduceInput.class);
+            String jsonData = jsonAdapter.toJson(createProduceInput);
+
+            // Build JSON RequestBody
+            MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+            RequestBody body = RequestBody.create(JSON, jsonData);
+
+            // Create Request
+            Request request = new Request.Builder()
+                    .url("http://10.0.2.2:3000/produce/create-produce")
+                    .addHeader("Authorization", "Bearer " + accessToken)
+                    .post(body)
+                    .build();
+
+            OkHttpClient client = new OkHttpClient();
+            client.newCall(request).enqueue(new Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    Log.e("CreateProduce", "Create failed: " + e.getMessage());
+                    runOnUiThread(() -> Toast.makeText(AddProduce.this, "Create thất bại!", Toast.LENGTH_SHORT).show());
+                }
+
+                @Override
+                public void onResponse(Call call, Response response) throws IOException {
+                    if (response.isSuccessful()) {
+                        Log.d("CreateProduce", "Create thành công: " + response.body().string());
+                        runOnUiThread(() -> Toast.makeText(AddProduce.this, "Create thành công!", Toast.LENGTH_SHORT).show());
+                    } else {
+                        Log.e("CreateProduce", "Server error: " + response.code());
+                        runOnUiThread(() -> Toast.makeText(AddProduce.this, "Server error: " + response.code(), Toast.LENGTH_SHORT).show());
+                    }
+                }
+            });
+        } catch (Exception e) {
+            Log.e("CreateProduce", "Error: " + e.getMessage());
         }
     }
 
