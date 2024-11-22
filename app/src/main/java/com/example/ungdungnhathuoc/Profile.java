@@ -68,7 +68,7 @@ public class Profile extends AppCompatActivity {
 
 
         Request request = new Request.Builder()
-                .url("http://10.0.2.2:3000/auth/user-detail") // Thay bằng IP/Domain thực tế
+                .url("https://api.quandev03.id.vn/auth/user-detail") // Thay bằng IP/Domain thực tế
                 .addHeader("Authorization", "Bearer " + accessToken) // Thêm Bearer token vào header
                 .build();
 
@@ -86,6 +86,7 @@ public class Profile extends AppCompatActivity {
                 }
 
                 String json = response.body().string();
+                Log.d("Data: ", json);
 //                final JsonAdapter<Account> jsonAdapter = moshi.adapter(Account.class);
 //                final Account account = jsonAdapter.fromJson(json);
                 JsonAdapter<ResponseData> jsonAdapter = moshi.adapter(ResponseData.class);
