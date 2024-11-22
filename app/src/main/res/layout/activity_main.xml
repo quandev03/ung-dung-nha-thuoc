@@ -39,16 +39,17 @@
                 android:layout_height="wrap_content"
                 android:hint="accessToken"
                 android:minHeight="100dp" />
-            <Button
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Proflie"
-                android:id="@+id/openProfile"/>
-            <Button
-                android:id="@+id/addProduce"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Add Produce" />
+<!--            <Button-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:text="Proflie"-->
+<!--                android:id="@+id/openProfile"/>-->
+<!--            <Button-->
+<!--                android:id="@+id/addProduce"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:text="Add Produce" />-->
+
         </LinearLayout>
     </FrameLayout>
 
