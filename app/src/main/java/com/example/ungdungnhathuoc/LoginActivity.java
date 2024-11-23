@@ -1,80 +1,100 @@
 package com.example.ungdungnhathuoc;
 
-import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
-
 
 import com.example.ungdungnhathuoc.Activity.HomeAdminActivity;
-import com.example.ungdungnhathuoc.Model.SQLiteConnect;
+
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 public class LoginActivity extends AppCompatActivity {
     EditText usernameLogin, passwordLogin;
     Button loginButton;
     TextView registerTextView;
-    SQLiteConnect dbHelper;
 
-    @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
-        setContentView(com.example.ungdungnhathuoc.R.layout.activity_login);
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
-        });
+        setContentView(R.layout.activity_login);
 
+        // Khởi tạo view
         usernameLogin = findViewById(R.id.usernameLogin);
         passwordLogin = findViewById(R.id.passwordLogin);
         loginButton = findViewById(R.id.loginButton);
         registerTextView = findViewById(R.id.registerTextView);
-        dbHelper = new SQLiteConnect(this);
 
+        // Kiểm tra accessToken ngay khi mở activity
+        SharedPreferences sharedPref = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
+        String accessToken = sharedPref.getString("accessToken", null);
 
+        if (accessToken != null) {
+            // Nếu đã đăng nhập, điều hướng đến màn hình chính
+            Intent intent = new Intent(LoginActivity.this, HomeAdminActivity.class);
+            startActivity(intent);
+            finish();
+        }
+
+        // Xử lý sự kiện khi bấm nút Đăng nhập
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 String username = usernameLogin.getText().toString().trim();
                 String password = passwordLogin.getText().toString().trim();
 
-                // Kiểm tra đăng nhập với tài khoản admin mặc định
-                if (username.equals("admin") && password.equals("admin123")) {
-                    Toast.makeText(LoginActivity.this, "Chào mừng quản trị viên", Toast.LENGTH_SHORT).show();
+                if (TextUtils.isEmpty(username) || TextUtils.isEmpty(password)) {
+                    Toast.makeText(LoginActivity.this, "Vui lòng nhập tên đăng nhập và mật khẩu", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                // Mã hóa mật khẩu
+                String hashedPassword = hashPassword(password);
+                if (hashedPassword == null) {
+                    Toast.makeText(LoginActivity.this, "Đã có lỗi trong quá trình mã hóa mật khẩu", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                // Truy xuất SharedPreferences
+                SharedPreferences sharedPref = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
+                String storedPassword = sharedPref.getString(username + "password", null);
+                String fullname = sharedPref.getString(username + "fullname", "Người dùng");
+
+                if (storedPassword == null) {
+                    Toast.makeText(LoginActivity.this, "Tên đăng nhập không tồn tại", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                // Kiểm tra thông tin đăng nhập
+                if (storedPassword.equals(hashedPassword)) {
+                    // Lưu accessToken vào SharedPreferences
+                    SharedPreferences.Editor editor = sharedPref.edit();
+                    editor.putString("accessToken", username); // Lưu username làm token
+                    editor.apply();
+
+                    Toast.makeText(LoginActivity.this, "Đăng nhập thành công!\nChào mừng " + fullname, Toast.LENGTH_SHORT).show();
+
                     // Chuyển đến màn hình chính
                     Intent intent = new Intent(LoginActivity.this, HomeAdminActivity.class);
                     startActivity(intent);
                     finish();
                 } else {
-                    // Kiểm tra tài khoản người dùng trong cơ sở dữ liệu
-                    boolean isLoggedId = dbHelper.checkUser(username, password);
-                    String fullname = dbHelper.getFullnameByUsernameAndPassword(username, password);
-                    if (isLoggedId) {
-                        Toast.makeText(LoginActivity.this, "Đăng nhập thành công!\nChào mừng " + fullname, Toast.LENGTH_SHORT).show();
-                        // Chuyển đến màn hình chính
-                        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                        startActivity(intent);
-                        finish();
-                    } else {
-                        Toast.makeText(LoginActivity.this, "Đăng nhập thất bại", Toast.LENGTH_SHORT).show();
-                    }
+                    // Đăng nhập thất bại
+                    Toast.makeText(LoginActivity.this, "Tên đăng nhập hoặc mật khẩu không đúng", Toast.LENGTH_SHORT).show();
                 }
             }
         });
 
-        // Khi nhấn vào dòng chữ "Don't have an account? Sign up", chuyển sang RegisterActivity
+        // Xử lý khi bấm vào "Đăng ký"
         registerTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -82,5 +102,21 @@ public class LoginActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+    }
+
+    // Hàm mã hóa mật khẩu
+    public String hashPassword(String password) {
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] hashBytes = digest.digest(password.getBytes());
+            StringBuilder hexString = new StringBuilder();
+            for (byte b : hashBytes) {
+                hexString.append(String.format("%02x", b));
+            }
+            return hexString.toString();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+            return null; // Trả về null nếu có lỗi
+        }
     }
 }
