@@ -19,6 +19,12 @@
         android:theme="@style/Theme.UngDungNhaThuoc"
         tools:targetApi="31">
         <activity
+            android:name=".ThongbaonbActivity"
+            android:exported="false" />
+        <activity
+            android:name=".trangchunmActivity"
+            android:exported="false" />
+        <activity
             android:name=".Activity.HomeAdminActivity"
             android:exported="false" />
         <activity
@@ -33,7 +39,6 @@
         <activity
             android:name=".Activity.homeActivity"
             android:exported="false" />
-
         <activity
             android:name=".Activity.ThongTinDonHangNBActivity"
             android:exported="false" />
@@ -59,7 +64,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-<!--        <activity android:name=".Activity.BaseActivity" />-->
     </application>
 
 </manifest>
