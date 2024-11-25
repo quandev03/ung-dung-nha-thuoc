@@ -76,7 +76,7 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
-        // Khi nhấn vào dòng chữ "Don't have an account? Sign up", chuyển sang RegisterActivity
+        // Khi nhấn vào dòng chữ "Don't have an account? Sign up"
         registerTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

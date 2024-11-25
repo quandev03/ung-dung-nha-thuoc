@@ -83,7 +83,7 @@ public class RegisterActivity extends AppCompatActivity {
                 if (username.equals("admin")) {
                     Toast.makeText(RegisterActivity.this, "Tên tài khoản đã tồn tại", Toast.LENGTH_SHORT).show();
                     return;
-                } else if (password.equals("admin123")) {
+                } else if (hashPassword(password).equals(hashPassword("admin123"))) {
                     Toast.makeText(RegisterActivity.this, "Mật khẩu đã tồn tại", Toast.LENGTH_SHORT).show();
                     return;
                 }
@@ -92,10 +92,10 @@ public class RegisterActivity extends AppCompatActivity {
                     return;
                 }
                 else if (fullname.equals("Administrator")) {
-                    Toast.makeText(RegisterActivity.this, "Mật khẩu đã tồn tại", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(RegisterActivity.this, "Tên người dùng đã tồn tại", Toast.LENGTH_SHORT).show();
                     return;
                 }
-                else if (phone.equals("123456789")) {
+                else if (phone.equals("admin123")) {
                     Toast.makeText(RegisterActivity.this, "Mật khẩu đã tồn tại", Toast.LENGTH_SHORT).show();
                     return;
                 }
@@ -114,7 +114,7 @@ public class RegisterActivity extends AppCompatActivity {
                             Toast.makeText(RegisterActivity.this, "Email đã tồn tại", Toast.LENGTH_SHORT).show();
                             return;
                         }
-                        else if(dbHelper.checkPassword(password)){
+                        else if(dbHelper.checkPassword(hashPassword(password))){
                             Toast.makeText(RegisterActivity.this, "Mật khẩu đã tồn tại", Toast.LENGTH_SHORT).show();
                             return;
                         }
