@@ -1,8 +1,11 @@
 package com.example.ungdungnhathuoc.Model;
 
+import static java.security.AccessController.getContext;
+
 import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -10,10 +13,12 @@ import android.database.sqlite.SQLiteOpenHelper;
 import androidx.annotation.Nullable;
 
 public class SQLiteConnect extends SQLiteOpenHelper {
-    public static final String DBName = "register.db";
+    public static final String DBName = "user.db";
+    private Context context;
 
     public SQLiteConnect(@Nullable Context context) {
         super(context, DBName, null, 1);
+        this.context = context; // Lưu context vào biến
     }
 
     @Override
@@ -57,6 +62,17 @@ public class SQLiteConnect extends SQLiteOpenHelper {
             contentValues.put("phone", "123456789");
             // Chèn dữ liệu vào bảng
             sqLiteDatabase.insert("users", null, contentValues);
+
+            // Lưu thông tin admin vào SharedPreferences
+            SharedPreferences sharedPreferences = context.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putString("username", "admin");
+            editor.putString("email", "admin@example.com");
+            editor.putString("password", "admin123"); // Mã hóa mật khẩu nếu cần
+            editor.putString("fullname", "Administrator");
+            editor.putString("address", "Admin Address");
+            editor.putString("phone", "123456789");
+            editor.apply();
         }
         cursor.close();
     }
@@ -133,3 +149,4 @@ public class SQLiteConnect extends SQLiteOpenHelper {
         else return false;
     }
 }
+

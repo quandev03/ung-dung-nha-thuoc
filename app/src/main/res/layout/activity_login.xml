@@ -7,6 +7,7 @@
     android:layout_height="match_parent"
     tools:context=".LoginActivity">
     <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
@@ -58,49 +59,22 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="LOGIN"
-            android:backgroundTint="@color/blue"
+            android:backgroundTint="@color/blue2"
             android:textColor="@android:color/white"
             android:padding="12dp"
             android:textAllCaps="false"
             android:fontFamily="sans-serif-medium"
             android:layout_marginBottom="20dp"/>
-        <LinearLayout
+        <TextView
+            android:id="@+id/registerTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Don't have an account? "
-                android:textStyle="bold"
-                android:textColor="@color/blue"
-                android:textSize="16sp"
-                android:fontFamily="sans-serif"
-                android:layout_gravity="center"
-                android:layout_marginTop="10dp"
-                android:clickable="true"
-                android:focusable="true"
-                />
-            <TextView
-                android:text="Sign up"
-                android:id="@+id/registerTextView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textStyle="bold"
-                android:textColor="@color/red"
-                android:textSize="16sp"
-                android:fontFamily="sans-serif"
-                android:layout_gravity="center"
-                android:layout_marginTop="10dp"
-                android:clickable="true"
-                android:focusable="true">
-
-            </TextView>
-
-        </LinearLayout>
-
-
-
-
+            android:text="Don't have an account? Sign up"
+            android:textStyle="bold"
+            android:textColor="@color/blue2"
+            android:textSize="16sp"
+            android:fontFamily="sans-serif"
+            android:layout_gravity="center"
+            android:layout_marginTop="10dp"/>
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

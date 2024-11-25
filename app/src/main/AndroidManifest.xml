@@ -33,7 +33,6 @@
         <activity
             android:name=".Activity.homeActivity"
             android:exported="false" />
-
         <activity
             android:name=".Activity.ThongTinDonHangNBActivity"
             android:exported="false" />
@@ -59,7 +58,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-<!--        <activity android:name=".Activity.BaseActivity" />-->
     </application>
 
 </manifest>
