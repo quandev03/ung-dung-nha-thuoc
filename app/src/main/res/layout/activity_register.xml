@@ -72,19 +72,19 @@
             android:background="@drawable/rounded_edittext_background"
             android:layout_marginBottom="16dp"/>
 
-<!--        <EditText-->
-<!--            android:id="@+id/repasswordRegister"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_marginBottom="16dp"-->
-<!--            android:textColor="@color/black"-->
-<!--            android:textColorHint="#808080"-->
-<!--            android:background="@drawable/rounded_edittext_background"-->
-<!--            android:drawableStart="@drawable/baseline_lock_24"-->
-<!--            android:drawablePadding="10dp"-->
-<!--            android:hint="Repassword"-->
-<!--            android:inputType="textPassword"-->
-<!--            android:padding="12dp" />-->
+        <EditText
+            android:id="@+id/repasswordRegister"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:textColor="@color/black"
+            android:textColorHint="#808080"
+            android:background="@drawable/rounded_edittext_background"
+            android:drawableStart="@drawable/baseline_lock_24"
+            android:drawablePadding="10dp"
+            android:hint="Repassword"
+            android:inputType="textPassword"
+            android:padding="12dp" />
 
         <EditText
             android:id="@+id/fullnameRegister"
@@ -99,19 +99,19 @@
             android:padding="12dp"
             android:background="@drawable/rounded_edittext_background"
             android:layout_marginBottom="16dp"/>
-<!--        <EditText-->
-<!--            android:id="@+id/addressRegister"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:hint="Address"-->
-<!--            android:inputType="textPostalAddress"-->
-<!--            android:textColor="@color/black"-->
-<!--            android:textColorHint="#808080"-->
-<!--            android:drawableStart="@drawable/baseline_location_on_24"-->
-<!--            android:drawablePadding="10dp"-->
-<!--            android:padding="12dp"-->
-<!--            android:background="@drawable/rounded_edittext_background"-->
-<!--            android:layout_marginBottom="16dp"/>-->
+        <EditText
+            android:id="@+id/addressRegister"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Address"
+            android:inputType="textPostalAddress"
+            android:textColor="@color/black"
+            android:textColorHint="#808080"
+            android:drawableStart="@drawable/baseline_location_on_24"
+            android:drawablePadding="10dp"
+            android:padding="12dp"
+            android:background="@drawable/rounded_edittext_background"
+            android:layout_marginBottom="16dp"/>
         <EditText
             android:id="@+id/phoneRegister"
             android:layout_width="match_parent"
@@ -130,7 +130,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="REGISTER"
-            android:backgroundTint="@color/blue"
+            android:backgroundTint="@color/blue2"
             android:textColor="@android:color/white"
             android:padding="12dp"
             android:textAllCaps="false"
@@ -142,7 +142,7 @@
             android:layout_height="wrap_content"
             android:text="Do you have an account? Log in"
             android:textStyle="bold"
-            android:textColor="@color/blue"
+            android:textColor="@color/blue2"
             android:textSize="16sp"
             android:fontFamily="sans-serif"
             android:layout_gravity="center"
