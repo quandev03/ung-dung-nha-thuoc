@@ -12,6 +12,9 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import androidx.annotation.Nullable;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+
 public class SQLiteConnect extends SQLiteOpenHelper {
     public static final String DBName = "user.db";
     private Context context;
@@ -32,6 +35,8 @@ public class SQLiteConnect extends SQLiteOpenHelper {
         sqLiteDatabase.execSQL("drop table if exists users");
         onCreate(sqLiteDatabase);
     }
+
+
 
     public boolean insertData(String username, String password, String fullname, String address, String email, String phone){
         SQLiteDatabase myDB = this.getWritableDatabase();
@@ -55,7 +60,7 @@ public class SQLiteConnect extends SQLiteOpenHelper {
             // Thêm tài khoản admin vào cơ sở dữ liệu nếu chưa có
             ContentValues contentValues = new ContentValues();
             contentValues.put("username", "admin");
-            contentValues.put("password", "admin123");
+            contentValues.put("password", hashPassword("admin123"));
             contentValues.put("fullname", "Administrator");
             contentValues.put("address", "Admin Address");
             contentValues.put("email", "admin@example.com");
@@ -68,7 +73,7 @@ public class SQLiteConnect extends SQLiteOpenHelper {
             SharedPreferences.Editor editor = sharedPreferences.edit();
             editor.putString("username", "admin");
             editor.putString("email", "admin@example.com");
-            editor.putString("password", "admin123"); // Mã hóa mật khẩu nếu cần
+            editor.putString("password", hashPassword("admin123"));
             editor.putString("fullname", "Administrator");
             editor.putString("address", "Admin Address");
             editor.putString("phone", "123456789");
@@ -147,6 +152,22 @@ public class SQLiteConnect extends SQLiteOpenHelper {
         if(cursor.getCount()>0)
             return true;
         else return false;
+    }
+
+    // Hàm mã hóa mật khẩu
+    private String hashPassword(String password) {
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] hashBytes = digest.digest(password.getBytes());
+            StringBuilder hexString = new StringBuilder();
+            for (byte b : hashBytes) {
+                hexString.append(String.format("%02x", b));
+            }
+            return hexString.toString();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }
 
