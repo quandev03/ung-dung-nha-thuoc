@@ -54,14 +54,17 @@ public class SQLiteConnect extends SQLiteOpenHelper {
 
     // Hàm thêm tài khoản quản trị viên vào cơ sở dữ liệu
     private void addAdminAccount(SQLiteDatabase sqLiteDatabase) {
+//        String adminUsername = "admin";
+//        String adminPassword = hashPassword("admin123"); // Mã hóa mật khẩu trước khi lưu
+//        String adminFullname = "Admin";
         // Kiểm tra xem tài khoản admin đã có chưa
         Cursor cursor = sqLiteDatabase.rawQuery("SELECT * FROM users WHERE username = ?", new String[]{"admin"});
         if (cursor.getCount() == 0) {
             // Thêm tài khoản admin vào cơ sở dữ liệu nếu chưa có
             ContentValues contentValues = new ContentValues();
             contentValues.put("username", "admin");
-            contentValues.put("password", hashPassword("admin123"));
-            contentValues.put("fullname", "Administrator");
+            contentValues.put("password", "admin123");
+            contentValues.put("fullname", "adminFullname");
             contentValues.put("address", "Admin Address");
             contentValues.put("email", "admin@example.com");
             contentValues.put("phone", "123456789");
@@ -71,9 +74,8 @@ public class SQLiteConnect extends SQLiteOpenHelper {
             // Lưu thông tin admin vào SharedPreferences
             SharedPreferences sharedPreferences = context.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = sharedPreferences.edit();
-            editor.putString("username", "admin");
+            editor.putString("username", "adminUsername");
             editor.putString("email", "admin@example.com");
-            editor.putString("password", "admin123");
             editor.putString("fullname", "Administrator");
             editor.putString("address", "Admin Address");
             editor.putString("phone", "123456789");
@@ -154,20 +156,20 @@ public class SQLiteConnect extends SQLiteOpenHelper {
         else return false;
     }
 
-    // Hàm mã hóa mật khẩu
-    private String hashPassword(String password) {
-        try {
-            MessageDigest digest = MessageDigest.getInstance("SHA-256");
-            byte[] hashBytes = digest.digest(password.getBytes());
-            StringBuilder hexString = new StringBuilder();
-            for (byte b : hashBytes) {
-                hexString.append(String.format("%02x", b));
-            }
-            return hexString.toString();
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
+//    // Hàm mã hóa mật khẩu
+//    public String hashPassword(String password) {
+//        try {
+//            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+//            byte[] hashBytes = digest.digest(password.getBytes());
+//            StringBuilder hexString = new StringBuilder();
+//            for (byte b : hashBytes) {
+//                hexString.append(String.format("%02x", b));
+//            }
+//            return hexString.toString();
+//        } catch (NoSuchAlgorithmException e) {
+//            e.printStackTrace();
+//            return null;
+//        }
+//    }
 }
 
