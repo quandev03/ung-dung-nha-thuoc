@@ -73,7 +73,7 @@ public class SQLiteConnect extends SQLiteOpenHelper {
             SharedPreferences.Editor editor = sharedPreferences.edit();
             editor.putString("username", "admin");
             editor.putString("email", "admin@example.com");
-            editor.putString("password", hashPassword("admin123"));
+            editor.putString("password", "admin123");
             editor.putString("fullname", "Administrator");
             editor.putString("address", "Admin Address");
             editor.putString("phone", "123456789");
