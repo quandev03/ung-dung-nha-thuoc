@@ -54,17 +54,17 @@ public class SQLiteConnect extends SQLiteOpenHelper {
 
     // Hàm thêm tài khoản quản trị viên vào cơ sở dữ liệu
     private void addAdminAccount(SQLiteDatabase sqLiteDatabase) {
-        String adminUsername = "admin";
-        String adminPassword = hashPassword("admin123"); // Mã hóa mật khẩu trước khi lưu
-        String adminFullname = "Admin";
+//        String adminUsername = "admin";
+//        String adminPassword = hashPassword("admin123"); // Mã hóa mật khẩu trước khi lưu
+//        String adminFullname = "Admin";
         // Kiểm tra xem tài khoản admin đã có chưa
         Cursor cursor = sqLiteDatabase.rawQuery("SELECT * FROM users WHERE username = ?", new String[]{"admin"});
         if (cursor.getCount() == 0) {
             // Thêm tài khoản admin vào cơ sở dữ liệu nếu chưa có
             ContentValues contentValues = new ContentValues();
-            contentValues.put("username", adminUsername);
-            contentValues.put("password", adminPassword);
-            contentValues.put("fullname", adminFullname);
+            contentValues.put("username", "admin");
+            contentValues.put("password", "admin123");
+            contentValues.put("fullname", "Admin");
             contentValues.put("address", "Admin Address");
             contentValues.put("email", "admin@example.com");
             contentValues.put("phone", "123456789");
@@ -154,24 +154,6 @@ public class SQLiteConnect extends SQLiteOpenHelper {
         if(cursor.getCount()>0)
             return true;
         else return false;
-    }
-    public String hashPassword(String password) {
-        try {
-            // Sử dụng thuật toán MD5
-            MessageDigest digest = MessageDigest.getInstance("MD5");
-            // Chuyển chuỗi mật khẩu thành mảng byte và mã hóa
-            byte[] hashBytes = digest.digest(password.getBytes());
-            // Chuyển đổi mảng byte thành chuỗi hexadecimal
-            StringBuilder hexString = new StringBuilder();
-            for (byte b : hashBytes) {
-                hexString.append(String.format("%02x", b));
-            }
-            // Trả về chuỗi đã mã hóa
-            return hexString.toString();
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-            return null;
-        }
     }
 
 
