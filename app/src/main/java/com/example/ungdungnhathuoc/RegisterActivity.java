@@ -72,94 +72,99 @@ public class RegisterActivity extends AppCompatActivity {
                 email = emailRegister.getText().toString().trim();
 
                 // Kiểm tra tính hợp lệ
-                if (username.isEmpty() || password.isEmpty() || repassword.isEmpty() || fullname.isEmpty()
-                        || address.isEmpty() || phone.isEmpty() || email.isEmpty()) {
-                    Toast.makeText(RegisterActivity.this, "Vui lòng điền đầy đủ thông tin", Toast.LENGTH_SHORT).show();
+                if (!isUsernameValid(username)) {
+                    Toast.makeText(RegisterActivity.this, "Tên tài khoản không hợp lệ", Toast.LENGTH_SHORT).show();
                     return;
                 }
-
-                if (!password.equals(repassword)) {
-                    Toast.makeText(RegisterActivity.this, "Mật khẩu không trùng khớp", Toast.LENGTH_SHORT).show();
+                if (!isPasswordValid(password)) {
+                    Toast.makeText(RegisterActivity.this, "Mật khẩu không hợp lệ", Toast.LENGTH_SHORT).show();
                     return;
                 }
-                if(!isUsernameValid(username)){
-                    Toast.makeText(RegisterActivity.this, "Username không hợp lệ", Toast.LENGTH_SHORT).show();
+                if (!isPhoneValid(phone)) {
+                    Toast.makeText(RegisterActivity.this, "Số điện thoại không hợp lệ", Toast.LENGTH_SHORT).show();
                     return;
-                } else if (!isPasswordValid(password)) {
-                    Toast.makeText(RegisterActivity.this, "Password không hợp lệ", Toast.LENGTH_SHORT).show();
-                    return;
-                } else if (!isPhoneValid(phone)) {
-                    Toast.makeText(RegisterActivity.this, "Phone không hợp lệ", Toast.LENGTH_SHORT).show();
-                    return;
-                } else if (!isEmailValid(email)) {
+                }
+                if (!isEmailValid(email)) {
                     Toast.makeText(RegisterActivity.this, "Email không hợp lệ", Toast.LENGTH_SHORT).show();
                     return;
                 }
 
-                // Tạo đối tượng JSON để gửi
-                JSONObject jsonObject = new JSONObject();
-                try {
-                    jsonObject.put("username", username);
-                    jsonObject.put("password", password);
-                    jsonObject.put("fullname", fullname);
-                    jsonObject.put("address", address);
-                    jsonObject.put("phone", phone);
-                    jsonObject.put("email", email);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                    Toast.makeText(RegisterActivity.this, "Lỗi xử lý dữ liệu", Toast.LENGTH_SHORT).show();
+                // Kiểm tra nếu username là admin, không cho phép đăng ký
+                if (username.equals("admin")) {
+                    Toast.makeText(RegisterActivity.this, "Tên tài khoản đã tồn tại", Toast.LENGTH_SHORT).show();
+                    return;
+                } else if (password.equals("admin123")) {
+                    Toast.makeText(RegisterActivity.this, "Mật khẩu đã tồn tại", Toast.LENGTH_SHORT).show();
                     return;
                 }
+                else if (email.equals("admin@example.com")) {
+                    Toast.makeText(RegisterActivity.this, "Email đã tồn tại", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                else if (fullname.equals("Administrator")) {
+                    Toast.makeText(RegisterActivity.this, "Tên người dùng đã tồn tại", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                else if (phone.equals("123456789")) {
+                    Toast.makeText(RegisterActivity.this, "Mật khẩu đã tồn tại", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                        if(username.equals("") || password.equals("") || repassword.equals("") || fullname.equals("")
+                        || address.equals("") || phone.equals("") || email.equals("")){
+                    Toast.makeText(RegisterActivity.this, "Vui lòng điền thông tin", Toast.LENGTH_SHORT).show();
 
-                // Gửi yêu cầu POST đến API
-                OkHttpClient client = new OkHttpClient();
-                RequestBody body = RequestBody.create(
-                        MediaType.parse("application/json; charset=utf-8"),
-                        jsonObject.toString()
-                );
-
-                Request request = new Request.Builder()
-                        .url("https://api.quandev03.id.vn/auth/register")
-                        .post(body)
-                        .build();
-
-                client.newCall(request).enqueue(new okhttp3.Callback() {
-                    @Override
-                    public void onFailure(okhttp3.Call call, IOException e) {
-                        e.printStackTrace();
-                        runOnUiThread(() -> Toast.makeText(RegisterActivity.this, "Lỗi kết nối mạng: " + e.getMessage(), Toast.LENGTH_SHORT).show());
-                    }
-
-                    @Override
-                    public void onResponse(okhttp3.Call call, okhttp3.Response response) throws IOException {
-                        String responseBody = response.body().string(); // Lưu phản hồi
-                        if (response.isSuccessful()) {
-                            runOnUiThread(() -> {
-                                Toast.makeText(RegisterActivity.this, "Đăng ký thành công", Toast.LENGTH_SHORT).show();
-
-                                // Lưu thông tin vào SharedPreferences
-                                SharedPreferences sharedPreferences = getSharedPreferences("MyPrefs", MODE_PRIVATE);
-                                SharedPreferences.Editor editor = sharedPreferences.edit();
-                                editor.putString("username", usernameRegister.getText().toString().trim());
-                                editor.putString("fullname", fullnameRegister.getText().toString().trim());
-                                editor.putString("address", addressRegister.getText().toString().trim());
-                                editor.putString("phone", phoneRegister.getText().toString().trim());
-                                editor.putString("email", emailRegister.getText().toString().trim());
-                                editor.putBoolean("isLoggedIn", true);  // Đánh dấu người dùng đã đăng nhập
-                                editor.apply();  // Lưu thay đổi
-
-                                // Chuyển đến màn hình đăng nhập
-                                Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
-                                startActivity(intent);
-                            });
-                        } else {
-                            runOnUiThread(() -> {
-                                Toast.makeText(RegisterActivity.this, "Đăng ký thất bại: " + responseBody, Toast.LENGTH_SHORT).show();
-                            });
+                }
+                else {
+                    if(password.equals(repassword)){
+                        if(dbHelper.checkUsername(username)){
+                            Toast.makeText(RegisterActivity.this, "Tên tài khoản đã tồn tại", Toast.LENGTH_SHORT).show();
+                            return;
                         }
-                    }
+                        else if(dbHelper.checkEmail(email)){
+                            Toast.makeText(RegisterActivity.this, "Email đã tồn tại", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+                        else if(dbHelper.checkPassword(password)){
+                            Toast.makeText(RegisterActivity.this, "Mật khẩu đã tồn tại", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+                        else if(dbHelper.checkFullname(fullname)){
+                            Toast.makeText(RegisterActivity.this, "Tên người dùng đã tồn tại", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+                        else if(dbHelper.checkPhone(phone)){
+                            Toast.makeText(RegisterActivity.this, "Số điện thoại đã tồn tại", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+//                        // Mã hóa mật khẩu
+//                        String hashedPassword = hashPassword(password);
 
-                });
+                        // Lưu thông tin vào cơ sở dữ liệu
+                        boolean registerSuccess = dbHelper.insertData(username, password, fullname, address, phone, email);
+                        if(registerSuccess){
+                            // Lưu thông tin vào SharedPreferences
+                            SharedPreferences sharedPreferences = getSharedPreferences("MyPrefs", MODE_PRIVATE);
+                            SharedPreferences.Editor editor = sharedPreferences.edit();
+                            editor.putString("username", username);
+
+                            editor.putString("fullname", fullname);
+                            editor.putString("phone", phone);
+                            editor.putString("address", address);
+                            editor.putString("email", email);
+
+                            editor.apply();
+                            Toast.makeText(RegisterActivity.this, "Đăng ký thành công", Toast.LENGTH_SHORT).show();
+
+                            // Chuyển sang màn hình login
+                            Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
+                            startActivity(intent);
+                        } else {
+                            Toast.makeText(RegisterActivity.this, "Đăng ký thất bại", Toast.LENGTH_SHORT).show();
+                        }
+                    } else {
+                        Toast.makeText(RegisterActivity.this, "Mật khẩu không trùng khớp", Toast.LENGTH_SHORT).show();
+                    }
+                }
             }
         });
 
@@ -193,24 +198,24 @@ public class RegisterActivity extends AppCompatActivity {
         return email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$");
     }
 
-    //Hàm mã hóa mật khẩu
-    public String hashPassword(String password) {
-        try {
-            MessageDigest digest = MessageDigest.getInstance("SHA-256");
-            byte[] hashBytes = digest.digest(password.getBytes());
-            StringBuilder hexString = new StringBuilder();
-            for (byte b : hashBytes) {
-                String hex = Integer.toHexString(0xff & b);
-                if (hex.length() == 1) {
-                    hexString.append('0');
-                }
-                hexString.append(hex);
-            }
-            return hexString.toString();
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
+//    //Hàm mã hóa mật khẩu
+//    public String hashPassword(String password) {
+//        try {
+//            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+//            byte[] hashBytes = digest.digest(password.getBytes());
+//            StringBuilder hexString = new StringBuilder();
+//            for (byte b : hashBytes) {
+//                String hex = Integer.toHexString(0xff & b);
+//                if (hex.length() == 1) {
+//                    hexString.append('0');
+//                }
+//                hexString.append(hex);
+//            }
+//            return hexString.toString();
+//        } catch (NoSuchAlgorithmException e) {
+//            e.printStackTrace();
+//            return null;
+//        }
+//    }
 
 }
