@@ -82,9 +82,17 @@ public class RegisterActivity extends AppCompatActivity {
                     Toast.makeText(RegisterActivity.this, "Mật khẩu không trùng khớp", Toast.LENGTH_SHORT).show();
                     return;
                 }
-
-                if (!isUsernameValid(username) || !isPasswordValid(password) || !isPhoneValid(phone) || !isEmailValid(email)) {
-                    Toast.makeText(RegisterActivity.this, "Thông tin nhập vào không hợp lệ", Toast.LENGTH_SHORT).show();
+                if(!isUsernameValid(username)){
+                    Toast.makeText(RegisterActivity.this, "Username không hợp lệ", Toast.LENGTH_SHORT).show();
+                    return;
+                } else if (!isPasswordValid(password)) {
+                    Toast.makeText(RegisterActivity.this, "Password không hợp lệ", Toast.LENGTH_SHORT).show();
+                    return;
+                } else if (!isPhoneValid(phone)) {
+                    Toast.makeText(RegisterActivity.this, "Phone không hợp lệ", Toast.LENGTH_SHORT).show();
+                    return;
+                } else if (!isEmailValid(email)) {
+                    Toast.makeText(RegisterActivity.this, "Email không hợp lệ", Toast.LENGTH_SHORT).show();
                     return;
                 }
 
