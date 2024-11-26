@@ -93,7 +93,7 @@ public class RegisterActivity extends AppCompatActivity {
                 if (username.equals("admin")) {
                     Toast.makeText(RegisterActivity.this, "Tên tài khoản đã tồn tại", Toast.LENGTH_SHORT).show();
                     return;
-                } else if (password.equals("admin123")) {
+                } else if (hashPassword(password).equals(hashPassword("admin123"))) {
                     Toast.makeText(RegisterActivity.this, "Mật khẩu đã tồn tại", Toast.LENGTH_SHORT).show();
                     return;
                 }
@@ -124,7 +124,7 @@ public class RegisterActivity extends AppCompatActivity {
                             Toast.makeText(RegisterActivity.this, "Email đã tồn tại", Toast.LENGTH_SHORT).show();
                             return;
                         }
-                        else if(dbHelper.checkPassword(password)){
+                        else if(dbHelper.checkPassword(hashPassword(password))){
                             Toast.makeText(RegisterActivity.this, "Mật khẩu đã tồn tại", Toast.LENGTH_SHORT).show();
                             return;
                         }
@@ -136,11 +136,11 @@ public class RegisterActivity extends AppCompatActivity {
                             Toast.makeText(RegisterActivity.this, "Số điện thoại đã tồn tại", Toast.LENGTH_SHORT).show();
                             return;
                         }
-//                        // Mã hóa mật khẩu
-//                        String hashedPassword = hashPassword(password);
+                        // Mã hóa mật khẩu
+                        String hashedPassword = hashPassword(password);
 
                         // Lưu thông tin vào cơ sở dữ liệu
-                        boolean registerSuccess = dbHelper.insertData(username, password, fullname, address, phone, email);
+                        boolean registerSuccess = dbHelper.insertData(username, hashedPassword, fullname, address, phone, email);
                         if(registerSuccess){
                             // Lưu thông tin vào SharedPreferences
                             SharedPreferences sharedPreferences = getSharedPreferences("MyPrefs", MODE_PRIVATE);
@@ -197,6 +197,27 @@ public class RegisterActivity extends AppCompatActivity {
     public boolean isEmailValid(String email) {
         return email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$");
     }
+
+
+    public String hashPassword(String password) {
+        try {
+            // Sử dụng thuật toán MD5
+            MessageDigest digest = MessageDigest.getInstance("MD5");
+            // Chuyển chuỗi mật khẩu thành mảng byte và mã hóa
+            byte[] hashBytes = digest.digest(password.getBytes());
+            // Chuyển đổi mảng byte thành chuỗi hexadecimal
+            StringBuilder hexString = new StringBuilder();
+            for (byte b : hashBytes) {
+                hexString.append(String.format("%02x", b));
+            }
+            // Trả về chuỗi đã mã hóa
+            return hexString.toString();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
 
 //    //Hàm mã hóa mật khẩu
 //    public String hashPassword(String password) {

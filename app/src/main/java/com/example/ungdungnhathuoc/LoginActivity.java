@@ -54,13 +54,13 @@ public class LoginActivity extends AppCompatActivity {
                     Toast.makeText(LoginActivity.this, "Vui lòng nhập tên đăng nhập và mật khẩu", Toast.LENGTH_SHORT).show();
                     return;
                 }
-//                String hashedPassword = hashPassword(password);
-//                if (hashedPassword == null) {
-//                    Toast.makeText(LoginActivity.this, "Đã có lỗi trong quá trình mã hóa mật khẩu", Toast.LENGTH_SHORT).show();
-//                    return;
-//                }
-                boolean isLoggedId = dbHelper.checkUser(username, password);
-                String fullname = dbHelper.getFullnameByUsernameAndPassword(username, password);
+                String hashedPassword = hashPassword(password);
+                if (hashedPassword == null) {
+                    Toast.makeText(LoginActivity.this, "Đã có lỗi trong quá trình mã hóa mật khẩu", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                boolean isLoggedId = dbHelper.checkUser(username, hashedPassword);
+                String fullname = dbHelper.getFullnameByUsernameAndPassword(username, hashedPassword);
                 if (isLoggedId) {
                     // Lưu accessToken vào SharedPreferences
                     SharedPreferences.Editor editor = sharedPref.edit();
@@ -86,19 +86,38 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
-    // Hàm mã hóa mật khẩu
     public String hashPassword(String password) {
         try {
-            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            // Sử dụng thuật toán MD5
+            MessageDigest digest = MessageDigest.getInstance("MD5");
+            // Chuyển chuỗi mật khẩu thành mảng byte và mã hóa
             byte[] hashBytes = digest.digest(password.getBytes());
+            // Chuyển đổi mảng byte thành chuỗi hexadecimal
             StringBuilder hexString = new StringBuilder();
             for (byte b : hashBytes) {
                 hexString.append(String.format("%02x", b));
             }
+            // Trả về chuỗi đã mã hóa
             return hexString.toString();
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
             return null;
         }
     }
+
+    // Hàm mã hóa mật khẩu
+//    public String hashPassword(String password) {
+//        try {
+//            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+//            byte[] hashBytes = digest.digest(password.getBytes());
+//            StringBuilder hexString = new StringBuilder();
+//            for (byte b : hashBytes) {
+//                hexString.append(String.format("%02x", b));
+//            }
+//            return hexString.toString();
+//        } catch (NoSuchAlgorithmException e) {
+//            e.printStackTrace();
+//            return null;
+//        }
+//    }
 }
