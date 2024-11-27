@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -39,17 +40,23 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHol
     public void onBindViewHolder(@NonNull OrderViewHolder holder, int position) {
         Order order = orderList.get(position);
 
-        // Cập nhật giá trị vào các TextView
+        // Hiển thị thông tin tóm tắt
         holder.tvOrderId.setText("Mã đơn: " + order.getOrderId());
         holder.tvStatus.setText("Trạng thái: " + order.getStatus());
         holder.tvTotalPrice.setText("Tổng tiền: " + order.getTotalPrice());
         holder.tvOrderDate.setText("Ngày mua: " + order.getOrderDate());
-        holder.tvCustomerName.setText("Người mua: " + order.getCustomerName());
-        holder.tvContactInfo.setText("Số điện thoại: " + order.getCustomerPhone());
-        holder.tvAddress.setText("Địa chỉ: " + order.getAddress());
         holder.tvItems.setText("Sản phẩm: " + order.getItems());
 
-        // Tạo một listener chung cho việc chuyển qua màn hình chi tiết đơn hàng
+        // Hiển thị ảnh sản phẩm (nếu bạn sử dụng ID tài nguyên)
+//        holder.imgSanPham.setImageResource(order.getImgSanPham());
+// Fixed this line
+
+        // Ẩn các thông tin không cần thiết trong trang thống kê
+        holder.tvCustomerName.setVisibility(View.GONE);
+        holder.tvContactInfo.setVisibility(View.GONE);
+        holder.tvAddress.setVisibility(View.GONE);
+
+        // Tạo listener cho việc chuyển qua trang chi tiết đơn hàng
         View.OnClickListener orderDetailClickListener = v -> {
             Intent intent = new Intent(context, ThongTinDonHangNBActivity.class);
             intent.putExtra("order_id", order.getOrderId());
@@ -60,6 +67,8 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHol
             intent.putExtra("order_phone", order.getCustomerPhone());
             intent.putExtra("order_address", order.getAddress());
             intent.putExtra("order_items", order.getItems());
+//            intent.putExtra("order_ImgSanPham", order.getImgSanPham(),);  // Fixed this line
+
             context.startActivity(intent);
         };
 
@@ -94,6 +103,7 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHol
     public static class OrderViewHolder extends RecyclerView.ViewHolder {
         TextView tvOrderId, tvStatus, tvTotalPrice, tvOrderDate, tvCustomerName, tvContactInfo, tvAddress, tvItems;
         Button btnConfirm, btnCancel, btnViewDetails;
+        ImageView imgSanPham;
 
         public OrderViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -105,6 +115,7 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHol
             tvContactInfo = itemView.findViewById(R.id.tvContactInfo);
             tvAddress = itemView.findViewById(R.id.tvAddress);
             tvItems = itemView.findViewById(R.id.tvItems);
+            imgSanPham = itemView.findViewById(R.id.imgSanPham);
 
             // Nút xác nhận, hủy và xem chi tiết
             btnConfirm = itemView.findViewById(R.id.btnConfirm);

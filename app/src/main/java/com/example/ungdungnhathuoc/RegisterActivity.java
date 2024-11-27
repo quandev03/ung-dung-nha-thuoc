@@ -18,10 +18,11 @@ import androidx.core.view.WindowInsetsCompat;
 import com.example.ungdungnhathuoc.Data.SQLiteConnect;
 
 public class RegisterActivity extends AppCompatActivity {
-    EditText emailRegister, usernameRegister, passwordRegister,repasswordRegister, fullnameRegister, addressRegister, phoneRegister;
+    EditText emailRegister, usernameRegister, passwordRegister, repasswordRegister, fullnameRegister, addressRegister, phoneRegister;
     Button registerButton;
     TextView loginTextView;
     SQLiteConnect dbHelper;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -83,43 +84,35 @@ public class RegisterActivity extends AppCompatActivity {
                 } else if (password.equals("admin123")) {
                     Toast.makeText(RegisterActivity.this, "Mật khẩu đã tồn tại", Toast.LENGTH_SHORT).show();
                     return;
-                }
-                else if (email.equals("admin@example.com")) {
+                } else if (email.equals("admin@example.com")) {
                     Toast.makeText(RegisterActivity.this, "Email đã tồn tại", Toast.LENGTH_SHORT).show();
                     return;
-                }
-                else if (fullname.equals("Administrator")) {
+                } else if (fullname.equals("Administrator")) {
                     Toast.makeText(RegisterActivity.this, "Tên người dùng đã tồn tại", Toast.LENGTH_SHORT).show();
                     return;
-                }
-                else if (phone.equals("123456789")) {
+                } else if (phone.equals("123456789")) {
                     Toast.makeText(RegisterActivity.this, "Mật khẩu đã tồn tại", Toast.LENGTH_SHORT).show();
                     return;
                 }
-                        if(username.equals("") || password.equals("") || repassword.equals("") || fullname.equals("")
-                        || address.equals("") || phone.equals("") || email.equals("")){
+                if (username.equals("") || password.equals("") || repassword.equals("") || fullname.equals("")
+                        || address.equals("") || phone.equals("") || email.equals("")) {
                     Toast.makeText(RegisterActivity.this, "Vui lòng điền thông tin", Toast.LENGTH_SHORT).show();
 
-                }
-                else {
-                    if(password.equals(repassword)){
-                        if(dbHelper.checkUsername(username)){
+                } else {
+                    if (password.equals(repassword)) {
+                        if (dbHelper.checkUsername(username)) {
                             Toast.makeText(RegisterActivity.this, "Tên tài khoản đã tồn tại", Toast.LENGTH_SHORT).show();
                             return;
-                        }
-                        else if(dbHelper.checkEmail(email)){
+                        } else if (dbHelper.checkEmail(email)) {
                             Toast.makeText(RegisterActivity.this, "Email đã tồn tại", Toast.LENGTH_SHORT).show();
                             return;
-                        }
-                        else if(dbHelper.checkPassword(password)){
+                        } else if (dbHelper.checkPassword(password)) {
                             Toast.makeText(RegisterActivity.this, "Mật khẩu đã tồn tại", Toast.LENGTH_SHORT).show();
                             return;
-                        }
-                        else if(dbHelper.checkFullname(fullname)){
+                        } else if (dbHelper.checkFullname(fullname)) {
                             Toast.makeText(RegisterActivity.this, "Tên người dùng đã tồn tại", Toast.LENGTH_SHORT).show();
                             return;
-                        }
-                        else if(dbHelper.checkPhone(phone)){
+                        } else if (dbHelper.checkPhone(phone)) {
                             Toast.makeText(RegisterActivity.this, "Số điện thoại đã tồn tại", Toast.LENGTH_SHORT).show();
                             return;
                         }
@@ -128,16 +121,16 @@ public class RegisterActivity extends AppCompatActivity {
 
                         // Lưu thông tin vào cơ sở dữ liệu
                         boolean registerSuccess = dbHelper.insertData(username, password, fullname, address, phone, email);
-                        if(registerSuccess){
+                        if (registerSuccess) {
                             // Lưu thông tin vào SharedPreferences
                             SharedPreferences sharedPreferences = getSharedPreferences("MyPrefs", MODE_PRIVATE);
                             SharedPreferences.Editor editor = sharedPreferences.edit();
                             editor.putString("username", username);
-
                             editor.putString("fullname", fullname);
                             editor.putString("phone", phone);
                             editor.putString("address", address);
                             editor.putString("email", email);
+                            editor.putString("role", "user");
 
                             editor.apply();
                             Toast.makeText(RegisterActivity.this, "Đăng ký thành công", Toast.LENGTH_SHORT).show();
@@ -154,8 +147,6 @@ public class RegisterActivity extends AppCompatActivity {
                 }
             }
         });
-
-
 
 
         // Khi nhấn vào dòng chữ "Do you have an account? Log in"
@@ -184,27 +175,5 @@ public class RegisterActivity extends AppCompatActivity {
     public boolean isEmailValid(String email) {
         return email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$");
     }
-
-
-
-//    //Hàm mã hóa mật khẩu
-//    public String hashPassword(String password) {
-//        try {
-//            MessageDigest digest = MessageDigest.getInstance("SHA-256");
-//            byte[] hashBytes = digest.digest(password.getBytes());
-//            StringBuilder hexString = new StringBuilder();
-//            for (byte b : hashBytes) {
-//                String hex = Integer.toHexString(0xff & b);
-//                if (hex.length() == 1) {
-//                    hexString.append('0');
-//                }
-//                hexString.append(hex);
-//            }
-//            return hexString.toString();
-//        } catch (NoSuchAlgorithmException e) {
-//            e.printStackTrace();
-//            return null;
-//        }
-//    }
 
 }

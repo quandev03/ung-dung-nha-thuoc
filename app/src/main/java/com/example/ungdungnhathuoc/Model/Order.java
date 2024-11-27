@@ -1,5 +1,7 @@
 package com.example.ungdungnhathuoc.Model;
 
+import android.widget.ImageView;
+
 public class Order {
     private String orderId;
     private String status;
@@ -10,6 +12,7 @@ public class Order {
     private String address;
     private String customerPhone;
     private String items;
+    private ImageView imgSanPham;
 
 
     // Constructor
@@ -25,6 +28,10 @@ public class Order {
         this.address = address;
         this.customerPhone = customerPhone;
         this.items = items;
+    }
+
+    public Order(ImageView imgSanPham) {
+        this.imgSanPham = imgSanPham;
     }
 
     // Getters
@@ -103,6 +110,29 @@ public class Order {
 
     // Override toString() for easier debugging
 
+    public ImageView getImgSanPham() {
+        return imgSanPham;
+    }
+
+    public void setImgSanPham(ImageView imgSanPham) {
+        this.imgSanPham = imgSanPham;
+    }
+
+//    @Override
+//    public String toString() {
+//        return "Order{" +
+//                "orderId='" + orderId + '\'' +
+//                ", status='" + status + '\'' +
+//                ", totalPrice=" + totalPrice +
+//                ", orderDate='" + orderDate + '\'' +
+//                ", customerName='" + customerName + '\'' +
+//                ", contactInfo='" + contactInfo + '\'' +
+//                ", address='" + address + '\'' +
+//                ", CustomerPhone='" + customerPhone + '\'' +
+//                ", items='" + items + '\'' +
+//                '}';
+//    }
+
     @Override
     public String toString() {
         return "Order{" +
@@ -113,8 +143,9 @@ public class Order {
                 ", customerName='" + customerName + '\'' +
                 ", contactInfo='" + contactInfo + '\'' +
                 ", address='" + address + '\'' +
-                ", CustomerPhone='" + customerPhone + '\'' +
+                ", customerPhone='" + customerPhone + '\'' +
                 ", items='" + items + '\'' +
+                ", imgSanPham=" + imgSanPham +
                 '}';
     }
 }
