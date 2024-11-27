@@ -47,8 +47,6 @@ public abstract class BaseActivity extends AppCompatActivity {
 
         if (itemId == R.id.nav_home) {
             intent = new Intent(this, MainActivity.class);
-        } else if (itemId == R.id.nav_orders) {
-            intent = new Intent(this, ThongTinDonHangNBActivity.class);
         } else if (itemId == R.id.nav_statistic) {
             intent = new Intent(this, ThongKeDonHangActivity.class);
         } else if (itemId == R.id.nav_profile) {

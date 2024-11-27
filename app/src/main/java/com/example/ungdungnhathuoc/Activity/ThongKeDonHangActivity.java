@@ -2,12 +2,11 @@ package com.example.ungdungnhathuoc.Activity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.MenuItem;
 import android.widget.TextView;
 
+import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -15,23 +14,22 @@ import com.example.ungdungnhathuoc.Adapter.OrderAdapter;
 import com.example.ungdungnhathuoc.Model.Order;
 import com.example.ungdungnhathuoc.R;
 import com.google.android.material.navigation.NavigationView;
-import androidx.appcompat.app.ActionBarDrawerToggle;
 
 import java.util.ArrayList;
 import java.util.List;
+
 public class ThongKeDonHangActivity extends BaseActivity {
 
     private RecyclerView recyclerViewOrders;
-    private TextView tvTotalOrders, tvDeliveredOrders, tvCancelledOrders, tvUnconfirmedOrders, tvTongTienDaGiao;
+    private TextView tvTotalOrders, tvDeliveredOrders, tvCancelledOrders, tvUnconfirmedOrders, tvTongTienDaGiao,tvconfirmedOrders;
     private DrawerLayout drawerLayout;
     private NavigationView navigationView;
+    private List<Order> orders;  // Thêm biến lưu danh sách đơn hàng
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_thong_ke_don_hang_nbactivity);
-
-        // Khởi tạo DrawerLayout và NavigationView
         drawerLayout = findViewById(R.id.drawer_layout);
         navigationView = findViewById(R.id.nav_view);
 
@@ -59,18 +57,19 @@ public class ThongKeDonHangActivity extends BaseActivity {
         tvCancelledOrders = findViewById(R.id.tvCancelledOrders);
         tvUnconfirmedOrders = findViewById(R.id.tvUnconfirmedOrders);
         tvTongTienDaGiao = findViewById(R.id.tvTongTienDaGiao);
+        tvconfirmedOrders = findViewById(R.id.tvconfirmedOrders);
 
         // Set up RecyclerView
         recyclerViewOrders.setLayoutManager(new LinearLayoutManager(this));
 
         // Lấy danh sách đơn hàng mẫu
-        List<Order> orders = getSampleOrders();
+        orders = getSampleOrders();
 
         // Kiểm tra nếu không có đơn hàng
         if (orders != null && !orders.isEmpty()) {
             OrderAdapter adapter = new OrderAdapter(orders, this);
             recyclerViewOrders.setAdapter(adapter);
-            updateStatistics(orders);  // Cập nhật thống kê
+            updateStatistics();  // Cập nhật thống kê
         } else {
             // Nếu không có đơn hàng
             tvTotalOrders.setText("Không có đơn hàng");
@@ -90,29 +89,41 @@ public class ThongKeDonHangActivity extends BaseActivity {
         return orders;
     }
 
-    private void updateStatistics(List<Order> orders) {
-        int totalOrders = orders.size();
+    public void updateStatistics() {
+        // Cập nhật thống kê sau khi thay đổi trạng thái đơn hàng
+        int totalOrders = 0;
         int deliveredOrders = 0;
         int cancelledOrders = 0;
         int unconfirmedOrders = 0;
+        int    confirmedOrders = 0;
         double totalMoneyOrders = 0.0;
 
-        // Tính toán thống kê đơn hàng
+        // Lặp qua danh sách đơn hàng để tính lại thống kê
         for (Order order : orders) {
+            totalOrders++;
             if ("Đã giao".equals(order.getStatus())) {
                 deliveredOrders++;
                 totalMoneyOrders += order.getTotalPrice();
+            }
+            if ("Đã xác nhận".equals(order.getStatus())) {
+                confirmedOrders++;
             }
             if ("Đã hủy".equals(order.getStatus())) cancelledOrders++;
             if ("Chưa xác nhận".equals(order.getStatus())) unconfirmedOrders++;
         }
 
-        // Cập nhật thống kê trên màn hình
+        // Cập nhật thông tin thống kê lên giao diện
         tvTotalOrders.setText("Tổng số đơn: " + totalOrders);
         tvDeliveredOrders.setText("Đơn đã giao: " + deliveredOrders);
         tvCancelledOrders.setText("Đơn đã hủy: " + cancelledOrders);
         tvUnconfirmedOrders.setText("Đơn chưa xác nhận: " + unconfirmedOrders);
+        tvconfirmedOrders.setText("Đơn đã xác nhận: " + confirmedOrders);
         tvTongTienDaGiao.setText("Tổng tiền đơn hàng đã giao thành công: " + totalMoneyOrders + " Đồng");
+    }
+
+    // Thêm phương thức getOrders()
+    public List<Order> getOrders() {
+        return orders;
     }
 
     @Override

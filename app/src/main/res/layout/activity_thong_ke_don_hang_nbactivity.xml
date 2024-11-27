@@ -1,86 +1,80 @@
-<?xml version="1.0" encoding="utf-8"?>
-
 <androidx.drawerlayout.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".Activity.ThongKeDonHangActivity">
+    android:layout_height="match_parent">
 
-    <!-- Nội dung chính của hoạt động -->
-    <FrameLayout
-        android:id="@+id/content_frame"
+    <!-- Nội dung chính -->
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            app:title="Thống kê đơn hàng"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+        <!-- Thông tin thống kê -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerViewOrders"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:id="@+id/linearlayout">
+            android:background="@color/blue"
+            android:padding="16dp">
 
-            <!-- Toolbar với tiêu đề và background -->
-            <androidx.appcompat.widget.Toolbar
-                android:id="@+id/toolbar"
-                android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                android:background="#388E3C"
-                android:title="@string/thong_ke_don_hang"
-                android:titleTextColor="#FFFFFF"
-                app:titleTextColor="@color/white" />
-
-            <!-- Thống kê tổng quan -->
             <TextView
                 android:id="@+id/tvTotalOrders"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Tổng số đơn: 0"
-                android:textSize="16sp" />
+                android:text="Tổng số đơn hàng" />
 
             <TextView
                 android:id="@+id/tvDeliveredOrders"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Đơn đã giao: 0"
-                android:textSize="16sp" />
-
+                android:text="Đơn đã giao"
+                />
             <TextView
                 android:id="@+id/tvCancelledOrders"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Đơn đã hủy: 0"
-                android:textSize="16sp" />
-
+                android:text="Số đơn đã hủy" />
             <TextView
                 android:id="@+id/tvUnconfirmedOrders"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Đơn chưa xác nhận: 0"
-                android:textSize="16sp" />
-
+                android:text="Chờ xác nhận: " />
+            <TextView
+                android:id="@+id/tvconfirmedOrders"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Đã các nhận xác nhận: " />
             <TextView
                 android:id="@+id/tvTongTienDaGiao"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Tổng tiền những đơn giao: 0"
-                android:textSize="16sp" />
+                android:text="Tổng tiền: " />
 
-            <!-- RecyclerView hiển thị danh sách đơn hàng -->
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recyclerViewOrders"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginTop="20dp"
-                />
+            <!-- Thêm các TextView khác tương tự -->
         </LinearLayout>
-    </FrameLayout>
+    </LinearLayout>
 
-    <!-- NavigationView (Menu thanh điều hướng) -->
+    <!-- NavigationView -->
     <com.google.android.material.navigation.NavigationView
         android:id="@+id/nav_view"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="start"
+        android:fitsSystemWindows="true"
         app:menu="@menu/drawer_menu" />
-
 </androidx.drawerlayout.widget.DrawerLayout>

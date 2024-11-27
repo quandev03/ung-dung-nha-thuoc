@@ -6,10 +6,10 @@
         android:title="Trang chủ"
         />
 
-    <item
-        android:id="@+id/nav_orders"
-        android:title="Đơn hàng"
-       />
+<!--    <item-->
+<!--        android:id="@+id/nav_orders"-->
+<!--        android:title="Đơn hàng"-->
+<!--       />-->
 
     <item
         android:id="@+id/nav_statistic"
