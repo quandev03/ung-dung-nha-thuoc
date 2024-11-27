@@ -1,21 +1,24 @@
 package com.example.ungdungnhathuoc.Activity;
 
+import static com.example.ungdungnhathuoc.R.id.imgSanPham;
+
 import android.os.Bundle;
+import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.widget.Toolbar;
-
 import com.example.ungdungnhathuoc.R;
 import com.google.android.material.navigation.NavigationView;
 
-public class ThongTinDonHangNBActivity extends BaseActivity {
+public class ThongTinDonHangNBActivity extends AppCompatActivity {
 
     private DrawerLayout drawerLayout;
     private NavigationView navigationView;
     private Toolbar toolbar;
 
     private TextView tvOrderId, tvStatus, tvCustomerName, tvProductName, tvPhone, tvAddress, tvTotalPrice, tvOrderDate;
+    private ImageView imgSanPham;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,13 +38,14 @@ public class ThongTinDonHangNBActivity extends BaseActivity {
         tvAddress = findViewById(R.id.tvAddress);
         tvTotalPrice = findViewById(R.id.tvTotalPrice);
         tvOrderDate = findViewById(R.id.tvOrderDate);
+//        imgSanPham = findViewById(R.id.imgSanPham); // Initialize ImageView for product image
 
         // Set up the toolbar and navigation drawer
         setSupportActionBar(toolbar);
 
         // Fetch data from Intent
         if (getIntent() != null) {
-            String orderId = getIntent().getStringExtra("orderId");
+            String orderId = getIntent().getStringExtra("order_id");
             String status = getIntent().getStringExtra("order_status");
             String customerName = getIntent().getStringExtra("order_customer");
             String productName = getIntent().getStringExtra("order_items");
@@ -49,6 +53,16 @@ public class ThongTinDonHangNBActivity extends BaseActivity {
             String address = getIntent().getStringExtra("order_address");
             double totalPrice = getIntent().getDoubleExtra("order_price", 0.0);
             String orderDate = getIntent().getStringExtra("order_date");
+
+            // Get the product image resource ID from the Intent
+//            int order_ImgSanPham = getIntent().getIntExtra("order_ImgSanPham", -1);  // Retrieve the image resource ID
+
+            // Set the image resource, using a default image if no image is passed
+//            if (order_ImgSanPham != -1) {
+//                imgSanPham.setImageResource(order_ImgSanPham);
+//            } else {
+//                imgSanPham.setImageResource(R.drawable.anh_nha_thuov); // Default image if no image is passed
+//            }
 
             // Set values to TextViews
             tvOrderId.setText("Mã đơn hàng: " + orderId);

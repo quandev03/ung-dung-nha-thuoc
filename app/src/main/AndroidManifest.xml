@@ -31,7 +31,7 @@
             android:name=".Activity.BaseActivity"
             android:exported="false" />
         <activity
-            android:name=".Activity.homeActivity"
+            android:name=".Activity.HomeActivity"
             android:exported="false" />
         <activity
             android:name=".Activity.ThongTinDonHangNBActivity"
@@ -48,6 +48,9 @@
             android:exported="false" />
         <activity
             android:name=".Profile"
+            android:exported="false" />
+        <activity
+            android:name=".Activity.timkiem"
             android:exported="false" />
         <activity
             android:name=".LoginActivity"

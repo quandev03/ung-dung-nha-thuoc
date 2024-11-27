@@ -1,4 +1,6 @@
-package com.example.ungdungnhathuoc.Data;
+package com.example.ungdungnhathuoc.Data;//package com.example.ungdungnhathuoc.Model;
+
+import static java.security.AccessController.getContext;
 
 import android.annotation.SuppressLint;
 import android.content.ContentValues;
@@ -21,7 +23,7 @@ public class SQLiteConnect extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
-        sqLiteDatabase.execSQL("create table users(username TEXT primary key, password TEXT, fullname TEXT, address TEXT, email TEXT, phone TEXT)");
+        sqLiteDatabase.execSQL("create table users(username TEXT primary key, password TEXT, fullname TEXT, address TEXT, email TEXT, phone TEXT, role TEXT)");
         addAdminAccount(sqLiteDatabase);
     }
 
@@ -32,7 +34,8 @@ public class SQLiteConnect extends SQLiteOpenHelper {
     }
 
 
-    public boolean insertData(String username, String password, String fullname, String address, String email, String phone) {
+
+    public boolean insertData(String username, String password, String fullname, String address, String email, String phone){
         SQLiteDatabase myDB = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put("username", username);
@@ -41,8 +44,9 @@ public class SQLiteConnect extends SQLiteOpenHelper {
         contentValues.put("address", address);
         contentValues.put("email", email);
         contentValues.put("phone", phone);
+        contentValues.put("role", "user"); // Mặc định là user
         long result = myDB.insert("users", null, contentValues);
-        if (result == -1) return false;
+        if(result == -1) return false;
         else return true;
     }
 
@@ -62,6 +66,7 @@ public class SQLiteConnect extends SQLiteOpenHelper {
             contentValues.put("address", "Admin Address");
             contentValues.put("email", "admin@example.com");
             contentValues.put("phone", "123456789");
+            contentValues.put("role", "admin"); // Thiết lập role cho admin
             // Chèn dữ liệu vào bảng
             sqLiteDatabase.insert("users", null, contentValues);
 
@@ -73,16 +78,30 @@ public class SQLiteConnect extends SQLiteOpenHelper {
             editor.putString("fullname", "Administrator");
             editor.putString("address", "Admin Address");
             editor.putString("phone", "123456789");
+            editor.putString("role", "admin");
             editor.apply();
         }
         cursor.close();
     }
 
+    public String getUserRole(String username, String password) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT role FROM users WHERE username = ? AND password = ?", new String[]{username, password});
+        if (cursor != null && cursor.moveToFirst()) {
+            @SuppressLint("Range") String role = cursor.getString(cursor.getColumnIndex("role"));
+            cursor.close();
+            return role;
+        }
+        if (cursor != null) cursor.close();
+        return "user"; // Mặc định là user nếu không tìm thấy
+    }
+
+
     //Kiểm xem username tồn tại chưa
-    public boolean checkUsername(String username) {
+    public boolean checkUsername(String username){
         SQLiteDatabase myDB = this.getWritableDatabase();
         Cursor cursor = myDB.rawQuery("select * from users where username = ?", new String[]{username});
-        if (cursor.getCount() > 0)
+        if(cursor.getCount()>0)
             return true;
         else return false;
     }
@@ -91,7 +110,7 @@ public class SQLiteConnect extends SQLiteOpenHelper {
     public boolean checkPassword(String password) {
         SQLiteDatabase myDB = this.getWritableDatabase();
         Cursor cursor = myDB.rawQuery("select * from users where password = ?", new String[]{password});
-        if (cursor.getCount() > 0)
+        if(cursor.getCount() > 0)
             return true;
         else
             return false;
@@ -101,7 +120,7 @@ public class SQLiteConnect extends SQLiteOpenHelper {
     public boolean checkEmail(String email) {
         SQLiteDatabase myDB = this.getWritableDatabase();
         Cursor cursor = myDB.rawQuery("select * from users where email = ?", new String[]{email});
-        if (cursor.getCount() > 0)
+        if(cursor.getCount() > 0)
             return true;
         else
             return false;
@@ -111,7 +130,7 @@ public class SQLiteConnect extends SQLiteOpenHelper {
     public boolean checkFullname(String fullname) {
         SQLiteDatabase myDB = this.getWritableDatabase();
         Cursor cursor = myDB.rawQuery("select * from users where fullname = ?", new String[]{fullname});
-        if (cursor.getCount() > 0)
+        if(cursor.getCount() > 0)
             return true;
         else
             return false;
@@ -121,7 +140,7 @@ public class SQLiteConnect extends SQLiteOpenHelper {
     public boolean checkPhone(String phone) {
         SQLiteDatabase myDB = this.getWritableDatabase();
         Cursor cursor = myDB.rawQuery("select * from users where phone = ?", new String[]{phone});
-        if (cursor.getCount() > 0)
+        if(cursor.getCount() > 0)
             return true;
         else
             return false;
@@ -142,12 +161,29 @@ public class SQLiteConnect extends SQLiteOpenHelper {
     }
 
     //Check tài khoản
-    public boolean checkUser(String username, String pwd) {
+    public boolean checkUser(String username, String pwd){
         SQLiteDatabase myDB = this.getWritableDatabase();
         Cursor cursor = myDB.rawQuery("select * from users where username = ? and password = ?", new String[]{username, pwd});
-        if (cursor.getCount() > 0)
+        if(cursor.getCount()>0)
             return true;
         else return false;
     }
 
+
+//    // Hàm mã hóa mật khẩu
+//    public String hashPassword(String password) {
+//        try {
+//            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+//            byte[] hashBytes = digest.digest(password.getBytes());
+//            StringBuilder hexString = new StringBuilder();
+//            for (byte b : hashBytes) {
+//                hexString.append(String.format("%02x", b));
+//            }
+//            return hexString.toString();
+//        } catch (NoSuchAlgorithmException e) {
+//            e.printStackTrace();
+//            return null;
+//        }
+//    }
 }
+

@@ -5,71 +5,102 @@
     android:padding="16dp"
     android:layout_marginBottom="8dp">
 
-    <TextView
-        android:id="@+id/tvOrderId"
-        android:layout_width="wrap_content"
+    <!-- Thông tin đơn hàng và sản phẩm -->
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Mã đơn hàng: 001"
-        android:textSize="16sp"
-        android:layout_marginBottom="8dp"/>
+        android:orientation="horizontal"
+        android:weightSum="2">
 
-    <TextView
-        android:id="@+id/tvStatus"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Trạng thái: Đã giao"
-        android:textSize="14sp"
-        android:layout_marginBottom="8dp"/>
+        <!-- Thông tin đơn hàng -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_weight="1">
 
-    <TextView
-        android:id="@+id/tvTotalPrice"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Tổng tiền: 500.0"
-        android:textSize="14sp"
-        android:layout_marginBottom="8dp"/>
+            <TextView
+                android:id="@+id/tvOrderId"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Mã đơn hàng: 001"
+                android:textSize="16sp"
+                android:layout_marginBottom="8dp" />
 
-    <TextView
-        android:id="@+id/tvOrderDate"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Ngày mua: 12/11/2024"
-        android:textSize="14sp"
-        android:layout_marginBottom="8dp"/>
+            <TextView
+                android:id="@+id/tvStatus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Trạng thái: Đã giao"
+                android:textSize="14sp"
+                android:layout_marginBottom="8dp" />
 
-    <TextView
-        android:id="@+id/tvCustomerName"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Người mua: Nguyễn Văn A"
-        android:textSize="14sp"
-        android:layout_marginBottom="8dp"/>
+            <TextView
+                android:id="@+id/tvTotalPrice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Tổng tiền: 500.0"
+                android:textSize="14sp"
+                android:layout_marginBottom="8dp" />
 
-    <TextView
-        android:id="@+id/tvContactInfo"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Số điện thoại: 0123456789"
-        android:textSize="14sp"
-        android:layout_marginBottom="8dp"/>
+            <TextView
+                android:id="@+id/tvOrderDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Ngày mua: 12/11/2024"
+                android:textSize="14sp"
+                android:layout_marginBottom="8dp" />
 
-    <TextView
-        android:id="@+id/tvAddress"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Địa chỉ: 123 Phố ABC, Quận X"
-        android:textSize="14sp"
-        android:layout_marginBottom="8dp"/>
+            <TextView
+                android:id="@+id/tvCustomerName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Người mua: Nguyễn Văn A"
+                android:textSize="14sp"
+                android:layout_marginBottom="8dp" />
 
-    <TextView
-        android:id="@+id/tvItems"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Sản phẩm: Thuốc ABC"
-        android:textSize="14sp"
-        android:layout_marginBottom="16dp"/>
+            <TextView
+                android:id="@+id/tvContactInfo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Số điện thoại: 0123456789"
+                android:textSize="14sp"
+                android:layout_marginBottom="8dp" />
 
-    <!-- Nút Xác nhận -->
+            <TextView
+                android:id="@+id/tvAddress"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Địa chỉ: 123 Phố ABC, Quận X"
+                android:textSize="14sp"
+                android:layout_marginBottom="8dp" />
+
+            <TextView
+                android:id="@+id/tvItems"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Sản phẩm: Thuốc ABC"
+                android:textSize="14sp"
+                android:layout_marginBottom="16dp" />
+        </LinearLayout>
+
+        <!-- Ảnh sản phẩm -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center">
+            <ImageView
+                android:id="@+id/imgSanPham"
+                android:layout_width="200dp"
+                android:layout_height="150dp"
+                android:src="@drawable/anh_nha_thuov"
+                android:layout_marginBottom="16dp" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <!-- Nút xác nhận, hủy và xem chi tiết -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
