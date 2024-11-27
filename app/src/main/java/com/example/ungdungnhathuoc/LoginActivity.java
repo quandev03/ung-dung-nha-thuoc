@@ -14,6 +14,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.ungdungnhathuoc.Activity.HomeAdminActivity;
+import com.example.ungdungnhathuoc.Activity.homeActivity;
 import com.example.ungdungnhathuoc.Model.SQLiteConnect;
 
 import java.security.MessageDigest;
@@ -33,8 +34,14 @@ public class LoginActivity extends AppCompatActivity {
         SharedPreferences sharedPref = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
         String accessToken = sharedPref.getString("accessToken", null);
         if (accessToken != null) {
-            Intent intent = new Intent(LoginActivity.this, HomeAdminActivity.class);
-            startActivity(intent);
+            String role = sharedPref.getString("role", "user"); // Lấy quyền từ SharedPreferences
+            if ("admin".equals(role)) {
+                Intent intent = new Intent(LoginActivity.this, HomeAdminActivity.class);
+                startActivity(intent);
+            } else {
+                Intent intent = new Intent(LoginActivity.this, homeActivity.class);
+                startActivity(intent);
+            }
             finish();
             return;
         }
@@ -61,14 +68,21 @@ public class LoginActivity extends AppCompatActivity {
 //                }
                 boolean isLoggedId = dbHelper.checkUser(username, password);
                 String fullname = dbHelper.getFullnameByUsernameAndPassword(username, password);
+                String role = dbHelper.getUserRole(username, password); // Lấy quyền của người dùng từ SQLite
                 if (isLoggedId) {
                     // Lưu accessToken vào SharedPreferences
                     SharedPreferences.Editor editor = sharedPref.edit();
                     editor.putString("accessToken", username);
+                    editor.putString("role", role);
                     editor.apply();
                     Toast.makeText(LoginActivity.this, "Đăng nhập thành công!\nChào mừng " + fullname, Toast.LENGTH_SHORT).show();
-                    Intent intent = new Intent(LoginActivity.this, HomeAdminActivity.class);
-                    startActivity(intent);
+                    if ("admin".equals(role)) {
+                        Intent intent = new Intent(LoginActivity.this, HomeAdminActivity.class);
+                        startActivity(intent);
+                    } else {
+                        Intent intent = new Intent(LoginActivity.this, homeActivity.class);
+                        startActivity(intent);
+                    }
                     finish();
                 } else {
                     Toast.makeText(LoginActivity.this, "Đăng nhập thất bại", Toast.LENGTH_SHORT).show();

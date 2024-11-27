@@ -16,7 +16,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 public class SQLiteConnect extends SQLiteOpenHelper {
-    public static final String DBName = "user.db";
+    public static final String DBName = "pharmacyApp.db";//file SQL
     private Context context;
 
     public SQLiteConnect(@Nullable Context context) {
@@ -24,12 +24,14 @@ public class SQLiteConnect extends SQLiteOpenHelper {
         this.context = context; // Lưu context vào biến
     }
 
+    //tạo bảng
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
-        sqLiteDatabase.execSQL("create table users(username TEXT primary key, password TEXT, fullname TEXT, address TEXT, email TEXT, phone TEXT)");
+        sqLiteDatabase.execSQL("create table users(username TEXT primary key, password TEXT, fullname TEXT, address TEXT, email TEXT, phone TEXT, role TEXT)");
         addAdminAccount(sqLiteDatabase);
     }
 
+    //xóa bảng nếu bảng đó đã tồn tại
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
         sqLiteDatabase.execSQL("drop table if exists users");
@@ -37,7 +39,7 @@ public class SQLiteConnect extends SQLiteOpenHelper {
     }
 
 
-
+    //Thêm dữ liệu vào bảng users
     public boolean insertData(String username, String password, String fullname, String address, String email, String phone){
         SQLiteDatabase myDB = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
@@ -47,6 +49,7 @@ public class SQLiteConnect extends SQLiteOpenHelper {
         contentValues.put("address", address);
         contentValues.put("email", email);
         contentValues.put("phone", phone);
+        contentValues.put("role", "user"); // Mặc định là user
         long result = myDB.insert("users", null, contentValues);
         if(result == -1) return false;
         else return true;
@@ -68,6 +71,7 @@ public class SQLiteConnect extends SQLiteOpenHelper {
             contentValues.put("address", "Admin Address");
             contentValues.put("email", "admin@example.com");
             contentValues.put("phone", "123456789");
+            contentValues.put("role", "admin"); // Thiết lập role cho admin
             // Chèn dữ liệu vào bảng
             sqLiteDatabase.insert("users", null, contentValues);
 
@@ -79,10 +83,24 @@ public class SQLiteConnect extends SQLiteOpenHelper {
             editor.putString("fullname", "Administrator");
             editor.putString("address", "Admin Address");
             editor.putString("phone", "123456789");
+            editor.putString("role", "admin");
             editor.apply();
         }
         cursor.close();
     }
+
+    public String getUserRole(String username, String password) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT role FROM users WHERE username = ? AND password = ?", new String[]{username, password});
+        if (cursor != null && cursor.moveToFirst()) {
+            @SuppressLint("Range") String role = cursor.getString(cursor.getColumnIndex("role"));
+            cursor.close();
+            return role;
+        }
+        if (cursor != null) cursor.close();
+        return "user"; // Mặc định là user nếu không tìm thấy
+    }
+
 
     //Kiểm xem username tồn tại chưa
     public boolean checkUsername(String username){

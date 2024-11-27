@@ -146,11 +146,11 @@ public class RegisterActivity extends AppCompatActivity {
                             SharedPreferences sharedPreferences = getSharedPreferences("MyPrefs", MODE_PRIVATE);
                             SharedPreferences.Editor editor = sharedPreferences.edit();
                             editor.putString("username", username);
-
                             editor.putString("fullname", fullname);
                             editor.putString("phone", phone);
                             editor.putString("address", address);
                             editor.putString("email", email);
+                            editor.putString("role", "user");
 
                             editor.apply();
                             Toast.makeText(RegisterActivity.this, "Đăng ký thành công", Toast.LENGTH_SHORT).show();
