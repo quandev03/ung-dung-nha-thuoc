@@ -1,4 +1,3 @@
-// OrderAdapter.java
 package com.example.ungdungnhathuoc.Adapter;
 
 import android.content.Context;
@@ -6,11 +5,13 @@ import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.ungdungnhathuoc.Activity.ThongKeDonHangActivity;
 import com.example.ungdungnhathuoc.Activity.ThongTinDonHangNBActivity;
 import com.example.ungdungnhathuoc.Model.Order;
 import com.example.ungdungnhathuoc.R;
@@ -38,7 +39,7 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHol
     public void onBindViewHolder(@NonNull OrderViewHolder holder, int position) {
         Order order = orderList.get(position);
 
-        // Gán giá trị vào các TextView của ViewHolder
+        // Cập nhật giá trị vào các TextView
         holder.tvOrderId.setText("Mã đơn: " + order.getOrderId());
         holder.tvStatus.setText("Trạng thái: " + order.getStatus());
         holder.tvTotalPrice.setText("Tổng tiền: " + order.getTotalPrice());
@@ -48,9 +49,9 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHol
         holder.tvAddress.setText("Địa chỉ: " + order.getAddress());
         holder.tvItems.setText("Sản phẩm: " + order.getItems());
 
-        // Thiết lập sự kiện click cho item
-        holder.itemView.setOnClickListener(v -> {
-            Intent intent = new Intent(context, ThongTinDonHangNBActivity.class); // Open ThongTinDonHangNBActivity
+        // Tạo một listener chung cho việc chuyển qua màn hình chi tiết đơn hàng
+        View.OnClickListener orderDetailClickListener = v -> {
+            Intent intent = new Intent(context, ThongTinDonHangNBActivity.class);
             intent.putExtra("order_id", order.getOrderId());
             intent.putExtra("order_status", order.getStatus());
             intent.putExtra("order_price", order.getTotalPrice());
@@ -60,8 +61,29 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHol
             intent.putExtra("order_address", order.getAddress());
             intent.putExtra("order_items", order.getItems());
             context.startActivity(intent);
+        };
+
+        // Áp dụng listener cho item view và nút "Xem chi tiết"
+        holder.itemView.setOnClickListener(orderDetailClickListener);
+        holder.btnViewDetails.setOnClickListener(orderDetailClickListener);
+
+        // Sự kiện nhấn nút xác nhận đơn hàng
+        holder.btnConfirm.setOnClickListener(v -> {
+            order.setStatus("Đã xác nhận");
+            notifyItemChanged(position); // Cập nhật lại trạng thái của item
+            if (context instanceof ThongKeDonHangActivity) {
+                ((ThongKeDonHangActivity) context).updateStatistics();
+            }
         });
 
+        // Sự kiện nhấn nút hủy đơn hàng
+        holder.btnCancel.setOnClickListener(v -> {
+            order.setStatus("Đã hủy");
+            notifyItemChanged(position); // Cập nhật lại trạng thái của item
+            if (context instanceof ThongKeDonHangActivity) {
+                ((ThongKeDonHangActivity) context).updateStatistics();
+            }
+        });
     }
 
     @Override
@@ -71,18 +93,23 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHol
 
     public static class OrderViewHolder extends RecyclerView.ViewHolder {
         TextView tvOrderId, tvStatus, tvTotalPrice, tvOrderDate, tvCustomerName, tvContactInfo, tvAddress, tvItems;
+        Button btnConfirm, btnCancel, btnViewDetails;
 
         public OrderViewHolder(@NonNull View itemView) {
             super(itemView);
-            tvOrderId = itemView.findViewById(R.id.orderId);
-            tvStatus = itemView.findViewById(R.id.status);
-            tvTotalPrice = itemView.findViewById(R.id.totalPrice);
-            tvOrderDate = itemView.findViewById(R.id.orderDate);
-            tvCustomerName = itemView.findViewById(R.id.customerName);
-            tvContactInfo = itemView.findViewById(R.id.contactInfo);
-            tvAddress = itemView.findViewById(R.id.address);
-            tvItems = itemView.findViewById(R.id.items);
+            tvOrderId = itemView.findViewById(R.id.tvOrderId);
+            tvStatus = itemView.findViewById(R.id.tvStatus);
+            tvTotalPrice = itemView.findViewById(R.id.tvTotalPrice);
+            tvOrderDate = itemView.findViewById(R.id.tvOrderDate);
+            tvCustomerName = itemView.findViewById(R.id.tvCustomerName);
+            tvContactInfo = itemView.findViewById(R.id.tvContactInfo);
+            tvAddress = itemView.findViewById(R.id.tvAddress);
+            tvItems = itemView.findViewById(R.id.tvItems);
+
+            // Nút xác nhận, hủy và xem chi tiết
+            btnConfirm = itemView.findViewById(R.id.btnConfirm);
+            btnCancel = itemView.findViewById(R.id.btnCancel);
+            btnViewDetails = itemView.findViewById(R.id.btnViewDetails);
         }
     }
-
 }

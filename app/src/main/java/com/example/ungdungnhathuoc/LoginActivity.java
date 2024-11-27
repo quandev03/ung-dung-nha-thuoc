@@ -14,16 +14,14 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.ungdungnhathuoc.Activity.HomeAdminActivity;
-import com.example.ungdungnhathuoc.Model.SQLiteConnect;
-
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
+import com.example.ungdungnhathuoc.Data.SQLiteConnect;
 
 public class LoginActivity extends AppCompatActivity {
     EditText usernameLogin, passwordLogin;
     Button loginButton;
     TextView registerTextView;
     SQLiteConnect dbHelper;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,11 +52,6 @@ public class LoginActivity extends AppCompatActivity {
                     Toast.makeText(LoginActivity.this, "Vui lòng nhập tên đăng nhập và mật khẩu", Toast.LENGTH_SHORT).show();
                     return;
                 }
-//                String hashedPassword = hashPassword(password);
-//                if (hashedPassword == null) {
-//                    Toast.makeText(LoginActivity.this, "Đã có lỗi trong quá trình mã hóa mật khẩu", Toast.LENGTH_SHORT).show();
-//                    return;
-//                }
                 boolean isLoggedId = dbHelper.checkUser(username, password);
                 String fullname = dbHelper.getFullnameByUsernameAndPassword(username, password);
                 if (isLoggedId) {
@@ -66,6 +59,7 @@ public class LoginActivity extends AppCompatActivity {
                     SharedPreferences.Editor editor = sharedPref.edit();
                     editor.putString("accessToken", username);
                     editor.apply();
+
                     Toast.makeText(LoginActivity.this, "Đăng nhập thành công!\nChào mừng " + fullname, Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(LoginActivity.this, HomeAdminActivity.class);
                     startActivity(intent);
@@ -86,21 +80,4 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
-
-
-    // Hàm mã hóa mật khẩu
-//    public String hashPassword(String password) {
-//        try {
-//            MessageDigest digest = MessageDigest.getInstance("SHA-256");
-//            byte[] hashBytes = digest.digest(password.getBytes());
-//            StringBuilder hexString = new StringBuilder();
-//            for (byte b : hashBytes) {
-//                hexString.append(String.format("%02x", b));
-//            }
-//            return hexString.toString();
-//        } catch (NoSuchAlgorithmException e) {
-//            e.printStackTrace();
-//            return null;
-//        }
-//    }
 }

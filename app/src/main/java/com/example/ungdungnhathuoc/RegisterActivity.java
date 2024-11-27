@@ -15,20 +15,7 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-import com.example.ungdungnhathuoc.Model.SQLiteConnect;
-import com.example.ungdungnhathuoc.R;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.IOException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
+import com.example.ungdungnhathuoc.Data.SQLiteConnect;
 
 public class RegisterActivity extends AppCompatActivity {
     EditText emailRegister, usernameRegister, passwordRegister,repasswordRegister, fullnameRegister, addressRegister, phoneRegister;

@@ -13,6 +13,7 @@
     <string name="customer_name_label">Người mua: </string>
     <string name="navigation_drawer_open">Open Navigation Drawer</string>
     <string name="navigation_drawer_close">Close Navigation Drawer</string>
+    <string name="navigate_up" />
     <string-array name="options_array">
         <item>Thần Kinh Trí Não</item>
         <item>Vitamin và Khoáng chất</item>
