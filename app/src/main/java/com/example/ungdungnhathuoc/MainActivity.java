@@ -12,8 +12,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import com.example.ungdungnhathuoc.Activity.BaseActivity;
 import com.example.ungdungnhathuoc.Activity.HomeAdminActivity;
 
-public class MainActivity extends BaseActivity {
-    private DrawerLayout drawerLayout;
+public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,9 +23,11 @@ public class MainActivity extends BaseActivity {
         SharedPreferences sharedPref = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
         String accessToken = sharedPref.getString("accessToken", null);
 
-        if (accessToken == null || accessToken.isEmpty()) {
+        // Kiểm tra xem accessToken có tồn tại và không rỗng
+        if (accessToken == null || accessToken.trim().isEmpty()) {
             // Chưa đăng nhập, chuyển về LoginActivity
             Toast.makeText(this, "Bạn chưa đăng nhập. Vui lòng đăng nhập để tiếp tục.", Toast.LENGTH_SHORT).show();
+            // Chuyển đến LoginActivity
             Intent intent = new Intent(MainActivity.this, LoginActivity.class);
             startActivity(intent);
             finish(); // Kết thúc MainActivity để không quay lại được

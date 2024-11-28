@@ -49,6 +49,25 @@ public abstract class BaseActivity extends AppCompatActivity {
             intent = new Intent(this, MainActivity.class);
         } else if (itemId == R.id.nav_statistic) {
             intent = new Intent(this, ThongKeDonHangActivity.class);
+        } else if (itemId == R.id.nav_warehouse) {
+            intent = new Intent(this, WareHouseActivity.class);
+        } else if (itemId == R.id.nav_logout) {
+            logoutUser();
+            return; // Kết thúc phương thức, không cần thực thi `startActivity(intent)`
+        }
+
+        // Nếu intent không null thì bắt đầu activity
+        if (intent != null) {
+            startActivity(intent);
+        }
+    }
+    protected void handleNavigationUser(int itemId) {
+        Intent intent = null;
+
+        if (itemId == R.id.nav_home) {
+            intent = new Intent(this, MainActivity.class);
+        } else if (itemId == R.id.nav_statistic) {
+            intent = new Intent(this, ThongKeDonHangActivity.class);
         } else if (itemId == R.id.nav_profile) {
             intent = new Intent(this, Profile.class);
         } else if (itemId == R.id.nav_logout) {
