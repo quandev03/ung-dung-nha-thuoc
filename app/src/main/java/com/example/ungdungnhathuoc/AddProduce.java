@@ -295,7 +295,7 @@ public class AddProduce extends AppCompatActivity {
 
             // Create Request
             Request request = new Request.Builder()
-                    .url("http://10.0.2.2:3000/produce/create-produce")
+                    .url("https://api.quandev03.id.vn/produce/create-produce")
                     .addHeader("Authorization", "Bearer " + accessToken)
                     .post(body)
                     .build();
