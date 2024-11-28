@@ -33,8 +33,9 @@ public class HomeActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         SharedPreferences sharedPreferences = getSharedPreferences("MyPrefs", MODE_PRIVATE);
-        Authentication auth = new Authentication(this, sharedPreferences);
-//        Log.d("TEST", "Test: "+ auth.getUsername());
+//        Authentication auth = new Authentication(this, sharedPreferences);
+//        String anc = String.valueOf(auth.isUserLogin());
+//        Log.d("TEST", "Test: "+ anc);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 

@@ -122,17 +122,6 @@ public class RegisterActivity extends AppCompatActivity {
                         // Lưu thông tin vào cơ sở dữ liệu
                         boolean registerSuccess = dbHelper.insertData(username, password, fullname, address, phone, email);
                         if (registerSuccess) {
-                            // Lưu thông tin vào SharedPreferences
-                            SharedPreferences sharedPreferences = getSharedPreferences("MyPrefs", MODE_PRIVATE);
-                            SharedPreferences.Editor editor = sharedPreferences.edit();
-                            editor.putString("username", username);
-                            editor.putString("fullname", fullname);
-                            editor.putString("phone", phone);
-                            editor.putString("address", address);
-                            editor.putString("email", email);
-                            editor.putString("role", "user");
-
-                            editor.apply();
                             Toast.makeText(RegisterActivity.this, "Đăng ký thành công", Toast.LENGTH_SHORT).show();
 
                             // Chuyển sang màn hình login
