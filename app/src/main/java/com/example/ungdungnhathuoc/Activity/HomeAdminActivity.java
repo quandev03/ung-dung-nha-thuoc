@@ -3,6 +3,7 @@ package com.example.ungdungnhathuoc.Activity;
 import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -18,12 +19,14 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
+import com.example.ungdungnhathuoc.Authentication;
 import com.example.ungdungnhathuoc.R;
 import com.google.android.material.navigation.NavigationView;
 
 public class HomeAdminActivity extends BaseActivity {
 
     Button btnQLDonHang, btnQLKhoHang, btnThongBaoNB, btnDangXuatNB;
+    SharedPreferences sharedPre;
 
     private DrawerLayout drawerLayout;
     private NavigationView navigationView;
@@ -32,6 +35,8 @@ public class HomeAdminActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this); // Enable Edge-to-Edge mode for full screen layout
         setContentView(R.layout.activity_homeadmin); // Set the layout
+        sharedPre = getSharedPreferences("MyPrefs", MODE_PRIVATE);
+        this.isPermissionAdmin();
 
         // Adjust insets for the main view to avoid overlapping system bars
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {

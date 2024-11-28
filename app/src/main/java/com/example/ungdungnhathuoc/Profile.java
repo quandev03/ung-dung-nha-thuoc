@@ -15,7 +15,11 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.example.ungdungnhathuoc.Activity.BaseActivity;
+import com.example.ungdungnhathuoc.Activity.HomeActivity;
+import com.example.ungdungnhathuoc.Data.SQLiteConnect;
 import com.example.ungdungnhathuoc.Model.Account;
+import com.example.ungdungnhathuoc.Model.User;
 import com.example.ungdungnhathuoc.Response.ResponseData;
 import com.google.gson.Gson;
 import com.squareup.moshi.JsonAdapter;
@@ -29,7 +33,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
-public class Profile extends AppCompatActivity {
+public class Profile extends BaseActivity {
     private Button btnEditProfile, btnBackHome;
     private TextView tvFullname;
     private TextView tvEmail;
@@ -42,9 +46,10 @@ public class Profile extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
         SharedPreferences sharedPref = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
-        OkHttpClient client = new OkHttpClient();
-        Moshi moshi = new Moshi.Builder().build();
-
+//        this.isLogin();
+        SQLiteConnect sqLiteConnect = new SQLiteConnect(this);
+        User user = sqLiteConnect.userDetail(sharedPref.getString("username", null));
+        Log.d("User", "User: "+ user.getFullname());
         btnEditProfile = findViewById(R.id.btnEditProfile);
         tvFullname = findViewById(R.id.fullname);
         tvEmail = findViewById(R.id.email);
@@ -54,9 +59,14 @@ public class Profile extends AppCompatActivity {
         btnBackHome = findViewById(R.id.btnback);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        tvFullname.setText(user.getFullname());
+        tvEmail.setText(user.getEmail());
+        tvPhone.setText(user.getPhone());
+        tvAddress.setText(user.getAddress());
+        tvUsername.setText(user.getUsername());
 
 
-        String accessToken = sharedPref.getString("accessToken", null);
+
 
 
 
@@ -67,54 +77,7 @@ public class Profile extends AppCompatActivity {
         });
 
 
-        Request request = new Request.Builder()
-                .url("https://api.quandev03.id.vn/auth/user-detail") // Thay bằng IP/Domain thực tế
-                .addHeader("Authorization", "Bearer " + accessToken) // Thêm Bearer token vào header
-                .build();
 
-        client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                Log.e("Error", "Network Error", e);
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                if (!response.isSuccessful()) {
-                    Log.e("Error", "Unexpected response code: " + response.code());
-                    return;
-                }
-
-                String json = response.body().string();
-                Log.d("Data: ", json);
-//                final JsonAdapter<Account> jsonAdapter = moshi.adapter(Account.class);
-//                final Account account = jsonAdapter.fromJson(json);
-                JsonAdapter<ResponseData> jsonAdapter = moshi.adapter(ResponseData.class);
-                try {
-                    // Chuyển JSON thành ResponseData
-                    ResponseData responseData = jsonAdapter.fromJson(json);
-
-                    if (responseData != null) {
-                        // Lấy thông tin từ data và hiển thị
-                        Account user = responseData.getData();
-                        if (user != null) {
-                            runOnUiThread(()->{
-                                tvFullname.setText("\uD83D\uDC64 Họ và tên: " +user.getFullname());
-                                tvEmail.setText("\uD83D\uDCE7 Email: " +user.getEmail());
-                                tvPhone.setText("\uD83D\uDCDE Số điện thoại: " +user.getPhone());
-                                tvAddress.setText("\uD83D\uDDFA Địa chỉ: " +user.getAddress());
-                                tvUsername.setText("\uD83D\uDC68 Tên đăng nhập: " +user.getUsername());
-                            });
-                        }
-                    } else {
-                        Log.e("Error", "Failed to parse JSON");
-                    }
-                } catch (IOException e) {
-                    Log.e("Error", "Error parsing JSON", e);
-                }
-
-            }
-        });
 
         btnEditProfile.setOnClickListener(view -> {
             Intent intent = new Intent(Profile.this, EditProfile.class);
@@ -123,7 +86,7 @@ public class Profile extends AppCompatActivity {
         btnBackHome.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(Profile.this, MainActivity.class);
+                Intent intent = new Intent(Profile.this, HomeActivity.class);
                 startActivity(intent);
             }
         });

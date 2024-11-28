@@ -9,10 +9,12 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import androidx.annotation.Nullable;
 
 import com.example.ungdungnhathuoc.Model.Thuoc;
+import com.example.ungdungnhathuoc.Model.User;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -209,13 +211,59 @@ public class SQLiteConnect extends SQLiteOpenHelper {
         cursor.close();
     }
 
+    public User userDetail(String username) {
+        String query = "SELECT * FROM users WHERE username = ?";
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(query, new String[]{username});
+
+        if (cursor != null && cursor.moveToFirst()) {
+            // Lấy dữ liệu từ cursor
+            String userUsername = cursor.getString(cursor.getColumnIndexOrThrow("username"));
+            String fullname = cursor.getString(cursor.getColumnIndexOrThrow("fullname"));
+            String address = cursor.getString(cursor.getColumnIndexOrThrow("address"));
+            String email = cursor.getString(cursor.getColumnIndexOrThrow("email"));
+            String phone = cursor.getString(cursor.getColumnIndexOrThrow("phone"));
+            String role = cursor.getString(cursor.getColumnIndexOrThrow("role"));
+            String pass = "ACCC";
+
+            // Đóng cursor
+            cursor.close();
+
+            // Trả về đối tượng User
+            return new User(userUsername,pass,fullname, address, email, phone);
+        }
+        // Đóng cursor nếu null
+        if (cursor != null) {
+            cursor.close();
+        }
+        return null; // Trả về null nếu không tìm thấy
+    }
+    public boolean updateUser(User user) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+
+        // Gán các giá trị mới
+        contentValues.put("fullname", user.getFullname());
+        contentValues.put("address", user.getAddress());
+        contentValues.put("email", user.getEmail());
+        contentValues.put("phone", user.getPhone());
+
+        // Thực hiện cập nhật
+        int rowsUpdated = db.update("users", contentValues, "username = ?", new String[]{user.getUsername()});
+
+        // Kiểm tra kết quả
+        return rowsUpdated > 0; // Trả về true nếu có dòng được cập nhật
+    }
+
     public boolean getUserRole(String username, String password) {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery("SELECT role FROM users WHERE username = ? AND password = ?", new String[]{username, password});
         if (cursor != null && cursor.moveToFirst()) {
             @SuppressLint("Range") String role = cursor.getString(cursor.getColumnIndex("role"));
             cursor.close();
-            return true;
+            if (role.equals("admin")) {
+                return true;
+            }else return false;
         }
         if (cursor != null) cursor.close();
         return false; // Mặc định là user nếu không tìm thấy
@@ -240,6 +288,8 @@ public class SQLiteConnect extends SQLiteOpenHelper {
         else
             return false;
     }
+
+
 
     //Kiểm tra email tồn tại chưa
     public boolean checkEmail(String email) {

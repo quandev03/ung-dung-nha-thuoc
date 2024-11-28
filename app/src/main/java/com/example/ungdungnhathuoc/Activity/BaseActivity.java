@@ -9,6 +9,7 @@ import android.widget.FrameLayout;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.drawerlayout.widget.DrawerLayout;
 
+import com.example.ungdungnhathuoc.Authentication;
 import com.example.ungdungnhathuoc.LoginActivity;
 import com.example.ungdungnhathuoc.MainActivity;
 import com.example.ungdungnhathuoc.Profile;
@@ -16,11 +17,14 @@ import com.example.ungdungnhathuoc.R;
 import com.google.android.material.navigation.NavigationView;
 public abstract class BaseActivity extends AppCompatActivity {
     protected DrawerLayout drawerLayout;
+    protected Authentication auth;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_base);
+        SharedPreferences sharedPref = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
 
         // Ánh xạ các thành phần
         drawerLayout = findViewById(R.id.drawer_layout);
@@ -34,10 +38,32 @@ public abstract class BaseActivity extends AppCompatActivity {
         });
 
         // Kiểm tra accessToken để bảo vệ quyền truy cập
-        SharedPreferences sharedPref = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
+
         String accessToken = sharedPref.getString("accessToken", null);
+
         if (accessToken == null) {
             redirectToLogin();
+        }
+        Authentication auth = new Authentication( sharedPref);
+        this.auth = auth;
+    }
+
+    protected void isPermissionUser(){
+        if(auth.isAdmin()) {
+            Intent intent = new Intent(this, HomeAdminActivity.class);
+            startActivity(intent);
+        }
+    }
+    protected void isPermissionAdmin(){
+        if(!auth.isAdmin()) {
+            Intent intent = new Intent(this, HomeActivity.class);
+            startActivity(intent);
+        }
+    }
+    protected void isLogin(){
+        if (!auth.isUserLogin()) {
+            Intent intent = new Intent(this, LoginActivity.class);
+            startActivity(intent);
         }
     }
 
@@ -46,7 +72,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         Intent intent = null;
 
         if (itemId == R.id.nav_home) {
-            intent = new Intent(this, MainActivity.class);
+            intent = new Intent(this, HomeAdminActivity.class);
         } else if (itemId == R.id.nav_statistic) {
             intent = new Intent(this, ThongKeDonHangActivity.class);
         } else if (itemId == R.id.nav_warehouse) {
@@ -55,29 +81,29 @@ public abstract class BaseActivity extends AppCompatActivity {
             logoutUser();
             return; // Kết thúc phương thức, không cần thực thi `startActivity(intent)`
         }
-
         // Nếu intent không null thì bắt đầu activity
         if (intent != null) {
             startActivity(intent);
         }
     }
-    protected void handleNavigationUser(int itemId) {
-        Intent intent = null;
-
-        if (itemId == R.id.nav_home) {
-            intent = new Intent(this, MainActivity.class);
-        } else if (itemId == R.id.nav_statistic) {
-            intent = new Intent(this, ThongKeDonHangActivity.class);
-        } else if (itemId == R.id.nav_profile) {
-            intent = new Intent(this, Profile.class);
-        } else if (itemId == R.id.nav_logout) {
-            logoutUser();
-            return; // Kết thúc phương thức, không cần thực thi `startActivity(intent)`
-        }
-
-        // Nếu intent không null thì bắt đầu activity
-        if (intent != null) {
+    protected void handleNavigatioUser(int itemId) {
+        if (itemId == R.id.menu_profile) {
+//            showToast("Profile được chọn");
+        } else if (itemId == R.id.menu_search) {
+            Intent intent = new Intent(this, HomeActivity.class);
             startActivity(intent);
+            overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
+//            showToast("Giỏ hàng được chọn");
+        } else if (itemId == R.id.menu_search) {
+            Intent intent = new Intent(this, timkiem.class);
+            startActivity(intent);
+            overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
+        } else if (itemId == R.id.nav_profile) {
+            Intent intent  = new Intent(this, Profile.class);
+            startActivity(intent);}
+
+        else if (itemId == R.id.nav_logout) {
+            logoutUser();
         }
     }
 

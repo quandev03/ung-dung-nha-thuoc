@@ -8,8 +8,6 @@ public class User {
     public String email;
     public String phone;
 
-    //Khai báo không tham số
-    public User(){}
 
     //Khai báo có tham số
 

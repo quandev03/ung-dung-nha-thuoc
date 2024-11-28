@@ -16,24 +16,16 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.example.ungdungnhathuoc.Data.SQLiteConnect;
 import com.example.ungdungnhathuoc.Model.Account;
 import com.example.ungdungnhathuoc.Request.UpdateProfileInput;
 import com.example.ungdungnhathuoc.Response.ResponseData;
-import com.squareup.moshi.JsonAdapter;
-import com.squareup.moshi.Moshi;
-import com.squareup.moshi.Types;
 
 import java.io.IOException;
 import java.lang.reflect.ParameterizedType;
 import java.util.List;
+import com.example.ungdungnhathuoc.Model.User;
 
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
 
 public class EditProfile extends AppCompatActivity {
     Button btnSave, btnCancel;
@@ -44,19 +36,19 @@ public class EditProfile extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_edit_profile);
-
-        OkHttpClient client = new OkHttpClient();
-        Moshi moshi = new Moshi.Builder().build();
-        edtAddress = findViewById(R.id.edit_address);
-        edtEmail = findViewById(R.id.edit_email);
-        edtFullname = findViewById(R.id.edit_fullname);
-        edtPhone = findViewById(R.id.edit_phone);
         edtUsername = findViewById(R.id.edit_username);
-        btnCancel = findViewById(R.id.btn_cancel);
+        edtFullname = findViewById(R.id.edit_fullname);
+        edtEmail = findViewById(R.id.edit_email);
+        edtPhone = findViewById(R.id.edit_phone);
+        edtAddress = findViewById(R.id.edit_address);
         btnSave = findViewById(R.id.btn_save);
+        btnCancel = findViewById(R.id.btn_cancel);
+
+
+
         // get accessToken
         SharedPreferences sharedPref = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
-        String accessToken = sharedPref.getString("accessToken", null);
+
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.edit_profile_layout), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
@@ -64,53 +56,15 @@ public class EditProfile extends AppCompatActivity {
             return insets;
         });
 
+        SQLiteConnect sqLiteConnect = new SQLiteConnect(this);
+        User user = sqLiteConnect.userDetail(sharedPref.getString("username", null));
+        edtFullname.setText(user.getFullname());
+        edtEmail.setText(user.getEmail());
+        edtPhone.setText(user.getPhone());
+        edtAddress.setText(user.getAddress());
+        edtUsername.setText(user.getUsername());
 
-        Request request = new Request.Builder()
-                .url("http://10.0.2.2:3000/auth/user-detail") // Thay bằng IP/Domain thực tế
-                .addHeader("Authorization", "Bearer " + accessToken) // Thêm Bearer token vào header
-                .build();
 
-        client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                Log.e("Error", "Network Error", e);
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                if (!response.isSuccessful()) {
-                    Log.e("Error", "Unexpected response code: " + response.code());
-                    return;
-                }
-
-                String json = response.body().string();
-//                final JsonAdapter<Account> jsonAdapter = moshi.adapter(Account.class);
-//                final Account account = jsonAdapter.fromJson(json);
-                JsonAdapter<ResponseData> jsonAdapter = moshi.adapter(ResponseData.class);
-                try {
-                    // Chuyển JSON thành ResponseData
-                    ResponseData responseData = jsonAdapter.fromJson(json);
-
-                    if (responseData != null) {
-                        // Lấy thông tin từ data và hiển thị
-                        Account user = responseData.getData();
-                        if (user != null) {
-                            runOnUiThread(()->{
-                                edtAddress.setText(user.getAddress());
-                                edtEmail.setText(user.getEmail());
-                                edtFullname.setText(user.getFullname());
-                                edtPhone.setText(user.getPhone());
-                                edtUsername.setText(user.getUsername());
-                            });
-                        }
-                    } else {
-                        Log.e("Error", "Failed to parse JSON");
-                    }
-                } catch (IOException e) {
-                    Log.e("Error", "Error parsing JSON", e);
-                }
-            }
-        });
         btnCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -128,64 +82,19 @@ public class EditProfile extends AppCompatActivity {
                 String email = edtEmail.getText().toString().trim();
                 String username = edtUsername.getText().toString().trim();
 
-                // Kiểm tra dữ liệu hợp lệ (có thể thêm điều kiện)
-                if (fullname.isEmpty() || email.isEmpty() || phone.isEmpty() || address.isEmpty()) {
-                    Toast.makeText(EditProfile.this, "Please fill all fields", Toast.LENGTH_SHORT).show();
-                    return;
+                User userUpdate = new User(user.getUsername(), user.getPassword(), fullname, address, email, phone);
+
+                boolean result =sqLiteConnect.updateUser(userUpdate);
+                if (result) {
+                    Toast.makeText(EditProfile.this, "Cập nhật thông tin thành công", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(EditProfile.this, Profile.class);
+                    startActivity(intent);
+                } else {
+                    Toast.makeText(EditProfile.this, "Cập nhật thông tin thất bại", Toast.LENGTH_SHORT).show();
                 }
 
-                // Tạo đối tượng dữ liệu cần gửi
-                UpdateProfileInput dataUpdate = new UpdateProfileInput(fullname, email, phone, address);
 
-                // Chuyển đối tượng thành JSON (sử dụng Moshi hoặc Gson)
-                Moshi moshi = new Moshi.Builder().build();
-                JsonAdapter<UpdateProfileInput> jsonAdapter = moshi.adapter(UpdateProfileInput.class);
-                String jsonData = jsonAdapter.toJson(dataUpdate);
 
-                // Đảm bảo token không rỗng
-
-                // Tạo RequestBody từ chuỗi JSON
-                MediaType JSON = MediaType.parse("application/json; charset=utf-8");
-                RequestBody body = RequestBody.create(JSON, jsonData);
-
-                // Tạo yêu cầu PUT
-                OkHttpClient client = new OkHttpClient();
-                Request request = new Request.Builder()
-                        .url("http://10.0.2.2:3000/auth/update-user")
-                        .addHeader("Authorization", "Bearer " + accessToken)
-                        .put(body)
-                        .build();
-
-                // Gửi yêu cầu bất đồng bộ
-                client.newCall(request).enqueue(new Callback() {
-                    @Override
-                    public void onFailure(Call call, IOException e) {
-                        e.printStackTrace();
-                        // Thông báo lỗi nếu có vấn đề khi kết nối
-                        runOnUiThread(() -> Toast.makeText(EditProfile.this, "Network Error", Toast.LENGTH_SHORT).show());
-                    }
-
-                    @Override
-                    public void onResponse(Call call, Response response) throws IOException {
-
-                        // Kiểm tra mã phản hồi
-                        if (!response.isSuccessful()) {
-                            Log.e("Error", "Unexpected response code: " + response.code());
-                            return;
-                        }
-                        if (response.isSuccessful()) {
-                            // Xử lý phản hồi thành công
-                            String responseBody = response.body().string();
-                            runOnUiThread(() -> {
-                                // Hiển thị thông báo khi thành công
-                                Toast.makeText(EditProfile.this, "Profile updated successfully", Toast.LENGTH_SHORT).show();
-                            });
-                        } else {
-                            // Xử lý nếu mã phản hồi không phải 2xx
-                            runOnUiThread(() -> Toast.makeText(EditProfile.this, "Failed to update profile", Toast.LENGTH_SHORT).show());
-                        }
-                    }
-                });
             }
         });
 

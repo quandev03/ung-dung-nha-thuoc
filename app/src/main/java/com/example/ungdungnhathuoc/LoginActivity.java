@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -33,7 +34,7 @@ public class LoginActivity extends AppCompatActivity {
         SharedPreferences sharedPref = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
         String accessToken = sharedPref.getString("accessToken", null);
         if (accessToken != null) {
-            String role = sharedPref.getString("role", "user"); // Lấy quyền từ SharedPreferences
+            Boolean role = sharedPref.getBoolean("role", false); // Lấy quyền từ SharedPreferences
             if ("admin".equals(role)) {
                 Intent intent = new Intent(LoginActivity.this, HomeAdminActivity.class);
                 startActivity(intent);
@@ -70,6 +71,7 @@ public class LoginActivity extends AppCompatActivity {
                 boolean isLoggedId = dbHelper.checkUser(username, password);
                 String fullname = dbHelper.getFullnameByUsernameAndPassword(username, password);
                 boolean role = dbHelper.getUserRole(username, password); // Lấy quyền của người dùng từ SQLite
+                Log.d("LoginActivity", "Role: " + role);
                 if (isLoggedId) {
                     // Lưu accessToken vào SharedPreferences
                     SharedPreferences.Editor editor = sharedPref.edit();
