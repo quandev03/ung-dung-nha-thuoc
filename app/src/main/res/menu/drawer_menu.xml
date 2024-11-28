@@ -16,10 +16,9 @@
         android:title="Thống kê"
       />
     <item
-        android:id="@+id/nav_profile"
-        android:title="Profile"
+        android:id="@+id/nav_warehouse"
+        android:title="Kho hàng"
         />
-
     <item
         android:id="@+id/nav_logout"
         android:title="Đăng xuất"

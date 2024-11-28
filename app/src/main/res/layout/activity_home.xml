@@ -1,35 +1,117 @@
-<androidx.drawerlayout.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto" xmlns:tools="http://schemas.android.com/tools" android:id="@+id/drawerLayout" android:layout_width="match_parent" android:layout_height="match_parent" tools:context=".MainActivity">
-    <!--  Main Content  -->
-    <androidx.constraintlayout.widget.ConstraintLayout android:layout_width="match_parent" android:layout_height="match_parent">
-        <LinearLayout android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical" android:gravity="center_horizontal">
-            <!--  Header Text  -->
-            <TextView android:text="PHARMACY APP" android:textColor="#5764BA" android:background="#E7C3A9" android:gravity="center" android:textSize="15pt" android:textStyle="bold" android:layout_width="match_parent" android:layout_height="wrap_content"/>
-            <!--  Subtitle  -->
-            <TextView android:text="Chào mừng bạn đến với PHARMACY APP" android:gravity="center" android:padding="5dp" android:textStyle="italic" android:textColor="#218B4B" android:layout_width="match_parent" android:layout_height="wrap_content"/>
-            <!--  Image  -->
-            <ImageView android:src="@drawable/app2" android:layout_width="match_parent" android:layout_height="200dp" android:scaleType="centerCrop"/>
-            <!--  ListView  -->
-            <ListView android:id="@+id/lvmh" android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1"/>
-            <!--  Buttons  -->
-            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center" android:padding="10dp" android:layout_marginTop="10dp">
-                <Button android:id="@+id/btnCall" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Call" android:textStyle="bold" android:textSize="15dp" android:drawableLeft="@android:drawable/ic_menu_call" android:padding="8dp" android:textColor="#A15D98" android:backgroundTint="#E4CEE0"/>
-                <View android:layout_width="20dp" android:layout_height="match_parent"/>
-                <Button android:id="@+id/btnEmail" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Email" android:textStyle="bold" android:textSize="15dp" android:drawableLeft="@android:drawable/ic_menu_send" android:padding="8dp" android:textColor="#A15D98" android:backgroundTint="#E4CEE0"/>
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.drawerlayout.widget.DrawerLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/drawerLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <!-- Main Content -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <!-- Toolbar -->
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="#388E3C"
+            android:title="Trang chủ "
+            android:titleTextColor="#FFFFFF"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+        <!-- Content Layout -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:gravity="center_horizontal">
+
+            <!-- Header Text -->
+            <TextView
+                android:text="PHARMACY APP"
+                android:textColor="#5764BA"
+                android:background="#E7C3A9"
+                android:gravity="center"
+                android:textSize="15pt"
+                android:textStyle="bold"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <!-- Subtitle -->
+            <TextView
+                android:text="Chào mừng bạn đến với PHARMACY APP"
+                android:gravity="center"
+                android:padding="5dp"
+                android:textStyle="italic"
+                android:textColor="#218B4B"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <!-- Image -->
+            <ImageView
+                android:src="@drawable/app2"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:scaleType="centerCrop" />
+
+            <!-- ListView -->
+            <ListView
+                android:id="@+id/lvmh"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
+
+            <!-- Buttons -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center"
+                android:padding="10dp"
+                android:layout_marginTop="10dp">
+
+                <Button
+                    android:id="@+id/btnCall"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Call"
+                    android:textStyle="bold"
+                    android:textSize="15dp"
+                    android:drawableLeft="@android:drawable/ic_menu_call"
+                    android:padding="8dp"
+                    android:textColor="#A15D98"
+                    android:backgroundTint="#E4CEE0" />
+
+                <View
+                    android:layout_width="20dp"
+                    android:layout_height="match_parent" />
+
+                <Button
+                    android:id="@+id/btnEmail"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Email"
+                    android:textStyle="bold"
+                    android:textSize="15dp"
+                    android:drawableLeft="@android:drawable/ic_menu_send"
+                    android:padding="8dp"
+                    android:textColor="#A15D98"
+                    android:backgroundTint="#E4CEE0" />
             </LinearLayout>
         </LinearLayout>
-        <!--  Menu Icon  -->
-        <ImageView android:id="@+id/menuIcon"
-            android:src="@drawable/app2"
-            android:paddingRight="52dp"
-            android:layout_width="100dp"
-            android:layout_height="47dp"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentTop="true"
-            android:contentDescription="Menu Icon"
-            android:clickable="true"
-            android:focusable="true"
-            tools:ignore="MissingConstraints" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
-    <!--  Navigation View  -->
-    <com.google.android.material.navigation.NavigationView android:id="@+id/navigationView" android:layout_width="wrap_content" android:layout_height="match_parent" android:layout_gravity="start" app:menu="@menu/navigation_menu"/>
+    </LinearLayout>
+
+    <!-- Navigation View -->
+    <com.google.android.material.navigation.NavigationView
+        android:id="@+id/navigationView"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        app:menu="@menu/navigation_menu"
+        />
 </androidx.drawerlayout.widget.DrawerLayout>
