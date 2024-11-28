@@ -39,9 +39,9 @@ public class timkiem extends AppCompatActivity {
         listthuoc1= new ArrayList<>();
         String duongdananh="android.resource://"+R.class.getPackage().getName()+"/";
         //chạy thử dữ liệu
-        listthuoc1.add(new Thuoc("Vitamin E","Thuốc bổ",duongdananh+R.drawable.thuoc2,30,20,250000));
-        listthuoc1.add(new Thuoc("Vitamin tổng hợp","Thuốc bổ",duongdananh+R.drawable.thuoc1,50,45,500000));
-        listthuoc1.add(new Thuoc("Vitamin C","Thuốc bổ",duongdananh+R.drawable.thuoc3,50,45,250000));
+        listthuoc1.add(new Thuoc("Vitamin E","Thuốc bổ",duongdananh+R.drawable.thuoc2,30,20,250000, "loai", 1));
+        listthuoc1.add(new Thuoc("Vitamin tổng hợp","Thuốc bổ",duongdananh+R.drawable.thuoc1,50,45,500000, "loai", 1));
+        listthuoc1.add(new Thuoc("Vitamin C","Thuốc bổ",duongdananh+R.drawable.thuoc3,50,45,250000, "loai", 1));
         adaptertimkiem= new AdapterTimKiem(timkiem.this, R.layout.thuoc,listthuoc1);
         lvtk.setAdapter(adaptertimkiem);
         // thết lập suwj kiện tiìm kiếm

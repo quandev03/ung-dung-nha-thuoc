@@ -12,9 +12,57 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import androidx.annotation.Nullable;
 
+import com.example.ungdungnhathuoc.Model.Thuoc;
+
+import java.util.ArrayList;
+import java.util.List;
+
 public class SQLiteConnect extends SQLiteOpenHelper {
     public static final String DBName = "user.db";
     private Context context;
+
+    // ACCOUNT COLUMN
+    public static final String TABLE_USERS = "users";
+    public static final String COLUMN_ACCOUNT_USERNAME = "username";
+    public static final String COLUMN_ACCOUNT_PASSWORD = "password";
+    public static final String COLUMN_ACCOUNT_FULLNAME = "fullname";
+    public static final String COLUMN_ACCOUNT_ADDRESS = "address";
+    public static final String COLUMN_ACCOUNT_EMAIL = "email";
+    public static final String COLUMN_ACCOUNT_PHONE = "phone";
+    public static final String COLUMN_ACCOUNT_ROLE = "role";
+    private static final String CREATE_TABLE_USERS =
+            "CREATE TABLE " + TABLE_USERS + " (" +
+                    COLUMN_ACCOUNT_USERNAME + " TEXT PRIMARY KEY, " +
+                    COLUMN_ACCOUNT_PASSWORD + " TEXT NOT NULL, " +
+                    COLUMN_ACCOUNT_FULLNAME + " TEXT, " +
+                    COLUMN_ACCOUNT_ADDRESS + " TEXT, " +
+                    COLUMN_ACCOUNT_EMAIL + " TEXT, " +
+                    COLUMN_ACCOUNT_PHONE + " TEXT, " +
+                    COLUMN_ACCOUNT_ROLE + " BOOLEAN DEFAULT false" +
+                    ");";
+    // THUOC COLUMN
+    public static final String TABLE_THUOC_NAME = "thuoc";
+    public static final String COLUMN_THUOC_ID = "id";
+    public static final String COLUMN_THUOC_TEN_THUOC = "tenThuoc";
+    public static final String COLUMN_THUOC_CONG_DUNG = "congDung";
+    public static final String COLUMN_THUOC_TON_KHO = "tonKho";
+    public static final String COLUMN_THUOC_DA_BAN = "daBan";
+    public static final String COLUMN_THUOC_DON_GIA = "donGia";
+    public static final String COLUMN_THUOC_HINH_ANH = "hinhAnh";
+    public static final String COLUMN_THUOC_LOAI = "loai";
+    public static final String COLUMN_THUOC_CREATE_AT = "createAt";
+    private static final String CREATE_TABLE_THUOC =
+            "CREATE TABLE " + TABLE_THUOC_NAME + " (" +
+                    COLUMN_THUOC_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                    COLUMN_THUOC_TEN_THUOC + " TEXT NOT NULL, " +
+                    COLUMN_THUOC_CONG_DUNG + " TEXT, " +
+                    COLUMN_THUOC_TON_KHO + " INTEGER DEFAULT 0, " +
+                    COLUMN_THUOC_DA_BAN + " INTEGER DEFAULT 0, " +
+                    COLUMN_THUOC_DON_GIA + " REAL, " +
+                    COLUMN_THUOC_HINH_ANH + " TEXT, " +
+                    COLUMN_THUOC_LOAI + " TEXT, " +
+                    COLUMN_THUOC_CREATE_AT + " DATETIME DEFAULT CURRENT_TIMESTAMP" +
+                    ");";
 
     public SQLiteConnect(@Nullable Context context) {
         super(context, DBName, null, 1);
@@ -23,7 +71,8 @@ public class SQLiteConnect extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
-        sqLiteDatabase.execSQL("create table users(username TEXT primary key, password TEXT, fullname TEXT, address TEXT, email TEXT, phone TEXT, role TEXT)");
+        sqLiteDatabase.execSQL(CREATE_TABLE_USERS);
+        sqLiteDatabase.execSQL(CREATE_TABLE_THUOC);
         addAdminAccount(sqLiteDatabase);
     }
 
@@ -44,12 +93,88 @@ public class SQLiteConnect extends SQLiteOpenHelper {
         contentValues.put("address", address);
         contentValues.put("email", email);
         contentValues.put("phone", phone);
-        contentValues.put("role", "user"); // Mặc định là user
+        contentValues.put("role", true); // Mặc định là user
         long result = myDB.insert("users", null, contentValues);
         if(result == -1) return false;
         else return true;
     }
+    public boolean createNewThuoc(
+            String tenThuoc,
+            String congDung,
+            int tonKho,
+            double donGia,
+            String hinhAnh,
+            String loai
+    ) {
+        SQLiteDatabase myDB = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put("tenThuoc", tenThuoc);
+        contentValues.put("congDung", congDung);
+        contentValues.put("tonKho", tonKho);
+        contentValues.put("donGia", donGia);
+        contentValues.put("hinhAnh", hinhAnh);
+        contentValues.put("loai", loai);
+        long result = myDB.insert("thuoc", null, contentValues);
+        return result != -1;
+    }
 
+    public List<Thuoc> getAllThuoc() {
+        SQLiteDatabase myDB = this.getReadableDatabase();
+        List<Thuoc> thuocList = new ArrayList<>();
+
+        // Truy vấn tất cả dữ liệu từ bảng "thuoc"
+        Cursor cursor = myDB.rawQuery("SELECT * FROM thuoc", null);
+
+        if (cursor.moveToFirst()) {
+            do {
+                // Lấy dữ liệu từ các cột
+                int id = cursor.getInt(cursor.getColumnIndexOrThrow("id"));
+                String tenThuoc = cursor.getString(cursor.getColumnIndexOrThrow("tenThuoc"));
+                String congDung = cursor.getString(cursor.getColumnIndexOrThrow("congDung"));
+                int tonKho = cursor.getInt(cursor.getColumnIndexOrThrow("tonKho"));
+                double donGia = cursor.getDouble(cursor.getColumnIndexOrThrow("donGia"));
+                String hinhAnh = cursor.getString(cursor.getColumnIndexOrThrow("hinhAnh"));
+                String loai = cursor.getString(cursor.getColumnIndexOrThrow("loai"));
+
+                // Tạo đối tượng Thuoc và thêm vào danh sách
+                Thuoc thuoc = new Thuoc(tenThuoc, congDung, hinhAnh, tonKho, 0, (float) donGia, loai, id);
+                thuocList.add(thuoc);
+            } while (cursor.moveToNext());
+        }
+
+        // Đóng con trỏ
+        cursor.close();
+
+        return thuocList;
+    }
+    public Thuoc findOne(String condition) {
+        SQLiteDatabase myDB = this.getReadableDatabase();
+        Thuoc thuoc = null; // Biến để lưu bản ghi nếu tìm thấy
+
+        // Thực hiện truy vấn với điều kiện
+        Cursor cursor = myDB.rawQuery("SELECT * FROM thuoc WHERE " + condition, null);
+
+        if (cursor != null && cursor.moveToFirst()) {
+            // Lấy dữ liệu từ các cột
+            int id = cursor.getInt(cursor.getColumnIndexOrThrow("id"));
+            String tenThuoc = cursor.getString(cursor.getColumnIndexOrThrow("tenThuoc"));
+            String congDung = cursor.getString(cursor.getColumnIndexOrThrow("congDung"));
+            int tonKho = cursor.getInt(cursor.getColumnIndexOrThrow("tonKho"));
+            double donGia = cursor.getDouble(cursor.getColumnIndexOrThrow("donGia"));
+            String hinhAnh = cursor.getString(cursor.getColumnIndexOrThrow("hinhAnh"));
+            String loai = cursor.getString(cursor.getColumnIndexOrThrow("loai"));
+
+            // Tạo đối tượng Thuoc từ dữ liệu
+            thuoc = new Thuoc(tenThuoc, congDung, hinhAnh, tonKho, 0, (float) donGia, loai, id);
+        }
+
+        // Đóng con trỏ
+        if (cursor != null) {
+            cursor.close();
+        }
+
+        return thuoc; // Trả về đối tượng Thuoc (hoặc null nếu không tìm thấy)
+    }
     // Hàm thêm tài khoản quản trị viên vào cơ sở dữ liệu
     private void addAdminAccount(SQLiteDatabase sqLiteDatabase) {
 //        String adminUsername = "admin";
@@ -84,16 +209,16 @@ public class SQLiteConnect extends SQLiteOpenHelper {
         cursor.close();
     }
 
-    public String getUserRole(String username, String password) {
+    public boolean getUserRole(String username, String password) {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery("SELECT role FROM users WHERE username = ? AND password = ?", new String[]{username, password});
         if (cursor != null && cursor.moveToFirst()) {
             @SuppressLint("Range") String role = cursor.getString(cursor.getColumnIndex("role"));
             cursor.close();
-            return role;
+            return true;
         }
         if (cursor != null) cursor.close();
-        return "user"; // Mặc định là user nếu không tìm thấy
+        return false; // Mặc định là user nếu không tìm thấy
     }
 
 

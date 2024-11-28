@@ -8,11 +8,14 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.icu.text.SimpleDateFormat;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
+import android.widget.Adapter;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -29,6 +32,8 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.example.ungdungnhathuoc.Data.SQLiteConnect;
+import com.example.ungdungnhathuoc.Model.Thuoc;
 import com.example.ungdungnhathuoc.Request.CreateProduceInput;
 import com.example.ungdungnhathuoc.Request.UpdateProfileInput;
 import com.example.ungdungnhathuoc.Request.UploadFileInput;
@@ -39,21 +44,16 @@ import com.squareup.moshi.Moshi;
 
 import java.io.ByteArrayOutputStream;
 //import java.io.File;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
-
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.MediaType;
-import okhttp3.MultipartBody;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
+import java.util.List;
+import java.util.Random;
+import java.util.Date;
 
 
 
@@ -73,18 +73,8 @@ public class AddProduce extends AppCompatActivity {
                 if (result.getResultCode() == RESULT_OK) {
                     Uri fileUri = result.getData().getData();  // Get URI from result data
                     fileUriG =  fileUri;
-                    Log.d("URI", fileUri.toString());
-//                    ContentResolver contentResolver = context.getContentResolver();
-
-                    // Log the file path retrieved from URI
-//                    String filePath = getFilePathFromUri(AddProduce.this, fileUri);
-//                    Log.d("Path", filePath);  // Logs the file path
-
-                    // Display the image
                     displayImage(fileUri);  // This is your custom method to display the image, if needed
                     imageView.setImageURI(fileUri);  // Set the URI to ImageView
-
-                    // Optional: Get additional metadata about the file (e.g., MIME type)
                     getImageMetadata(fileUri);
                 }
             }
@@ -94,6 +84,7 @@ public class AddProduce extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_produce);
+        SQLiteConnect sqLiteConnect = new SQLiteConnect(this);
 
         btnUploadFile = findViewById(R.id.uploadFile);
         btnAdd = findViewById(R.id.add);
@@ -136,7 +127,8 @@ public class AddProduce extends AppCompatActivity {
 //                Log.d("Path", "Path to file: " + pathToFile);
 //                byte[] imageData = readFileToBufferFromPath(pathToFile);
 //                UploadFileInput uploadFile = new UploadFileInput(fileBuffer);
-
+                Log.d("DATA IMAGE", "DATA IMAGE: " + fileUriG);
+                String Path = saveImageFromUri(AddProduce.this, fileUriG, generateRandomFileName());
 
 
 //                Log.d("Data", dataImage);
@@ -150,8 +142,9 @@ public class AddProduce extends AppCompatActivity {
                 String loaiThuoc = spinner.getSelectedItem() != null ? spinner.getSelectedItem().toString() : "";
                 Integer donGia = Integer.parseInt(gia);
 
-                CreateProduceInput createProduceInput = new CreateProduceInput(tenThuoc, donGia, soLuong, congDung, null, loaiThuoc);
-                uploadImageToServer(fileUriG, accessToken, createProduceInput);
+                sqLiteConnect.createNewThuoc(tenThuoc, congDung, soLuong, donGia, Path, loaiThuoc);
+                List<Thuoc> thuocList = sqLiteConnect.getAllThuoc();
+                Log.d("Data Test", "Data Test:" + thuocList.toString());
             }
         });
     }
@@ -195,150 +188,59 @@ public class AddProduce extends AppCompatActivity {
         }
     }
 
-    private void uploadImageToServer(Uri fileUri, String accessToken, CreateProduceInput createProduceInput) {
-        if (fileUri == null) {
-            Log.e("Upload", "File URI is null, cannot upload");
-            Toast.makeText(AddProduce.this, "No file selected to upload!", Toast.LENGTH_SHORT).show();
-            return;
-        }
 
-        try {
-            // Read file into byte array
-            ContentResolver contentResolver = getContentResolver();
-            InputStream inputStream = contentResolver.openInputStream(fileUri);
-            if (inputStream == null) {
-                Log.e("Upload", "InputStream is null");
-                return;
-            }
-            byte[] fileBytes = readInputStreamToByteArray(inputStream);
-
-            String fileName = getFileNameFromUri(contentResolver, fileUri);
-            if (fileName == null) fileName = "image.jpg";
-
-            // Build Multipart RequestBody for image upload
-            RequestBody fileBody = RequestBody.create(MediaType.parse("image/jpeg"), fileBytes);
-            MultipartBody requestBody = new MultipartBody.Builder()
-                    .setType(MultipartBody.FORM)
-                    .addFormDataPart("file", fileName, fileBody)
-                    .build();
-
-            // Create Request for Image Upload
-            Request request = new Request.Builder()
-                    .url("http://10.0.2.2:3000/produce/upload-image-produce")
-                    .post(requestBody)
-                    .addHeader("Authorization", "Bearer " + accessToken)
-                    .build();
-
-            OkHttpClient client = new OkHttpClient();
-            client.newCall(request).enqueue(new Callback() {
-                @Override
-                public void onFailure(Call call, IOException e) {
-                    Log.e("Upload", "Upload failed: " + e.getMessage());
-                    runOnUiThread(() -> Toast.makeText(AddProduce.this, "Upload thất bại!", Toast.LENGTH_SHORT).show());
-                }
-
-                @Override
-                public void onResponse(Call call, Response response) throws IOException {
-                    if (response.isSuccessful()) {
-                        // Read response body once
-                        String responseBody = response.body() != null ? response.body().string() : null;
-                        Log.d("Upload", "Upload thành công: " + responseBody);
-
-                        // Update CreateProduceInput with image URL (assuming response body contains the URL)
-                        Moshi moshi = new Moshi.Builder().build();
-                        JsonAdapter<ResponceImageProduce> jsonAdapter = moshi.adapter(ResponceImageProduce.class);
-
-                        try {
-                            String imageResponse = responseBody;
-                                createProduceInput.setImage(imageResponse);
-                                // Proceed to create the produce record
-                                sendCreateProduceRequest(accessToken, createProduceInput);
-
-                        } catch (Exception e) {
-                            Log.e("Upload", "Error parsing image response: " + e.getMessage());
-                        }
-                    } else {
-                        Log.e("Upload", "Server error: " + response.code());
-                        runOnUiThread(() -> Toast.makeText(AddProduce.this, "Server error: " + response.code(), Toast.LENGTH_SHORT).show());
-                    }
-                }
-            });
-        } catch (IOException e) {
-            Log.e("Upload", "Error: " + e.getMessage());
-            Toast.makeText(AddProduce.this, "Error uploading file: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    // Utility to read InputStream into a byte array
-    private byte[] readInputStreamToByteArray(InputStream inputStream) throws IOException {
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        byte[] buffer = new byte[1024];
-        int length;
-        while ((length = inputStream.read(buffer)) != -1) {
-            byteArrayOutputStream.write(buffer, 0, length);
-        }
-        inputStream.close();
-        return byteArrayOutputStream.toByteArray();
-    }
 
     // Method to send CreateProduce request
-    private void sendCreateProduceRequest(String accessToken, CreateProduceInput createProduceInput) {
-        try {
-            // Convert CreateProduceInput to JSON
-            Moshi moshi = new Moshi.Builder().build();
-            JsonAdapter<CreateProduceInput> jsonAdapter = moshi.adapter(CreateProduceInput.class);
-            String jsonData = jsonAdapter.toJson(createProduceInput);
+    public String saveImageFromUri(Context context, Uri imageUri, String imageName) {
+        String savedImagePath = null;
 
-            // Build JSON RequestBody
-            MediaType JSON = MediaType.parse("application/json; charset=utf-8");
-            RequestBody body = RequestBody.create(JSON, jsonData);
-
-            // Create Request
-            Request request = new Request.Builder()
-                    .url("https://api.quandev03.id.vn/produce/create-produce")
-                    .addHeader("Authorization", "Bearer " + accessToken)
-                    .post(body)
-                    .build();
-
-            OkHttpClient client = new OkHttpClient();
-            client.newCall(request).enqueue(new Callback() {
-                @Override
-                public void onFailure(Call call, IOException e) {
-                    Log.e("CreateProduce", "Create failed: " + e.getMessage());
-                    runOnUiThread(() -> Toast.makeText(AddProduce.this, "Create thất bại!", Toast.LENGTH_SHORT).show());
-                }
-
-                @Override
-                public void onResponse(Call call, Response response) throws IOException {
-                    if (response.isSuccessful()) {
-                        Log.d("CreateProduce", "Create thành công: " + response.body().string());
-                        runOnUiThread(() -> Toast.makeText(AddProduce.this, "Create thành công!", Toast.LENGTH_SHORT).show());
-                    } else {
-                        Log.e("CreateProduce", "Server error: " + response.code());
-                        runOnUiThread(() -> Toast.makeText(AddProduce.this, "Server error: " + response.code(), Toast.LENGTH_SHORT).show());
-                    }
-                }
-            });
-        } catch (Exception e) {
-            Log.e("CreateProduce", "Error: " + e.getMessage());
+        // Tạo thư mục trong bộ nhớ trong
+        File storageDir = new File(context.getExternalFilesDir(Environment.DIRECTORY_PICTURES), "MyImages");
+        if (!storageDir.exists()) {
+            storageDir.mkdirs(); // Tạo thư mục nếu chưa tồn tại
         }
-    }
 
-    // Phương thức để lấy tên tệp từ URI
-    private String getFileNameFromUri(ContentResolver contentResolver, Uri uri) {
-        Cursor cursor = contentResolver.query(uri, null, null, null, null);
-        if (cursor != null && cursor.moveToFirst()) {
-            int nameIndex = cursor.getColumnIndex(MediaStore.Images.Media.DISPLAY_NAME);
-            if (nameIndex != -1) {
-                String fileName = cursor.getString(nameIndex);
-                cursor.close();
-                return fileName;
+        // Tạo tệp tin ảnh
+        File imageFile = new File(storageDir, imageName + ".jpg");
+
+        try (InputStream inputStream = context.getContentResolver().openInputStream(imageUri);
+             FileOutputStream outputStream = new FileOutputStream(imageFile)) {
+
+            // Ghi dữ liệu từ InputStream vào FileOutputStream
+            byte[] buffer = new byte[1024];
+            int length;
+            while ((length = inputStream.read(buffer)) > 0) {
+                outputStream.write(buffer, 0, length);
             }
-            cursor.close();
+
+            savedImagePath = imageFile.getAbsolutePath();
+            Log.d("SaveImage", "Image saved at: " + savedImagePath);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            Log.e("SaveImage", "Error saving image: " + e.getMessage());
         }
-        return null;
+
+        return savedImagePath;
+    }
+    public static String generateRandomFileName() {
+        // Tạo dấu thời gian hiện tại
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+
+        // Tạo chuỗi ngẫu nhiên
+        String randomString = getRandomString(5);
+
+        // Kết hợp dấu thời gian và chuỗi ngẫu nhiên làm tên tệp
+        return "file_" + timeStamp + "_" + randomString ;
     }
 
-
-
+    private static String getRandomString(int length) {
+        String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        StringBuilder result = new StringBuilder();
+        Random random = new Random();
+        for (int i = 0; i < length; i++) {
+            result.append(characters.charAt(random.nextInt(characters.length())));
+        }
+        return result.toString();
     }
+}
