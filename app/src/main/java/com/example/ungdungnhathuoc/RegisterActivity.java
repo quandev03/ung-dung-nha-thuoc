@@ -116,8 +116,7 @@ public class RegisterActivity extends AppCompatActivity {
                             Toast.makeText(RegisterActivity.this, "Số điện thoại đã tồn tại", Toast.LENGTH_SHORT).show();
                             return;
                         }
-//                        // Mã hóa mật khẩu
-//                        String hashedPassword = hashPassword(password);
+
 
                         // Lưu thông tin vào cơ sở dữ liệu
                         boolean registerSuccess = dbHelper.insertData(username, password, fullname, address, phone, email);

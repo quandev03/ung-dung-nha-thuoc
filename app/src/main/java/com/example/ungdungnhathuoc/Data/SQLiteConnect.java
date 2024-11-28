@@ -23,7 +23,7 @@ public class SQLiteConnect extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
-        sqLiteDatabase.execSQL("create table users(username TEXT primary key, password TEXT, fullname TEXT, address TEXT, email TEXT, phone TEXT, role TEXT)");
+        sqLiteDatabase.execSQL("create table users(id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT, password TEXT, fullname TEXT, address TEXT, email TEXT, phone TEXT, role TEXT)");
         addAdminAccount(sqLiteDatabase);
     }
 

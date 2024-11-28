@@ -6,14 +6,12 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.widget.Toast;
 
-import androidx.appcompat.widget.Toolbar;
-import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.ungdungnhathuoc.Activity.BaseActivity;
+import com.example.ungdungnhathuoc.Activity.HomeActivity;
 import com.example.ungdungnhathuoc.Activity.HomeAdminActivity;
 
-public class MainActivity extends BaseActivity {
-    private DrawerLayout drawerLayout;
+public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,35 +22,21 @@ public class MainActivity extends BaseActivity {
         SharedPreferences sharedPref = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
         String accessToken = sharedPref.getString("accessToken", null);
 
-        if (accessToken == null || accessToken.isEmpty()) {
+        // Kiểm tra xem accessToken có tồn tại và không rỗng
+        if (accessToken == null || accessToken.trim().isEmpty()) {
             // Chưa đăng nhập, chuyển về LoginActivity
             Toast.makeText(this, "Bạn chưa đăng nhập. Vui lòng đăng nhập để tiếp tục.", Toast.LENGTH_SHORT).show();
+            // Chuyển đến LoginActivity
             Intent intent = new Intent(MainActivity.this, LoginActivity.class);
             startActivity(intent);
             finish(); // Kết thúc MainActivity để không quay lại được
         } else {
             // Đã đăng nhập, chuyển đến HomeAdminActivity
             Toast.makeText(this, "Chào mừng bạn quay lại!", Toast.LENGTH_SHORT).show();
-            Intent intent = new Intent(MainActivity.this, HomeAdminActivity.class);
+            // Chuyển đến HomeAdminActivity
+            Intent intent = new Intent(MainActivity.this, HomeActivity.class);
             startActivity(intent);
             finish(); // Kết thúc MainActivity để không quay lại được
         }
     }
-
-
-    // Hàm xử lý đăng xuất
-//    public void logout() {
-//        // Xóa accessToken khi đăng xuất
-//        SharedPreferences sharedPref = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
-//        SharedPreferences.Editor editor = sharedPref.edit();
-//        editor.remove("accessToken");
-//        editor.apply();
-//
-//        Toast.makeText(this, "Đã đăng xuất thành công", Toast.LENGTH_SHORT).show();
-//
-//        // Chuyển đến màn hình đăng nhập sau khi đăng xuất
-//        Intent intent = new Intent(MainActivity.this, LoginActivity.class);
-//        startActivity(intent);
-//        finish();
-//    }
 }
