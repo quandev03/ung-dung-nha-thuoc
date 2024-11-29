@@ -20,7 +20,12 @@
         android:title="Kho hàng"
         />
     <item
+    android:id="@+id/navAddP"
+    android:title="Thêm thuốc"/>
+
+    <item
         android:id="@+id/nav_logout"
         android:title="Đăng xuất"
         />
+
 </menu>

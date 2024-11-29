@@ -53,6 +53,7 @@ public class SQLiteConnect extends SQLiteOpenHelper {
     public static final String COLUMN_THUOC_HINH_ANH = "hinhAnh";
     public static final String COLUMN_THUOC_LOAI = "loai";
     public static final String COLUMN_THUOC_CREATE_AT = "createAt";
+
     private static final String CREATE_TABLE_THUOC =
             "CREATE TABLE " + TABLE_THUOC_NAME + " (" +
                     COLUMN_THUOC_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
@@ -66,26 +67,43 @@ public class SQLiteConnect extends SQLiteOpenHelper {
                     COLUMN_THUOC_CREATE_AT + " DATETIME DEFAULT CURRENT_TIMESTAMP" +
                     ");";
 
+    public static final String TABLE_ORDER_NAME = "orderProduce";
+    public static final String COLUMN_ORDER_ID = "id";
+    public static final String COLUMN_ORDER_ID_THUOC = "id_produce";
+    public static final String COLUMN_ORDER_ID_USER = "id_user";
+    public static final String COLUMN_ORDER_SL = "so_mua";
+    public static final String COLUMN_ORDER_DON_GIA = "don_gia";
+    public static final String COLUMN_ORDER_CREATE_AT = "createAt";
+    public static final String COLUMN_ORDER_TOTAL = "total";
+    public static final String COLUMN_ORDER_STATUS = "status";
+    public static final String CREATE_TABLE_ORDER =
+            "CREATE TABLE " + TABLE_ORDER_NAME + " (" +
+                    COLUMN_ORDER_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                    COLUMN_ORDER_ID_THUOC + " INTEGER, " +
+                    COLUMN_ORDER_ID_USER + " INTEGER, " +
+                    COLUMN_ORDER_SL + " INTEGER, " +
+                    COLUMN_ORDER_DON_GIA + " FLOAT, " +
+                    COLUMN_ORDER_CREATE_AT + " DATETIME DEFAULT CURRENT_TIMESTAMP, " +
+                    COLUMN_ORDER_STATUS + " INTEGER DEFAULT 0," + // 0 là chưa duyệt, 1 là đã duyệt, 2 là đã hủy, 3 la hoàn thành
+                    COLUMN_ORDER_TOTAL + " FLOAT)";
+
+
     public SQLiteConnect(@Nullable Context context) {
         super(context, DBName, null, 1);
         this.context = context; // Lưu context vào biến
     }
-
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
         sqLiteDatabase.execSQL(CREATE_TABLE_USERS);
         sqLiteDatabase.execSQL(CREATE_TABLE_THUOC);
+        sqLiteDatabase.execSQL(CREATE_TABLE_ORDER);
         addAdminAccount(sqLiteDatabase);
     }
-
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
         sqLiteDatabase.execSQL("drop table if exists users");
         onCreate(sqLiteDatabase);
     }
-
-
-
     public boolean insertData(String username, String password, String fullname, String address, String email, String phone){
         SQLiteDatabase myDB = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
@@ -342,6 +360,174 @@ public class SQLiteConnect extends SQLiteOpenHelper {
         if(cursor.getCount()>0)
             return true;
         else return false;
+    }
+    public boolean createOrder(int idProduce, int idUser, int soLuong) {
+        SQLiteDatabase myDB = this.getWritableDatabase();
+        Cursor produce = null;
+
+        try {
+            // Query the 'thuoc' table for the specified product id
+            produce = myDB.rawQuery("SELECT * FROM thuoc WHERE id = ?", new String[]{String.valueOf(idProduce)});
+
+            // Check if the Cursor contains any data
+            if (produce != null && produce.moveToFirst()) {
+                int priceIndex = produce.getColumnIndex("donGia");
+                String price = produce.getString(priceIndex);
+                Float priceFloat = Float.parseFloat(price);
+                Float total = priceFloat * soLuong;
+
+                // Prepare the ContentValues for inserting the order
+                ContentValues contentValues = new ContentValues();
+                contentValues.put("id_produce", idProduce);
+                contentValues.put("id_user", idUser);
+                contentValues.put("so_mua", soLuong);
+                contentValues.put("don_gia", priceFloat);
+                contentValues.put("total", total);
+
+                // Start transaction
+                myDB.beginTransaction();
+                try {
+                    long result = myDB.insert("orderProduce", null, contentValues);
+
+                    if (result == -1) {
+                        return false;  // Insert failed
+                    }
+                    myDB.setTransactionSuccessful();
+                    return true;
+                } catch (Exception e) {
+                    return false;
+                } finally {
+                    myDB.endTransaction();
+                }
+            }
+
+        } catch (Exception e) {
+            // Handle the exception (e.g., log the error)
+            return false;
+        } finally {
+            if (produce != null) {
+                produce.close();  // Always close the cursor when done
+            }
+        }
+
+        return false;  // Return false if no matching product was found
+    }
+
+    public boolean confirmOrder(int orderId) {
+        SQLiteDatabase myDB = this.getWritableDatabase();
+        Cursor cursor = null;
+
+        try {
+            // Query to check the current status of the order
+            cursor = myDB.rawQuery("SELECT status FROM orderProduce WHERE id = ?", new String[]{String.valueOf(orderId)});
+
+            if (cursor != null && cursor.moveToFirst()) {
+                int statusIndex = cursor.getColumnIndex("status");
+                int status = cursor.getInt(statusIndex);
+
+                // Check if the current status is 0
+                if (status == 0) {
+                    ContentValues contentValues = new ContentValues();
+                    contentValues.put("status", 1); // Update status to 1 (confirmed)
+
+                    // Update the order status in the database
+                    int rowsUpdated = myDB.update("orderProduce", contentValues, "id = ?", new String[]{String.valueOf(orderId)});
+
+                    // Check if the update was successful
+                    return rowsUpdated > 0;
+                } else {
+                    return false; // Status is not 0, order cannot be confirmed
+                }
+            }
+
+            return false; // Order not found
+        } catch (Exception e) {
+            // Handle any exceptions (e.g., log the error)
+            e.printStackTrace();
+            return false;
+        } finally {
+            if (cursor != null) {
+                cursor.close(); // Always close the cursor when done
+            }
+        }
+    }
+
+    public boolean cancelOrder(int orderId) {
+        SQLiteDatabase myDB = this.getWritableDatabase();
+        Cursor cursor = null;
+
+        try {
+            // Query to get the current status of the order
+            cursor = myDB.rawQuery("SELECT status FROM orderProduce WHERE id = ?", new String[]{String.valueOf(orderId)});
+
+            if (cursor != null && cursor.moveToFirst()) {
+                int statusIndex = cursor.getColumnIndex("status");
+                int status = cursor.getInt(statusIndex);
+
+                // Check if the status is 0
+                if (status == 0) {
+                    ContentValues contentValues = new ContentValues();
+                    contentValues.put("status", 2); // Update status to 2 (canceled)
+
+                    // Update the order status
+                    int rowsUpdated = myDB.update("orderProduce", contentValues, "id = ?", new String[]{String.valueOf(orderId)});
+
+                    // Check if the update was successful
+                    return rowsUpdated > 0;
+                } else {
+                    return false; // Status is not 0, order cannot be canceled
+                }
+            }
+
+            return false; // Order not found
+        } catch (Exception e) {
+            // Handle any exceptions (e.g., log the error)
+            e.printStackTrace();
+            return false;
+        } finally {
+            if (cursor != null) {
+                cursor.close(); // Close the cursor to free resources
+            }
+        }
+    }
+
+    public boolean completeOrder(int orderId) {
+        SQLiteDatabase myDB = this.getWritableDatabase();
+        Cursor cursor = null;
+
+        try {
+            // Query to get the current status of the order
+            cursor = myDB.rawQuery("SELECT status FROM orderProduce WHERE id = ?", new String[]{String.valueOf(orderId)});
+
+            if (cursor != null && cursor.moveToFirst()) {
+                int statusIndex = cursor.getColumnIndex("status");
+                int status = cursor.getInt(statusIndex);
+
+                // Check if the status is 2
+                if (status == 2) {
+                    ContentValues contentValues = new ContentValues();
+                    contentValues.put("status", 3); // Update status to 3 (completed)
+
+                    // Update the order status
+                    int rowsUpdated = myDB.update("orderProduce", contentValues, "id = ?", new String[]{String.valueOf(orderId)});
+
+                    // Check if the update was successful
+                    return rowsUpdated > 0;
+                } else {
+                    return false; // Status is not 2, order cannot be completed
+                }
+            }
+
+            return false; // Order not found
+        } catch (Exception e) {
+            // Handle any exceptions (e.g., log the error)
+            e.printStackTrace();
+            return false;
+        } finally {
+            if (cursor != null) {
+                cursor.close(); // Close the cursor to free resources
+            }
+        }
     }
 
 

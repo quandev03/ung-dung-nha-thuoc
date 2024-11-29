@@ -32,6 +32,7 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.example.ungdungnhathuoc.Activity.BaseActivity;
 import com.example.ungdungnhathuoc.Data.SQLiteConnect;
 import com.example.ungdungnhathuoc.Model.Thuoc;
 import com.example.ungdungnhathuoc.Request.CreateProduceInput;
@@ -57,7 +58,7 @@ import java.util.Date;
 
 
 
-public class AddProduce extends AppCompatActivity {
+public class AddProduce extends BaseActivity {
     Button btnUploadFile, btnAdd, btnCancel;
     ImageView imageView;
     EditText edtTenThuoc, edtCongDung, edtDonGia, slThuoc;
@@ -242,5 +243,9 @@ public class AddProduce extends AppCompatActivity {
             result.append(characters.charAt(random.nextInt(characters.length())));
         }
         return result.toString();
+    }
+    @Override
+    protected void handleNavigation(int itemId) {
+        super.handleNavigation(itemId);
     }
 }

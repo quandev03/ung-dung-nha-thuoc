@@ -3,7 +3,7 @@ package com.example.ungdungnhathuoc.Model;
 import android.widget.ImageView;
 
 public class Order {
-    private String orderId;
+    private int orderId;
     private String status;
     private double totalPrice;  // Change to double for numeric operations
     private String orderDate;
@@ -18,7 +18,7 @@ public class Order {
     // Constructor
 
 
-    public Order(String orderId, String status, double totalPrice, String orderDate, String customerName, String contactInfo, String address, String customerPhone, String items) {
+    public Order(int orderId, String status, double totalPrice, String orderDate, String customerName, String contactInfo, String address, String customerPhone, String items) {
         this.orderId = orderId;
         this.status = status;
         this.totalPrice = totalPrice;
@@ -35,7 +35,7 @@ public class Order {
     }
 
     // Getters
-    public String getOrderId() {
+    public int getOrderId() {
         return orderId;
     }
 
@@ -68,7 +68,7 @@ public class Order {
     }
 
     // Setters
-    public void setOrderId(String orderId) {
+    public void setOrderId(int orderId) {
         this.orderId = orderId;
     }
 

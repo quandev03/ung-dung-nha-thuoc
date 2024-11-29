@@ -83,9 +83,9 @@ public class ThongKeDonHangActivity extends BaseActivity {
     private List<Order> getSampleOrders() {
         // Dữ liệu mẫu cho việc thử nghiệm
         List<Order> orders = new ArrayList<>();
-        orders.add(new Order("002", "Đã giao", 500.0, "2024-11-07", "Trần Thị B", "Hiệu thuốc Long Châu", "Hồ Chí Minh", "0987654321", "Sản phẩm C"));
-        orders.add(new Order("003", "Chưa xác nhận", 750.0, "2024-11-06", "Lê Văn C", "Hiệu thuốc Long Châu", "Đà Nẵng", "0912345678", "Sản phẩm D"));
-        orders.add(new Order("004", "Chưa xác nhận", 750.0, "2024-11-06", "Lê Văn C", "Hiệu thuốc Long Châu", "Đà Nẵng", "0912345678", "Sản phẩm D"));
+        orders.add(new Order(1, "Đã giao", 500.0, "2024-11-07", "Trần Thị B", "Hiệu thuốc Long Châu", "Hồ Chí Minh", "0987654321", "Sản phẩm C"));
+        orders.add(new Order(2, "Chưa xác nhận", 750.0, "2024-11-06", "Lê Văn C", "Hiệu thuốc Long Châu", "Đà Nẵng", "0912345678", "Sản phẩm D"));
+        orders.add(new Order(3, "Chưa xác nhận", 750.0, "2024-11-06", "Lê Văn C", "Hiệu thuốc Long Châu", "Đà Nẵng", "0912345678", "Sản phẩm D"));
         return orders;
     }
 

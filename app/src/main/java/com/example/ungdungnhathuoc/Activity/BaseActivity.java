@@ -9,6 +9,7 @@ import android.widget.FrameLayout;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.drawerlayout.widget.DrawerLayout;
 
+import com.example.ungdungnhathuoc.AddProduce;
 import com.example.ungdungnhathuoc.Authentication;
 import com.example.ungdungnhathuoc.LoginActivity;
 import com.example.ungdungnhathuoc.MainActivity;
@@ -80,8 +81,8 @@ public abstract class BaseActivity extends AppCompatActivity {
         } else if (itemId == R.id.nav_logout) {
             logoutUser();
             return; // Kết thúc phương thức, không cần thực thi `startActivity(intent)`
-        }
-        // Nếu intent không null thì bắt đầu activity
+        }else if(itemId==R.id.navAddP)
+            intent = new Intent(this, AddProduce.class);
         if (intent != null) {
             startActivity(intent);
         }
