@@ -376,13 +376,20 @@ public class SQLiteConnect extends SQLiteOpenHelper {
             // Query the 'thuoc' table for the specified product id
             produce = myDB.rawQuery("SELECT * FROM thuoc WHERE id = ?", new String[]{String.valueOf(idProduce)});
 
+
             // Check if the Cursor contains any data
             if (produce != null && produce.moveToFirst()) {
                 int priceIndex = produce.getColumnIndex("donGia");
                 String price = produce.getString(priceIndex);
                 Float priceFloat = Float.parseFloat(price);
                 Float total = priceFloat * soLuong;
-
+                int tonKho = produce.getColumnIndex("tonKho");
+                int tonKhoValue = produce.getInt(tonKho);
+                if (tonKhoValue < soLuong) {
+                    return false;
+                }
+                int currentTonKho = tonKhoValue - soLuong;
+                myDB.execSQL("UPDATE thuoc SET tonKho = ? WHERE id = ?", new Object[]{currentTonKho, idProduce});
                 // Prepare the ContentValues for inserting the order
                 ContentValues contentValues = new ContentValues();
                 contentValues.put("id_produce", idProduce);
@@ -465,11 +472,21 @@ public class SQLiteConnect extends SQLiteOpenHelper {
 
         try {
             // Query to get the current status of the order
-            cursor = myDB.rawQuery("SELECT status FROM orderProduce WHERE id = ?", new String[]{String.valueOf(orderId)});
+            cursor = myDB.rawQuery("SELECT status, so_mua, id_produce FROM orderProduce WHERE id = ?", new String[]{String.valueOf(orderId)});
+
+
 
             if (cursor != null && cursor.moveToFirst()) {
                 int statusIndex = cursor.getColumnIndex("status");
                 int status = cursor.getInt(statusIndex);
+                int idProduce = cursor.getColumnIndex("id_produce");
+                int idThuoc = cursor.getInt(idProduce);
+                Cursor produce = myDB.rawQuery("SELECT * FROM thuoc WHERE id = ?", new String[]{String.valueOf(idThuoc)});
+                int soLuong = produce.getColumnIndex("so_mua");
+                int tonKho = produce.getColumnIndex("tonKho");
+                int tonKhoValue = produce.getInt(tonKho);
+                int currentTonKho = tonKhoValue + soLuong;
+                myDB.execSQL("UPDATE thuoc SET tonKho = ? WHERE id = ?", new Object[]{currentTonKho, idThuoc});
 
                 // Check if the status is 0
                 if (status == 0) {
@@ -478,6 +495,7 @@ public class SQLiteConnect extends SQLiteOpenHelper {
 
                     // Update the order status
                     int rowsUpdated = myDB.update("orderProduce", contentValues, "id = ?", new String[]{String.valueOf(orderId)});
+
 
                     // Check if the update was successful
                     return rowsUpdated > 0;
@@ -504,11 +522,21 @@ public class SQLiteConnect extends SQLiteOpenHelper {
 
         try {
             // Query to get the current status of the order
-            cursor = myDB.rawQuery("SELECT status FROM orderProduce WHERE id = ?", new String[]{String.valueOf(orderId)});
+            cursor = myDB.rawQuery("SELECT status, so_mua, idProduce FROM orderProduce WHERE id = ?", new String[]{String.valueOf(orderId)});
 
             if (cursor != null && cursor.moveToFirst()) {
                 int statusIndex = cursor.getColumnIndex("status");
                 int status = cursor.getInt(statusIndex);
+                int so_mua = cursor.getColumnIndex("so_mua");
+                int soLuong = cursor.getInt(so_mua);
+                int idProduce = cursor.getColumnIndex("idProduce");
+                int idThuoc = cursor.getInt(idProduce);
+                Cursor produce = myDB.rawQuery("SELECT * FROM thuoc WHERE id = ?", new String[]{String.valueOf(idThuoc)});
+                int daBan = produce.getColumnIndex("daBan");
+                int daBanValue = produce.getInt(daBan);
+                int currentDaBan = daBanValue + soLuong;
+
+
 
                 // Check if the status is 2
                 if (status == 2) {
@@ -517,6 +545,7 @@ public class SQLiteConnect extends SQLiteOpenHelper {
 
                     // Update the order status
                     int rowsUpdated = myDB.update("orderProduce", contentValues, "id = ?", new String[]{String.valueOf(orderId)});
+                    myDB.execSQL("UPDATE thuoc SET daBan = ? WHERE id = ?", new Object[]{currentDaBan, idThuoc});
 
                     // Check if the update was successful
                     return rowsUpdated > 0;
