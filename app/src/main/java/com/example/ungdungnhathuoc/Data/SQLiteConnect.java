@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SQLiteConnect extends SQLiteOpenHelper {
-    public static final String DBName = "user.db";
+    public static final String DBName = "banthuoc.db";
     private Context context;
 
     // ACCOUNT COLUMN
@@ -33,7 +33,7 @@ public class SQLiteConnect extends SQLiteOpenHelper {
     public static final String COLUMN_ACCOUNT_PHONE = "phone";
     public static final String COLUMN_ACCOUNT_ROLE = "role";
     private static final String CREATE_TABLE_USERS =
-            "CREATE TABLE " + TABLE_USERS + " (" +
+            "CREATE TABLE IF NOT EXISTS " + TABLE_USERS + " (" +
                     COLUMN_ACCOUNT_USERNAME + " TEXT PRIMARY KEY, " +
                     COLUMN_ACCOUNT_PASSWORD + " TEXT NOT NULL, " +
                     COLUMN_ACCOUNT_FULLNAME + " TEXT, " +
@@ -55,7 +55,7 @@ public class SQLiteConnect extends SQLiteOpenHelper {
     public static final String COLUMN_THUOC_CREATE_AT = "createAt";
 
     private static final String CREATE_TABLE_THUOC =
-            "CREATE TABLE " + TABLE_THUOC_NAME + " (" +
+            "CREATE TABLE IF NOT EXISTS " + TABLE_THUOC_NAME + " (" +
                     COLUMN_THUOC_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                     COLUMN_THUOC_TEN_THUOC + " TEXT NOT NULL, " +
                     COLUMN_THUOC_CONG_DUNG + " TEXT, " +
@@ -77,14 +77,14 @@ public class SQLiteConnect extends SQLiteOpenHelper {
     public static final String COLUMN_ORDER_TOTAL = "total";
     public static final String COLUMN_ORDER_STATUS = "status";
     public static final String CREATE_TABLE_ORDER =
-            "CREATE TABLE " + TABLE_ORDER_NAME + " (" +
+            "CREATE TABLE IF NOT EXISTS " + TABLE_ORDER_NAME + " (" +
                     COLUMN_ORDER_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                     COLUMN_ORDER_ID_THUOC + " INTEGER, " +
-                    COLUMN_ORDER_ID_USER + " INTEGER, " +
+                    COLUMN_ORDER_ID_USER + " TEXT, " +
                     COLUMN_ORDER_SL + " INTEGER, " +
                     COLUMN_ORDER_DON_GIA + " FLOAT, " +
                     COLUMN_ORDER_CREATE_AT + " DATETIME DEFAULT CURRENT_TIMESTAMP, " +
-                    COLUMN_ORDER_STATUS + " INTEGER DEFAULT 0," + // 0 là chưa duyệt, 1 là đã duyệt, 2 là đã hủy, 3 la hoàn thành
+                    COLUMN_ORDER_STATUS + " INTEGER DEFAULT 0," +
                     COLUMN_ORDER_TOTAL + " FLOAT)";
 
 
@@ -100,9 +100,16 @@ public class SQLiteConnect extends SQLiteOpenHelper {
         addAdminAccount(sqLiteDatabase);
     }
     @Override
-    public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
-        sqLiteDatabase.execSQL("drop table if exists users");
-        onCreate(sqLiteDatabase);
+    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        // Xóa bảng cũ (nếu cần)
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_USERS);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_THUOC_NAME);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_ORDER_NAME);
+
+        // Tạo lại bảng mới
+        db.execSQL(TABLE_USERS);
+        db.execSQL(TABLE_THUOC_NAME);
+        db.execSQL(TABLE_ORDER_NAME);
     }
     public boolean insertData(String username, String password, String fullname, String address, String email, String phone){
         SQLiteDatabase myDB = this.getWritableDatabase();
@@ -361,7 +368,7 @@ public class SQLiteConnect extends SQLiteOpenHelper {
             return true;
         else return false;
     }
-    public boolean createOrder(int idProduce, int idUser, int soLuong) {
+    public boolean createOrder(int idProduce, String idUser, int soLuong) {
         SQLiteDatabase myDB = this.getWritableDatabase();
         Cursor produce = null;
 

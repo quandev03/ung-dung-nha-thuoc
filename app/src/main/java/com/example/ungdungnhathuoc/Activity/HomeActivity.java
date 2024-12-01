@@ -6,6 +6,8 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.FrameLayout;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -21,6 +23,7 @@ import com.example.ungdungnhathuoc.LoginActivity;
 import com.example.ungdungnhathuoc.Model.Thuoc;
 import com.example.ungdungnhathuoc.Profile;
 import com.example.ungdungnhathuoc.R;
+import com.example.ungdungnhathuoc.Xemchitiet;
 import com.google.android.material.navigation.NavigationView;
 
 import java.util.ArrayList;
@@ -32,7 +35,6 @@ public class HomeActivity extends BaseActivity {
     private ArrayList<Thuoc> listthuoc;
     private DrawerLayout drawerLayout;
     private NavigationView navigationView;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -70,6 +72,19 @@ public class HomeActivity extends BaseActivity {
         // Thiết lập adapter cho ListView
         adaptertrangchunm = new Adaptertrangchunm(this, R.layout.thuoc, listthuoc);
         lvmh.setAdapter(adaptertrangchunm);
+        lvmh.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                Intent xemchitietmh = new Intent(HomeActivity.this, Xemchitiet.class);
+                Bundle data = new Bundle();
+                Thuoc thuoc=adaptertrangchunm.getListhuoc().get(i);
+                data.putSerializable("thuoc_value", thuoc);
+                xemchitietmh.putExtras(data);
+                startActivity(xemchitietmh);
+
+                Toast.makeText(HomeActivity.this, listthuoc.get(i).getTenthuoc(), Toast.LENGTH_SHORT).show();
+            }
+        });
 
         // Xử lý sự kiện mở menu
         findViewById(R.id.drawerLayout).setOnClickListener(v -> drawerLayout.openDrawer(navigationView));

@@ -1,0 +1,92 @@
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Xemchitiet">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <!-- Sử dụng LinearLayout ngang cho nút back và tiêu đề -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:background="#FFDCE3"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <ImageView
+                android:id="@+id/imgback"
+                android:src="@drawable/baseline_arrow_back_ios_24"
+                android:layout_width="50dp"
+                android:layout_height="70dp" />
+
+            <TextView
+                android:text="Chi tiết mặt hàng"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:layout_weight="1"
+                android:textSize="20sp"
+                android:textColor="#2196F3"
+                android:padding="5dp" />
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/imgthuoc"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:scaleType="centerCrop" />
+
+        <TextView
+            android:id="@+id/tvten"
+            android:text="Tên thuốc: "
+            android:textSize="10pt"
+            android:gravity="center_vertical"
+            android:padding="5dp"
+            android:textColor="#06A9AE"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/tvcongdung"
+            android:text="Công dụng: "
+            android:gravity="center_vertical"
+            android:textSize="10pt"
+            android:padding="5dp"
+            android:textColor="#06A9AE"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/tvthanhphan"
+            android:text="Loại: "
+            android:gravity="center_vertical"
+            android:textSize="10pt"
+            android:padding="5dp"
+            android:textColor="#06A9AE"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/tvgia"
+            android:text="Giá bán: "
+            android:gravity="center_vertical"
+            android:textSize="10pt"
+            android:padding="5dp"
+            android:textColor="#FF5722"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <Button
+            android:id="@+id/btndathang"
+            android:text="Đặt hàng"
+            android:backgroundTint="#E91E63"
+            android:layout_width="match_parent"
+            android:layout_height="35dp" />
+    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
