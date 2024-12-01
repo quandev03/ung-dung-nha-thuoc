@@ -145,9 +145,9 @@ public class SQLiteConnect extends SQLiteOpenHelper {
         return result != -1;
     }
 
-    public List<Thuoc> getAllThuoc() {
+    public ArrayList<Thuoc> getAllThuoc() {
         SQLiteDatabase myDB = this.getReadableDatabase();
-        List<Thuoc> thuocList = new ArrayList<>();
+        ArrayList<Thuoc> thuocList = new ArrayList<>();
 
         // Truy vấn tất cả dữ liệu từ bảng "thuoc"
         Cursor cursor = myDB.rawQuery("SELECT * FROM thuoc", null);

@@ -19,6 +19,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.example.ungdungnhathuoc.Adapter.Adaptertrangchunm;
 import com.example.ungdungnhathuoc.Authentication;
+import com.example.ungdungnhathuoc.Data.SQLiteConnect;
 import com.example.ungdungnhathuoc.LoginActivity;
 import com.example.ungdungnhathuoc.Model.Thuoc;
 import com.example.ungdungnhathuoc.Profile;
@@ -35,10 +36,12 @@ public class HomeActivity extends BaseActivity {
     private ArrayList<Thuoc> listthuoc;
     private DrawerLayout drawerLayout;
     private NavigationView navigationView;
+    private SQLiteConnect sqLiteConnect;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+        sqLiteConnect = new SQLiteConnect(this);
 
         // Check access token first, if not present redirect to login
         SharedPreferences sharedPref = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
@@ -92,12 +95,8 @@ public class HomeActivity extends BaseActivity {
 
     // Phương thức khởi tạo dữ liệu
     private void initializeData() {
-        listthuoc = new ArrayList<>();
-        String duongdananh = "android.resource://" + getPackageName() + "/";
+        listthuoc = sqLiteConnect.getAllThuoc();
 
-        listthuoc.add(new Thuoc("Vitamin", "Thuốc bổ", duongdananh + R.drawable.thuoc2, 30, 20, 250000, "a", 1));
-        listthuoc.add(new Thuoc("Vitamin tổng hợp", "Thuốc bổ", duongdananh + R.drawable.thuoc1, 50, 45, 500000,"a", 1));
-        listthuoc.add(new Thuoc("Vitamin C", "Thuốc bổ", duongdananh + R.drawable.thuoc3, 50, 45, 250000,"a", 1));
     }
 
     // Phương thức hiển thị Toast
