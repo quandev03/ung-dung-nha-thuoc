@@ -249,13 +249,12 @@ public class SQLiteConnect extends SQLiteOpenHelper {
             String email = cursor.getString(cursor.getColumnIndexOrThrow("email"));
             String phone = cursor.getString(cursor.getColumnIndexOrThrow("phone"));
             String role = cursor.getString(cursor.getColumnIndexOrThrow("role"));
-            String pass = "ACCC";
 
             // Đóng cursor
             cursor.close();
 
             // Trả về đối tượng User
-            return new User(userUsername,pass,fullname, address, email, phone);
+            return new User(userUsername,"pass",fullname, address, email, phone);
         }
         // Đóng cursor nếu null
         if (cursor != null) {

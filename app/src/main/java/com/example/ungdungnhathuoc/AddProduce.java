@@ -144,8 +144,9 @@ public class AddProduce extends BaseActivity {
                 Integer donGia = Integer.parseInt(gia);
 
                 sqLiteConnect.createNewThuoc(tenThuoc, congDung, soLuong, donGia, Path, loaiThuoc);
-                List<Thuoc> thuocList = sqLiteConnect.getAllThuoc();
-                Log.d("Data Test", "Data Test:" + thuocList.toString());
+                Toast.makeText(AddProduce.this, "Thêm thành công", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(AddProduce.this, MainActivity.class);
+                startActivity(intent);
             }
         });
     }

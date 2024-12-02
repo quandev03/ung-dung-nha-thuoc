@@ -1,6 +1,7 @@
 package com.example.ungdungnhathuoc;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -93,9 +94,22 @@ public class Xemchitiet extends AppCompatActivity {
         btnthem.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                quantity[0]++; // Tăng số lượng
-                txtsoluongsp.setText("Số lượng:"+quantity[0]);
-                updateTotalPrice(quantity[0], thuoc, txttongtien); // Cập nhật tổng tiền
+                if (quantity[0] < 25) { // Kiểm tra nếu số lượng nhỏ hơn tối đa (25)
+                    quantity[0]++; // Tăng số lượng
+                    txtsoluongsp.setText("Số lượng:" + quantity[0]);
+                    updateTotalPrice(quantity[0], thuoc, txttongtien); // Cập nhật tổng tiền
+                } else {
+                    // Hiển thị Dialog thông báo khi đạt số lượng tối đa
+                    AlertDialog.Builder dialogthoat = new AlertDialog.Builder(Xemchitiet.this);
+                    dialogthoat.setTitle("Đã đặt số lượng mua tối đa!");
+                    dialogthoat.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            // Xử lý khi nhấn "OK", có thể đóng dialog hoặc không làm gì
+                        }
+                    });
+                    dialogthoat.show(); // Hiển thị Dialog
+                }
             }
         });
 
@@ -137,7 +151,7 @@ public class Xemchitiet extends AppCompatActivity {
     // Hàm cập nhật tổng tiền
     private void updateTotalPrice(int quantity, Thuoc thuoc, TextView txttongtien) {
         // Cập nhật tổng tiền
-        txttongtien.setText("Tổng tiền: " + (quantity * thuoc.getDongia()) + " VND");
+//        txttongtien.setText("Tổng tiền: " + (quantity * thuoc.getDongia()) + " VND");
     }
 
 }

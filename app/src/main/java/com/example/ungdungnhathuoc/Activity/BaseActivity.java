@@ -15,6 +15,7 @@ import com.example.ungdungnhathuoc.LoginActivity;
 import com.example.ungdungnhathuoc.MainActivity;
 import com.example.ungdungnhathuoc.Profile;
 import com.example.ungdungnhathuoc.R;
+
 import com.google.android.material.navigation.NavigationView;
 public abstract class BaseActivity extends AppCompatActivity {
     protected DrawerLayout drawerLayout;
@@ -91,7 +92,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         if (itemId == R.id.menu_profile) {
 //            showToast("Profile được chọn");
         } else if (itemId == R.id.menu_search) {
-            Intent intent = new Intent(this, HomeActivity.class);
+            Intent intent = new Intent(this, timkiem.class);
             startActivity(intent);
             overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
 //            showToast("Giỏ hàng được chọn");
