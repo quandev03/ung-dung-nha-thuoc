@@ -2,97 +2,132 @@ package com.example.ungdungnhathuoc.Adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.ungdungnhathuoc.Activity.ThongKeDonHangActivity;
 import com.example.ungdungnhathuoc.Activity.ThongTinDonHangNBActivity;
+import com.example.ungdungnhathuoc.Data.SQLiteConnect;
 import com.example.ungdungnhathuoc.Model.Order;
 import com.example.ungdungnhathuoc.R;
 
 import java.util.List;
 
 public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHolder> {
-    private List<Order> orderList;
-    private Context context;
 
-    // Constructor nhận danh sách đơn hàng và context
-    public OrderAdapter(List<Order> orderList, Context context) {
-        this.orderList = orderList;
+    private Context context;
+    private List<Order> orderList;
+    private SQLiteConnect sqLiteConnect;
+
+    public OrderAdapter(Context context, List<Order> orderList, SQLiteConnect sqLiteConnect) {
         this.context = context;
+        this.orderList = orderList;
+        this.sqLiteConnect = sqLiteConnect;
     }
 
-    @NonNull
     @Override
-    public OrderViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_order, parent, false);
+    public OrderViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(context).inflate(R.layout.item_order, parent, false);
         return new OrderViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull OrderViewHolder holder, int position) {
+    public void onBindViewHolder(OrderViewHolder holder, int position) {
         Order order = orderList.get(position);
 
-        // Hiển thị thông tin tóm tắt
-        holder.tvOrderId.setText("Mã đơn: " + order.getOrderId());
-        holder.tvStatus.setText("Trạng thái: " + order.getStatus());
-        holder.tvTotalPrice.setText("Tổng tiền: " + order.getTotalPrice());
-        holder.tvOrderDate.setText("Ngày mua: " + order.getOrderDate());
-        holder.tvItems.setText("Sản phẩm: " + order.getItems());
+        // Update order details
+        updateOrderDetails(holder, order);
 
-        // Hiển thị ảnh sản phẩm (nếu bạn sử dụng ID tài nguyên)
-//        holder.imgSanPham.setImageResource(order.getImgSanPham());
-// Fixed this line
+        // Set button listeners
+        holder.btnConfirm.setOnClickListener(v -> handleOrderConfirm(order, position));
+        holder.btnCancel.setOnClickListener(v -> handleOrderCancel(order, position));
+        holder.btnViewDetails.setOnClickListener(v -> handleViewOrderDetails(order.getOrderId()));
+    }
 
-        // Ẩn các thông tin không cần thiết trong trang thống kê
-        holder.tvCustomerName.setVisibility(View.GONE);
-        holder.tvContactInfo.setVisibility(View.GONE);
-        holder.tvAddress.setVisibility(View.GONE);
+    private void updateOrderDetails(OrderViewHolder holder, Order order) {
+        // Update Order ID, Status, Total Price, Order Date
+        holder.tvOrderId.setText(String.valueOf(order.getOrderId()));
+        holder.tvStatus.setText(order.getStatus() != null && !order.getStatus().isEmpty() ? order.getStatus() : "Không xác định");
+        holder.tvTotalPrice.setText(order.getTongTien() != 0.0 ? String.format("%,.2f", order.getTongTien()) : "Chưa có giá");
+        holder.tvOrderDate.setText(order.getOrderDate() != null && !order.getOrderDate().isEmpty() ? order.getOrderDate() : "Ngày không xác định");
 
-        // Tạo listener cho việc chuyển qua trang chi tiết đơn hàng
-        View.OnClickListener orderDetailClickListener = v -> {
-            Intent intent = new Intent(context, ThongTinDonHangNBActivity.class);
-            intent.putExtra("order_id", order.getOrderId());
-            intent.putExtra("order_status", order.getStatus());
-            intent.putExtra("order_price", order.getTotalPrice());
-            intent.putExtra("order_date", order.getOrderDate());
-            intent.putExtra("order_customer", order.getCustomerName());
-            intent.putExtra("order_phone", order.getCustomerPhone());
-            intent.putExtra("order_address", order.getAddress());
-            intent.putExtra("order_items", order.getItems());
-//            intent.putExtra("order_ImgSanPham", order.getImgSanPham(),);  // Fixed this line
+        // Update customer info
+        if (order.getUser() != null) {
+            holder.tvCustomerName.setText(order.getUser().getFullname());
+            holder.tvContactInfo.setText(order.getUser().getPhone());
+            holder.tvAddress.setText(order.getUser().getAddress());
+        } else {
+            holder.tvCustomerName.setText("Thông tin khách hàng không có");
+            holder.tvContactInfo.setText("-");
+            holder.tvAddress.setText("-");
+        }
 
-            context.startActivity(intent);
-        };
+        // Update product info
+        if (order.getThuoc() != null) {
+            holder.tvItems.setText(order.getThuoc().getTenthuoc());
+            loadImage(holder.imgSanPham, order.getThuoc().getHinhanh());
+        } else {
+            holder.tvItems.setText("Không có sản phẩm");
+            loadImage(holder.imgSanPham, null);
+        }
+    }
 
-        // Áp dụng listener cho item view và nút "Xem chi tiết"
-        holder.itemView.setOnClickListener(orderDetailClickListener);
-        holder.btnViewDetails.setOnClickListener(orderDetailClickListener);
+    private void loadImage(ImageView imageView, String imageUrl) {
+        Glide.with(context)
+                .load(imageUrl != null && !imageUrl.isEmpty() ? imageUrl : R.drawable.app2)  // If image URL is null or empty, use default
+                .placeholder(R.drawable.app2)  // Placeholder when the image is loading
+                .override(300, 300)  // Image size
+                .into(imageView);  // Set image to ImageView
+    }
 
-        // Sự kiện nhấn nút xác nhận đơn hàng
-        holder.btnConfirm.setOnClickListener(v -> {
+    private void handleOrderConfirm(Order order, int position) {
+        SQLiteDatabase db = sqLiteConnect.getWritableDatabase();
+        boolean result = sqLiteConnect.confirmOrder(order.getOrderId());
+
+        if (result) {
             order.setStatus("Đã xác nhận");
-            notifyItemChanged(position); // Cập nhật lại trạng thái của item
-            if (context instanceof ThongKeDonHangActivity) {
-                ((ThongKeDonHangActivity) context).updateStatistics();
-            }
-        });
+            Toast.makeText(context, "Đơn hàng đã được xác nhận!", Toast.LENGTH_SHORT).show();
+            notifyItemChanged(position);
+            reloadStatisticsIfNeeded();
+        } else {
+            Toast.makeText(context, "Không thể xác nhận đơn hàng!", Toast.LENGTH_SHORT).show();
+        }
+    }
 
-        // Sự kiện nhấn nút hủy đơn hàng
-        holder.btnCancel.setOnClickListener(v -> {
+    private void handleOrderCancel(Order order, int position) {
+        SQLiteDatabase db = sqLiteConnect.getWritableDatabase();
+        boolean result = sqLiteConnect.cancelOrder(order.getOrderId());
+
+        if (result) {
             order.setStatus("Đã hủy");
-            notifyItemChanged(position); // Cập nhật lại trạng thái của item
-            if (context instanceof ThongKeDonHangActivity) {
-                ((ThongKeDonHangActivity) context).updateStatistics();
-            }
-        });
+            Toast.makeText(context, "Đơn hàng đã được hủy!", Toast.LENGTH_SHORT).show();
+            notifyItemChanged(position);
+            reloadStatisticsIfNeeded();
+        } else {
+            Toast.makeText(context, "Không thể hủy đơn hàng!", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void reloadStatisticsIfNeeded() {
+        if (context instanceof ThongKeDonHangActivity) {
+            ((ThongKeDonHangActivity) context).loadStatistics();
+        }
+    }
+
+    private void handleViewOrderDetails(int orderId) {
+        Intent intent = new Intent(context, ThongTinDonHangNBActivity.class);
+        intent.putExtra("order_id", orderId);
+        context.startActivity(intent);
     }
 
     @Override
@@ -100,12 +135,13 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHol
         return orderList.size();
     }
 
-    public static class OrderViewHolder extends RecyclerView.ViewHolder {
-        TextView tvOrderId, tvStatus, tvTotalPrice, tvOrderDate, tvCustomerName, tvContactInfo, tvAddress, tvItems;
-        Button btnConfirm, btnCancel, btnViewDetails;
-        ImageView imgSanPham;
+    public class OrderViewHolder extends RecyclerView.ViewHolder {
 
-        public OrderViewHolder(@NonNull View itemView) {
+        TextView tvOrderId, tvStatus, tvTotalPrice, tvOrderDate, tvCustomerName, tvContactInfo, tvAddress, tvItems;
+        ImageView imgSanPham;
+        Button btnCancel, btnConfirm, btnViewDetails;
+
+        public OrderViewHolder(View itemView) {
             super(itemView);
             tvOrderId = itemView.findViewById(R.id.tvOrderId);
             tvStatus = itemView.findViewById(R.id.tvStatus);
@@ -116,10 +152,8 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHol
             tvAddress = itemView.findViewById(R.id.tvAddress);
             tvItems = itemView.findViewById(R.id.tvItems);
             imgSanPham = itemView.findViewById(R.id.imgSanPham);
-
-            // Nút xác nhận, hủy và xem chi tiết
-            btnConfirm = itemView.findViewById(R.id.btnConfirm);
             btnCancel = itemView.findViewById(R.id.btnCancel);
+            btnConfirm = itemView.findViewById(R.id.btnConfirm);
             btnViewDetails = itemView.findViewById(R.id.btnViewDetails);
         }
     }

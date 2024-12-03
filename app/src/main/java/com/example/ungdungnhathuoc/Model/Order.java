@@ -1,151 +1,87 @@
 package com.example.ungdungnhathuoc.Model;
 
-import android.widget.ImageView;
-
 public class Order {
-    private int orderId;
-    private String status;
-    private double totalPrice;  // Change to double for numeric operations
-    private String orderDate;
-    private String customerName;
-    private String contactInfo;
-    private String address;
-    private String customerPhone;
-    private String items;
-    private ImageView imgSanPham;
+    private int orderId;  // Mã đơn hàng
+    private String status;  // Trạng thái đơn hàng (chẳng hạn: Đã giao, Đang xử lý)
+    private double tongTien;
+    private String orderDate;  // Ngày đặt hàng
+    private User user;  // Người mua (liên kết với đối tượng User)
+    private Thuoc thuoc;  // Sản phẩm (liên kết với đối tượng Thuoc)
 
+    public Order() {
 
-    // Constructor
+    }
 
-
-    public Order(int orderId, String status, double totalPrice, String orderDate, String customerName, String contactInfo, String address, String customerPhone, String items) {
+    public Order(int orderId, String statusString, double totalAmount, String orderDate, User user, Thuoc thuoc) {
         this.orderId = orderId;
+        this.tongTien = tongTien;
         this.status = status;
-        this.totalPrice = totalPrice;
         this.orderDate = orderDate;
-        this.customerName = customerName;
-        this.contactInfo = contactInfo;
-        this.address = address;
-        this.customerPhone = customerPhone;
-        this.items = items;
+        this.user = user;
+        this.thuoc = thuoc;
     }
 
-    public Order(ImageView imgSanPham) {
-        this.imgSanPham = imgSanPham;
-    }
-
-    // Getters
     public int getOrderId() {
         return orderId;
+    }
+
+    public void setOrderId(int orderId) {
+        this.orderId = orderId;
+    }
+
+    public double getTongTien() {
+        return tongTien;
+    }
+
+    public void setTongTien(double tongTien) {
+        this.tongTien = tongTien;
     }
 
     public String getStatus() {
         return status;
     }
 
-    public double getTotalPrice() {
-        return totalPrice;
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     public String getOrderDate() {
         return orderDate;
     }
 
-    public String getCustomerName() {
-        return customerName;
-    }
-
-    public String getContactInfo() {
-        return contactInfo;
-    }
-
-    public String getAddress() {
-        return address;
-    }
-
-    public String getItems() {
-        return items;
-    }
-
-    // Setters
-    public void setOrderId(int orderId) {
-        this.orderId = orderId;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    public void setTotalPrice(double totalPrice) {
-        this.totalPrice = totalPrice;
-    }
-
     public void setOrderDate(String orderDate) {
         this.orderDate = orderDate;
     }
 
-    public void setCustomerName(String customerName) {
-        this.customerName = customerName;
+    public User getUser() {
+        return user;
     }
 
-    public void setContactInfo(String contactInfo) {
-        this.contactInfo = contactInfo;
+    public void setUser(User user) {
+        this.user = user;
     }
 
-    public void setAddress(String address) {
-        this.address = address;
+    public Thuoc getThuoc() {
+        return thuoc;
     }
 
-    public String getCustomerPhone() {
-        return customerPhone;
+    public void setThuoc(Thuoc thuoc) {
+        this.thuoc = thuoc;
     }
-
-    public void setCustomerPhone(String customerPhone) {
-        customerPhone = customerPhone;
-    }
-
-    public void setItems(String items) {
-        this.items = items;
-    }
-
-    // Override toString() for easier debugging
-
-    public ImageView getImgSanPham() {
-        return imgSanPham;
-    }
-
-    public void setImgSanPham(ImageView imgSanPham) {
-        this.imgSanPham = imgSanPham;
-    }
-
-//    @Override
-//    public String toString() {
-//        return "Order{" +
-//                "orderId='" + orderId + '\'' +
-//                ", status='" + status + '\'' +
-//                ", totalPrice=" + totalPrice +
-//                ", orderDate='" + orderDate + '\'' +
-//                ", customerName='" + customerName + '\'' +
-//                ", contactInfo='" + contactInfo + '\'' +
-//                ", address='" + address + '\'' +
-//                ", CustomerPhone='" + customerPhone + '\'' +
-//                ", items='" + items + '\'' +
-//                '}';
-//    }
 
     @Override
     public String toString() {
         return "Order{" +
-                "orderId='" + orderId + '\'' +
+                "orderId=" + orderId +
                 ", status='" + status + '\'' +
-                ", totalPrice=" + totalPrice +
+                ", tongTien=" + tongTien +
                 ", orderDate='" + orderDate + '\'' +
-                ", customerName='" + customerName + '\'' +
-                ", contactInfo='" + contactInfo + '\'' +
-                ", address='" + address + '\'' +
-                ", customerPhone='" + customerPhone + '\'' +
-                ", items='" + items + '\'' +
-                ", imgSanPham=" + imgSanPham +
+                ", user=" + user +
+                ", thuoc=" + thuoc +
                 '}';
     }
 }
+
+
+    // Constructor
+

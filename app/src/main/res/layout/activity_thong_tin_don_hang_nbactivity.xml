@@ -17,30 +17,25 @@
             android:layout_height="wrap_content"
             android:background="?attr/colorPrimary"
             app:title="@string/thong_tin_don_hang" />
-<!--            app:navigationIcon="@drawable/arrow"-->
-<!--            app:navigationContentDescription="@string/navigate_up"-->
 
-
-
-        <!-- Content Frame that holds the details of the order -->
-        <FrameLayout
-            android:id="@+id/content_frame"
+        <!-- ScrollView for Order Details -->
+        <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="wrap_content"
+            android:padding="16dp"
+            android:background="@color/white">
 
-            <!-- LinearLayout for displaying order information -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="16dp">
+                android:orientation="vertical">
 
-                <!-- Order details -->
+                <!-- Order Details -->
                 <TextView
                     android:id="@+id/tvOrderId"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Mã đơn hàng: 001"
+                    android:text="Mã đơn hàng: 1"
                     android:textSize="18sp" />
 
                 <TextView
@@ -92,68 +87,11 @@
                     android:text="Ngày đặt: 2024-11-07"
                     android:textSize="16sp" />
 
-            </LinearLayout>
-        </FrameLayout>
-
-        <!-- ScrollView for Order Details -->
-        <ScrollView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="16dp"
-            android:background="@color/white">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-                <!-- Store Name -->
-                <TextView
-                    android:id="@+id/detailStoreName"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Tên cửa hàng"
-                    android:textSize="18sp"
-                    android:textColor="@color/black"
-                    android:textStyle="bold"
-                    android:layout_marginBottom="12dp" />
-
-                <!-- Total Price -->
-                <TextView
-                    android:id="@+id/detailTotalPrice"
+                <ImageView
+                    android:id="@+id/imgSanPham"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Tổng số tiền: 249.000đ"
-                    android:textSize="16sp"
-                    android:textColor="@color/red"
-                    android:gravity="center"
-                    android:textStyle="bold" />
-
-                <!-- Confirm and Cancel Buttons -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center"
-                    android:layout_marginTop="16dp">
-
-                    <Button
-                        android:id="@+id/btnConfirm"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Xác nhận"
-                        android:backgroundTint="@color/green"
-                        android:textColor="@android:color/white"
-                        android:layout_marginEnd="8dp" />
-
-                    <Button
-                        android:id="@+id/btnCancel"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Hủy"
-                        android:backgroundTint="@color/red"
-                        android:textColor="@android:color/white" />
-                </LinearLayout>
+                    android:layout_height="500dp"
+                    android:src="@drawable/app2"/>
 
             </LinearLayout>
         </ScrollView>
@@ -167,5 +105,4 @@
         android:layout_height="match_parent"
         android:layout_gravity="start"
         app:menu="@menu/drawer_menu" />
-
 </androidx.drawerlayout.widget.DrawerLayout>

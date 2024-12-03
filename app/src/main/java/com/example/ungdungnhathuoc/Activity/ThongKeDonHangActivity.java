@@ -1,132 +1,135 @@
 package com.example.ungdungnhathuoc.Activity;
 
-import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.widget.TextView;
 
 import androidx.appcompat.app.ActionBarDrawerToggle;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.example.ungdungnhathuoc.Adapter.OrderAdapter;
+import com.example.ungdungnhathuoc.Data.SQLiteConnect;
 import com.example.ungdungnhathuoc.Model.Order;
 import com.example.ungdungnhathuoc.R;
 import com.google.android.material.navigation.NavigationView;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class ThongKeDonHangActivity extends BaseActivity {
 
+    private TextView tvTotalOrders, tvDeliveredOrders, tvCancelledOrders, tvUnconfirmedOrders, tvConfirmedOrders, tvTotalAmountDelivered;
     private RecyclerView recyclerViewOrders;
-    private TextView tvTotalOrders, tvDeliveredOrders, tvCancelledOrders, tvUnconfirmedOrders, tvTongTienDaGiao,tvconfirmedOrders;
+    private OrderAdapter adapter;
+    private List<Order> orderList;
     private DrawerLayout drawerLayout;
     private NavigationView navigationView;
-    private List<Order> orders;  // Thêm biến lưu danh sách đơn hàng
+    private SQLiteConnect sqLiteConnect;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_thong_ke_don_hang_nbactivity);
+
+        initializeUI();
+        sqLiteConnect = new SQLiteConnect(this);
+
+        // Load dữ liệu thống kê và danh sách đơn hàng
+        loadStatistics();
+        loadOrders();
+    }
+
+    private void initializeUI() {
+        // Khởi tạo giao diện điều hướng
         drawerLayout = findViewById(R.id.drawer_layout);
         navigationView = findViewById(R.id.nav_view);
-
-        // Set up Toolbar
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        // Set up DrawerToggle
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
 
-        // Xử lý sự kiện chọn item từ NavigationView
         navigationView.setNavigationItemSelectedListener(item -> {
             handleNavigation(item.getItemId());
             drawerLayout.closeDrawers();
             return true;
         });
 
-        // Khởi tạo các View
-        recyclerViewOrders = findViewById(R.id.recyclerViewOrders);
+        // Khởi tạo TextViews
         tvTotalOrders = findViewById(R.id.tvTotalOrders);
         tvDeliveredOrders = findViewById(R.id.tvDeliveredOrders);
         tvCancelledOrders = findViewById(R.id.tvCancelledOrders);
         tvUnconfirmedOrders = findViewById(R.id.tvUnconfirmedOrders);
-        tvTongTienDaGiao = findViewById(R.id.tvTongTienDaGiao);
-        tvconfirmedOrders = findViewById(R.id.tvconfirmedOrders);
+        tvConfirmedOrders = findViewById(R.id.tvConfirmedOrders);
+        tvTotalAmountDelivered = findViewById(R.id.tvTotalAmountDelivered);
 
-        // Set up RecyclerView
+        // Khởi tạo RecyclerView
+        recyclerViewOrders = findViewById(R.id.recyclerViewOrders);
         recyclerViewOrders.setLayoutManager(new LinearLayoutManager(this));
+    }
 
-        // Lấy danh sách đơn hàng mẫu
-        orders = getSampleOrders();
+    public void loadStatistics() {
+        SQLiteDatabase db = sqLiteConnect.getReadableDatabase();
 
-        // Kiểm tra nếu không có đơn hàng
-        if (orders != null && !orders.isEmpty()) {
-            OrderAdapter adapter = new OrderAdapter(orders, this);
+        // Đặt dữ liệu thống kê vào TextViews
+        setTextForTextView(db, "SELECT COUNT(*) FROM orderProduce", tvTotalOrders, "Tổng số đơn hàng: ");
+        setTextForTextView(db, "SELECT COUNT(*) FROM orderProduce WHERE status = 3", tvDeliveredOrders, "Đơn đã giao: ");
+        setTextForTextView(db, "SELECT COUNT(*) FROM orderProduce WHERE status = 1", tvConfirmedOrders, "Đơn đã xác nhận: ");
+        setTextForTextView(db, "SELECT COUNT(*) FROM orderProduce WHERE status = 2", tvCancelledOrders, "Đơn đã hủy: ");
+        setTextForTextView(db, "SELECT COUNT(*) FROM orderProduce WHERE status = 0", tvUnconfirmedOrders, "Đơn chờ xác nhận: ");
+        setAmountForTextView(db, "SELECT SUM(total) FROM orderProduce WHERE status = 1", tvTotalAmountDelivered, "Tổng tiền đã giao: ");
+    }
+
+    private void setTextForTextView(SQLiteDatabase db, String query, TextView textView, String label) {
+        Cursor cursor = null;
+        try {
+            cursor = db.rawQuery(query, null);
+            if (cursor != null && cursor.moveToFirst()) {
+                int result = cursor.getInt(0);
+                textView.setText(label + result);
+            } else {
+                textView.setText(label + "0");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            textView.setText(label + "0");
+        } finally {
+            if (cursor != null) cursor.close();
+        }
+    }
+
+    private void setAmountForTextView(SQLiteDatabase db, String query, TextView textView, String label) {
+        Cursor cursor = null;
+        try {
+            cursor = db.rawQuery(query, null);
+            if (cursor != null && cursor.moveToFirst()) {
+                double result = cursor.getDouble(0);
+                textView.setText(label + result);
+            } else {
+                textView.setText(label + "0.0");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            textView.setText(label + "0.0");
+        } finally {
+            if (cursor != null) cursor.close();
+        }
+    }
+
+    private void loadOrders() {
+        orderList = sqLiteConnect.getAllOrderDetails();
+
+        if (orderList != null && !orderList.isEmpty()) {
+            adapter = new OrderAdapter(this, orderList, sqLiteConnect);
             recyclerViewOrders.setAdapter(adapter);
-            updateStatistics();  // Cập nhật thống kê
-        } else {
-            // Nếu không có đơn hàng
-            tvTotalOrders.setText("Không có đơn hàng");
-            tvDeliveredOrders.setText("Không có đơn hàng");
-            tvCancelledOrders.setText("Không có đơn hàng");
-            tvUnconfirmedOrders.setText("Không có đơn hàng");
-            tvTongTienDaGiao.setText("0 Đồng");
         }
     }
 
-    private List<Order> getSampleOrders() {
-        // Dữ liệu mẫu cho việc thử nghiệm
-        List<Order> orders = new ArrayList<>();
-        orders.add(new Order(1, "Đã giao", 500.0, "2024-11-07", "Trần Thị B", "Hiệu thuốc Long Châu", "Hồ Chí Minh", "0987654321", "Sản phẩm C"));
-        orders.add(new Order(2, "Chưa xác nhận", 750.0, "2024-11-06", "Lê Văn C", "Hiệu thuốc Long Châu", "Đà Nẵng", "0912345678", "Sản phẩm D"));
-        orders.add(new Order(3, "Chưa xác nhận", 750.0, "2024-11-06", "Lê Văn C", "Hiệu thuốc Long Châu", "Đà Nẵng", "0912345678", "Sản phẩm D"));
-        return orders;
-    }
-
-    public void updateStatistics() {
-        // Cập nhật thống kê sau khi thay đổi trạng thái đơn hàng
-        int totalOrders = 0;
-        int deliveredOrders = 0;
-        int cancelledOrders = 0;
-        int unconfirmedOrders = 0;
-        int    confirmedOrders = 0;
-        double totalMoneyOrders = 0.0;
-
-        // Lặp qua danh sách đơn hàng để tính lại thống kê
-        for (Order order : orders) {
-            totalOrders++;
-            if ("Đã giao".equals(order.getStatus())) {
-                deliveredOrders++;
-                totalMoneyOrders += order.getTotalPrice();
-            }
-            if ("Đã xác nhận".equals(order.getStatus())) {
-                confirmedOrders++;
-            }
-            if ("Đã hủy".equals(order.getStatus())) cancelledOrders++;
-            if ("Chưa xác nhận".equals(order.getStatus())) unconfirmedOrders++;
-        }
-
-        // Cập nhật thông tin thống kê lên giao diện
-        tvTotalOrders.setText("Tổng số đơn: " + totalOrders);
-        tvDeliveredOrders.setText("Đơn đã giao: " + deliveredOrders);
-        tvCancelledOrders.setText("Đơn đã hủy: " + cancelledOrders);
-        tvUnconfirmedOrders.setText("Đơn chưa xác nhận: " + unconfirmedOrders);
-        tvconfirmedOrders.setText("Đơn đã xác nhận: " + confirmedOrders);
-        tvTongTienDaGiao.setText("Tổng tiền đơn hàng đã giao thành công: " + totalMoneyOrders + " Đồng");
-    }
-
-    // Thêm phương thức getOrders()
-    public List<Order> getOrders() {
-        return orders;
-    }
-
-    @Override
     protected void handleNavigation(int itemId) {
         super.handleNavigation(itemId);
     }
