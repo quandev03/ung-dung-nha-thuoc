@@ -5,6 +5,7 @@ import static java.security.AccessController.getContext;
 import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -13,6 +14,8 @@ import android.util.Log;
 
 import androidx.annotation.Nullable;
 
+import com.example.ungdungnhathuoc.Activity.ThongTinDonHangNBActivity;
+import com.example.ungdungnhathuoc.Model.Order;
 import com.example.ungdungnhathuoc.Model.Thuoc;
 import com.example.ungdungnhathuoc.Model.User;
 
@@ -87,11 +90,40 @@ public class SQLiteConnect extends SQLiteOpenHelper {
                     COLUMN_ORDER_STATUS + " INTEGER DEFAULT 0," +
                     COLUMN_ORDER_TOTAL + " FLOAT)";
 
+    public static final String TABLE_STATISTICS_NAME = "statistics";
+    public static final String COLUMN_STATISTICS_ID = "id";
+    public static final String COLUMN_STATISTICS_TOTAL_ORDERS = "totalOrders";
+    public static final String COLUMN_STATISTICS_DELIVERED_ORDERS = "deliveredOrders";
+    public static final String COLUMN_STATISTICS_CANCELLED_ORDERS = "cancelledOrders";
+    public static final String COLUMN_STATISTICS_TOTAL_SOLD = "totalSold";
+    public static final String COLUMN_STATISTICS_TOTAL_REVENUE = "totalRevenue";
+    public static final String COLUMN_STATISTICS_UPDATE_AT = "updateAt";
+
+    private static final String CREATE_TABLE_STATISTICS =
+            "CREATE TABLE IF NOT EXISTS " + TABLE_STATISTICS_NAME + " (" +
+                    COLUMN_STATISTICS_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                    COLUMN_STATISTICS_TOTAL_ORDERS + " INTEGER DEFAULT 0, " +
+                    COLUMN_STATISTICS_DELIVERED_ORDERS + " INTEGER DEFAULT 0, " +
+                    COLUMN_STATISTICS_CANCELLED_ORDERS + " INTEGER DEFAULT 0, " +
+                    COLUMN_STATISTICS_TOTAL_SOLD + " INTEGER DEFAULT 0, " +
+                    COLUMN_STATISTICS_TOTAL_REVENUE + " REAL DEFAULT 0, " +
+                    COLUMN_STATISTICS_UPDATE_AT + " DATETIME DEFAULT CURRENT_TIMESTAMP" +
+                    ");";
+    private static final String UPDATE_STATISTICS_QUERY =
+            "UPDATE " + TABLE_STATISTICS_NAME + " SET " +
+                    COLUMN_STATISTICS_TOTAL_ORDERS + " = (SELECT COUNT(*) FROM " + TABLE_ORDER_NAME + "), " +
+                    COLUMN_STATISTICS_DELIVERED_ORDERS + " = (SELECT COUNT(*) FROM " + TABLE_ORDER_NAME + " WHERE " + COLUMN_ORDER_STATUS + " = 1), " +
+                    COLUMN_STATISTICS_CANCELLED_ORDERS + " = (SELECT COUNT(*) FROM " + TABLE_ORDER_NAME + " WHERE " + COLUMN_ORDER_STATUS + " = 2), " +
+                    COLUMN_STATISTICS_TOTAL_SOLD + " = (SELECT SUM(" + COLUMN_ORDER_SL + ") FROM " + TABLE_ORDER_NAME + "), " +
+                    COLUMN_STATISTICS_TOTAL_REVENUE + " = (SELECT SUM(" + COLUMN_ORDER_TOTAL + ") FROM " + TABLE_ORDER_NAME + "), " +
+                    COLUMN_STATISTICS_UPDATE_AT + " = CURRENT_TIMESTAMP " +
+                    "WHERE " + COLUMN_STATISTICS_ID + " = 1";
 
     public SQLiteConnect(@Nullable Context context) {
         super(context, DBName, null, 1);
         this.context = context; // Lưu context vào biến
     }
+
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
         sqLiteDatabase.execSQL(CREATE_TABLE_USERS);
@@ -425,43 +457,41 @@ public class SQLiteConnect extends SQLiteOpenHelper {
 
         return false;  // Return false if no matching product was found
     }
-
     public boolean confirmOrder(int orderId) {
         SQLiteDatabase myDB = this.getWritableDatabase();
         Cursor cursor = null;
 
         try {
-            // Query to check the current status of the order
             cursor = myDB.rawQuery("SELECT status FROM orderProduce WHERE id = ?", new String[]{String.valueOf(orderId)});
 
             if (cursor != null && cursor.moveToFirst()) {
                 int statusIndex = cursor.getColumnIndex("status");
                 int status = cursor.getInt(statusIndex);
 
-                // Check if the current status is 0
+                // Check if the current status is 0 (unconfirmed)
                 if (status == 0) {
                     ContentValues contentValues = new ContentValues();
                     contentValues.put("status", 1); // Update status to 1 (confirmed)
 
-                    // Update the order status in the database
                     int rowsUpdated = myDB.update("orderProduce", contentValues, "id = ?", new String[]{String.valueOf(orderId)});
 
-                    // Check if the update was successful
-                    return rowsUpdated > 0;
+                    if (rowsUpdated > 0) {
+                        return true; // Successfully confirmed
+                    } else {
+                        Log.e("Database", "Order update failed, rows updated: " + rowsUpdated);
+                        return false; // Update failed
+                    }
                 } else {
+                    Log.e("Database", "Order cannot be confirmed, current status: " + status);
                     return false; // Status is not 0, order cannot be confirmed
                 }
             }
-
             return false; // Order not found
         } catch (Exception e) {
-            // Handle any exceptions (e.g., log the error)
-            e.printStackTrace();
+            Log.e("DatabaseError", "Error confirming order", e);
             return false;
         } finally {
-            if (cursor != null) {
-                cursor.close(); // Always close the cursor when done
-            }
+            if (cursor != null) cursor.close();
         }
     }
 
@@ -470,48 +500,52 @@ public class SQLiteConnect extends SQLiteOpenHelper {
         Cursor cursor = null;
 
         try {
-            // Query to get the current status of the order
             cursor = myDB.rawQuery("SELECT status, so_mua, id_produce FROM orderProduce WHERE id = ?", new String[]{String.valueOf(orderId)});
-
-
 
             if (cursor != null && cursor.moveToFirst()) {
                 int statusIndex = cursor.getColumnIndex("status");
                 int status = cursor.getInt(statusIndex);
-                int idProduce = cursor.getColumnIndex("id_produce");
-                int idThuoc = cursor.getInt(idProduce);
-                Cursor produce = myDB.rawQuery("SELECT * FROM thuoc WHERE id = ?", new String[]{String.valueOf(idThuoc)});
-                int soLuong = produce.getColumnIndex("so_mua");
-                int tonKho = produce.getColumnIndex("tonKho");
-                int tonKhoValue = produce.getInt(tonKho);
-                int currentTonKho = tonKhoValue + soLuong;
-                myDB.execSQL("UPDATE thuoc SET tonKho = ? WHERE id = ?", new Object[]{currentTonKho, idThuoc});
 
-                // Check if the status is 0
+                int soMuaIndex = cursor.getColumnIndex("so_mua");
+                int soLuong = cursor.getInt(soMuaIndex);
+
+                int idProduceIndex = cursor.getColumnIndex("id_produce");
+                int idThuoc = cursor.getInt(idProduceIndex);
+
+                Cursor produce = myDB.rawQuery("SELECT tonKho FROM thuoc WHERE id = ?", new String[]{String.valueOf(idThuoc)});
+                if (produce != null && produce.moveToFirst()) {
+                    int tonKhoIndex = produce.getColumnIndex("tonKho");
+                    int tonKhoValue = produce.getInt(tonKhoIndex);
+
+                    int currentTonKho = tonKhoValue + soLuong;
+                    myDB.execSQL("UPDATE thuoc SET tonKho = ? WHERE id = ?", new Object[]{currentTonKho, idThuoc});
+
+                    produce.close(); // Close the cursor after use
+                }
+
                 if (status == 0) {
                     ContentValues contentValues = new ContentValues();
                     contentValues.put("status", 2); // Update status to 2 (canceled)
 
-                    // Update the order status
                     int rowsUpdated = myDB.update("orderProduce", contentValues, "id = ?", new String[]{String.valueOf(orderId)});
 
-
-                    // Check if the update was successful
-                    return rowsUpdated > 0;
+                    if (rowsUpdated > 0) {
+                        return true; // Successfully canceled
+                    } else {
+                        Log.e("Database", "Order update failed, rows updated: " + rowsUpdated);
+                        return false; // Update failed
+                    }
                 } else {
+                    Log.e("Database", "Order cannot be canceled, current status: " + status);
                     return false; // Status is not 0, order cannot be canceled
                 }
             }
-
             return false; // Order not found
         } catch (Exception e) {
-            // Handle any exceptions (e.g., log the error)
-            e.printStackTrace();
+            Log.e("DatabaseError", "Error canceling order", e);
             return false;
         } finally {
-            if (cursor != null) {
-                cursor.close(); // Close the cursor to free resources
-            }
+            if (cursor != null) cursor.close();
         }
     }
 
@@ -564,22 +598,148 @@ public class SQLiteConnect extends SQLiteOpenHelper {
             }
         }
     }
+    public void updateStatistics() {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.execSQL(UPDATE_STATISTICS_QUERY);
+        db.close();
+    }
+    public ArrayList<Order> getAllOrderDetails() {
+        SQLiteDatabase myDB = this.getReadableDatabase();
+        ArrayList<Order> orderDetailsList = new ArrayList<>();
+
+        // Truy vấn kết hợp dữ liệu từ các bảng
+        String query = "SELECT o.id AS orderId, o.createAt AS orderDate, o.status, o.total AS totalAmount, " +
+                "o.so_mua AS quantity, t.tenThuoc AS productName, t.donGia AS donGiaThuoc, t.id AS productId, t.hinhAnh AS productImage, " +
+                "u.username AS customerName, u.phone AS customerPhone, u.fullname AS customerFullName "  +
+                "FROM orderProduce o " +
+                "INNER JOIN thuoc t ON o.id_produce = t.id " +
+                "INNER JOIN users u ON o.id_user = u.username";
+
+        Cursor cursor = myDB.rawQuery(query, null);
+
+        if (cursor.moveToFirst()) {
+            do {
+                try {
+                    // Lấy thông tin đơn hàng
+                    int orderId = cursor.getInt(cursor.getColumnIndexOrThrow("orderId"));
+                    String orderDate = cursor.getString(cursor.getColumnIndexOrThrow("orderDate"));
+                    int status = cursor.getInt(cursor.getColumnIndexOrThrow("status"));
+                    int quantity = cursor.getInt(cursor.getColumnIndexOrThrow("quantity"));
+
+                    // Lấy thông tin đơn giá thuốc
+                    double donGiaThuoc = cursor.getDouble(cursor.getColumnIndexOrThrow("donGiaThuoc"));
+
+                    // Tính tổng tiền (nếu chưa có giá trị)
+                    double totalAmount = cursor.getDouble(cursor.getColumnIndexOrThrow("totalAmount"));
+                    if (totalAmount == 0) {
+                        totalAmount = donGiaThuoc * quantity;
+                    }
+
+                    // Lấy thông tin thuốc
+                    int productId = cursor.getInt(cursor.getColumnIndexOrThrow("productId"));
+                    String productName = cursor.getString(cursor.getColumnIndexOrThrow("productName"));
+                    String productImage = cursor.getString(cursor.getColumnIndexOrThrow("productImage"));
+                    Thuoc thuoc = new Thuoc(productName, "", productImage, 0, quantity, (float) donGiaThuoc, "", productId);
+
+                    // Lấy thông tin người dùng
+                    String customerName = cursor.getString(cursor.getColumnIndexOrThrow("customerName"));
+                    String customerPhone = cursor.getString(cursor.getColumnIndexOrThrow("customerPhone"));
+                    String customerFullName = cursor.getString(cursor.getColumnIndexOrThrow("customerFullName"));
+                    User user = new User(customerName, "", customerFullName, "", "", customerPhone);
+
+                    // Chuyển đổi trạng thái từ số nguyên sang chuỗi
+                    String statusString = getStatusString(status);
+
+                    // Tạo đối tượng Order và thêm vào danh sách
+                    Order orderDetails = new Order(orderId, statusString, totalAmount, orderDate, user, thuoc);
+                    Log.d("ORDER", "Data: " + orderDetails.toString());
+                    orderDetailsList.add(orderDetails);
+
+                } catch (Exception e) {
+                    Log.e("getAllOrderDetails", "Error parsing order details", e);
+                }
+            } while (cursor.moveToNext());
+        }
+
+        // Đóng con trỏ
+        if (cursor != null && !cursor.isClosed()) {
+            cursor.close();
+        }
+
+        return orderDetailsList;
+    }
 
 
-//    // Hàm mã hóa mật khẩu
-//    public String hashPassword(String password) {
-//        try {
-//            MessageDigest digest = MessageDigest.getInstance("SHA-256");
-//            byte[] hashBytes = digest.digest(password.getBytes());
-//            StringBuilder hexString = new StringBuilder();
-//            for (byte b : hashBytes) {
-//                hexString.append(String.format("%02x", b));
-//            }
-//            return hexString.toString();
-//        } catch (NoSuchAlgorithmException e) {
-//            e.printStackTrace();
-//            return null;
-//        }
-//    }
+    // Chuyển đổi trạng thái đơn hàng từ số nguyên sang chuỗi
+    private String getStatusString(int status) {
+        switch (status) {
+            case 0:
+                return "Đang xử lý";
+            case 3:
+                return "Đã giao";
+            case 2:
+                return "Đã hủy";
+            case 1:
+                return "Đã xác nhận";
+            default:
+                return "Không xác định";
+        }
+    }
+
+
+    // Chuyển đổi trạng thái đơn hàng từ int sang String
+    public Order getOrderDetailsById(int orderId) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Order order = null;
+        Cursor cursor = null;
+
+        try {
+            // Truy vấn SQL đã sửa
+            String query = "SELECT o.id AS orderId, o.status, o.createAt AS orderDate, o.total AS totalPrice, " +
+                    "o.so_mua AS quantity, t.tenThuoc AS productName, t.hinhAnh AS productImage, " +
+                    "u.fullname AS customerName, u.phone, u.address, u.fullname AS customerFullName " +
+                    "FROM orderProduce o " +
+                    "LEFT JOIN thuoc t ON o.id_produce = t.id " +
+                    "LEFT JOIN users u ON o.id_user = u.username " +
+                    "WHERE o.id = ?";
+
+            cursor = db.rawQuery(query, new String[]{String.valueOf(orderId)});
+
+            // Kiểm tra nếu có dữ liệu
+            if (cursor != null && cursor.moveToFirst()) {
+                int orderID = cursor.getInt(cursor.getColumnIndexOrThrow("orderId"));
+                String status = cursor.getString(cursor.getColumnIndexOrThrow("status"));
+                String orderDate = cursor.getString(cursor.getColumnIndexOrThrow("orderDate"));
+                double totalPrice = cursor.getDouble(cursor.getColumnIndexOrThrow("totalPrice"));
+                int quantity = cursor.getInt(cursor.getColumnIndexOrThrow("quantity"));
+
+                // Tạo đối tượng sản phẩm
+                String productName = cursor.getString(cursor.getColumnIndexOrThrow("productName"));
+                String productImage = cursor.getString(cursor.getColumnIndexOrThrow("productImage"));
+                Thuoc thuoc = new Thuoc(productName, "", productImage, 0, quantity, (float) totalPrice, productImage, orderID);
+
+                // Tạo đối tượng khách hàng
+                String customerName = cursor.getString(cursor.getColumnIndexOrThrow("customerName"));
+                String customerPhone = cursor.getString(cursor.getColumnIndexOrThrow("phone"));
+                String address = cursor.getString(cursor.getColumnIndexOrThrow("address"));
+                String customerFullName = cursor.getString(cursor.getColumnIndexOrThrow("customerFullName"));
+                User user = new User(customerName, "", customerFullName, address, "", customerPhone);
+
+                // Tạo đối tượng Order
+                order = new Order(orderID, getStatusString(Integer.parseInt(status)), totalPrice, orderDate, user, thuoc);
+            }
+        } catch (Exception e) {
+            Log.e("ThongTinDonHangActivity", "Error fetching order details", e);
+        } finally {
+            if (cursor != null) cursor.close();
+        }
+
+        return order;
+    }
+
+
+
+
 }
+
 

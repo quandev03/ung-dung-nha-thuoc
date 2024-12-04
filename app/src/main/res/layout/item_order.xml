@@ -79,9 +79,9 @@
                 android:id="@+id/tvItems"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
                 android:text="Sản phẩm: Thuốc ABC"
-                android:textSize="14sp"
-                android:layout_marginBottom="16dp" />
+                android:textSize="14sp" />
         </LinearLayout>
 
         <!-- Ảnh sản phẩm -->
