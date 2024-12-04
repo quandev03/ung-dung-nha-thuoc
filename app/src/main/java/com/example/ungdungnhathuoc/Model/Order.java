@@ -14,8 +14,8 @@ public class Order {
 
     public Order(int orderId, String statusString, double totalAmount, String orderDate, User user, Thuoc thuoc) {
         this.orderId = orderId;
-        this.tongTien = tongTien;
-        this.status = status;
+        this.tongTien = totalAmount;
+        this.status = statusString;
         this.orderDate = orderDate;
         this.user = user;
         this.thuoc = thuoc;

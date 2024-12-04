@@ -610,8 +610,8 @@ public class SQLiteConnect extends SQLiteOpenHelper {
 
         // Truy vấn kết hợp dữ liệu từ các bảng
         String query = "SELECT o.id AS orderId, o.createAt AS orderDate, o.status, o.total AS totalAmount, " +
-                "o.so_mua AS quantity, t.tenThuoc AS productName, t.donGia AS donGiaThuoc, t.id AS productId, " +
-                "u.username AS customerName, u.phone AS customerPhone, u.fullname AS customerFullName " +
+                "o.so_mua AS quantity, t.tenThuoc AS productName, t.donGia AS donGiaThuoc, t.id AS productId, t.hinhAnh AS productImage, " +
+                "u.username AS customerName, u.phone AS customerPhone, u.fullname AS customerFullName "  +
                 "FROM orderProduce o " +
                 "INNER JOIN thuoc t ON o.id_produce = t.id " +
                 "INNER JOIN users u ON o.id_user = u.username";
@@ -639,7 +639,8 @@ public class SQLiteConnect extends SQLiteOpenHelper {
                     // Lấy thông tin thuốc
                     int productId = cursor.getInt(cursor.getColumnIndexOrThrow("productId"));
                     String productName = cursor.getString(cursor.getColumnIndexOrThrow("productName"));
-                    Thuoc thuoc = new Thuoc(productName, "", "", 0, quantity, (float) donGiaThuoc, "", productId);
+                    String productImage = cursor.getString(cursor.getColumnIndexOrThrow("productImage"));
+                    Thuoc thuoc = new Thuoc(productName, "", productImage, 0, quantity, (float) donGiaThuoc, "", productId);
 
                     // Lấy thông tin người dùng
                     String customerName = cursor.getString(cursor.getColumnIndexOrThrow("customerName"));
@@ -652,6 +653,7 @@ public class SQLiteConnect extends SQLiteOpenHelper {
 
                     // Tạo đối tượng Order và thêm vào danh sách
                     Order orderDetails = new Order(orderId, statusString, totalAmount, orderDate, user, thuoc);
+                    Log.d("ORDER", "Data: " + orderDetails.toString());
                     orderDetailsList.add(orderDetails);
 
                 } catch (Exception e) {
@@ -715,7 +717,7 @@ public class SQLiteConnect extends SQLiteOpenHelper {
                 // Tạo đối tượng sản phẩm
                 String productName = cursor.getString(cursor.getColumnIndexOrThrow("productName"));
                 String productImage = cursor.getString(cursor.getColumnIndexOrThrow("productImage"));
-                Thuoc thuoc = new Thuoc(productName, "", "", 0, quantity, (float) totalPrice, productImage, orderID);
+                Thuoc thuoc = new Thuoc(productName, "", productImage, 0, quantity, (float) totalPrice, productImage, orderID);
 
                 // Tạo đối tượng khách hàng
                 String customerName = cursor.getString(cursor.getColumnIndexOrThrow("customerName"));
