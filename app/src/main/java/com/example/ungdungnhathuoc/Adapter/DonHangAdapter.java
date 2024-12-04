@@ -56,11 +56,7 @@ public class DonHangAdapter extends ArrayAdapter<DonHang> {
 
             // Gán các View vào ViewHolder
             holder = new ViewHolder();
-//            holder.imgLogo = convertView.findViewById(R.id.imgLogo);
-//            holder.tvID = convertView.findViewById(R.id.tvID);
-//            holder.tvName = convertView.findViewById(R.id.tvName);
-//            holder.tvPrice = convertView.findViewById(R.id.tvPrice);
-//            holder.btnView = convertView.findViewById(R.id.btnView);
+
 
             convertView.setTag(holder); // Lưu ViewHolder vào convertView
         } else {

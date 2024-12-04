@@ -56,15 +56,17 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHol
     private void updateOrderDetails(OrderViewHolder holder, Order order) {
         // Update Order ID, Status, Total Price, Order Date
         holder.tvOrderId.setText(String.valueOf(order.getOrderId()));
-        holder.tvStatus.setText(order.getStatus() != null && !order.getStatus().isEmpty() ? order.getStatus() : "Không xác định");
-        holder.tvTotalPrice.setText(order.getTongTien() != 0.0 ? String.format("%,.2f", order.getTongTien()) : "Chưa có giá");
-        holder.tvOrderDate.setText(order.getOrderDate() != null && !order.getOrderDate().isEmpty() ? order.getOrderDate() : "Ngày không xác định");
+        String status = order.getStatus() != null && !order.getStatus().isEmpty() ? order.getStatus() : "Không xác định";
+        holder.tvStatus.setText("Trạng thái: " + status);
+        String toTien = order.getTongTien() != 0.0 ? String.format("%,.2f", order.getTongTien()) : "Chưa có giá";
+        holder.tvTotalPrice.setText("Tổng tiền: "  + toTien);
+        holder.tvOrderDate.setText("Thời gian đặt: "+order.getOrderDate() != null && !order.getOrderDate().isEmpty() ? order.getOrderDate() : "Ngày không xác định");
 
         // Update customer info
         if (order.getUser() != null) {
-            holder.tvCustomerName.setText(order.getUser().getFullname());
-            holder.tvContactInfo.setText(order.getUser().getPhone());
-            holder.tvAddress.setText(order.getUser().getAddress());
+            holder.tvCustomerName.setText("Tên KH: "+ order.getUser().getFullname());
+            holder.tvContactInfo.setText("SĐT: "+order.getUser().getPhone());
+            holder.tvAddress.setText("Địa chỉ nhận hàng"+order.getUser().getAddress());
         } else {
             holder.tvCustomerName.setText("Thông tin khách hàng không có");
             holder.tvContactInfo.setText("-");
