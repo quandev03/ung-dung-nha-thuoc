@@ -1,21 +1,17 @@
 package com.example.ungdungnhathuoc;
 
-import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.icu.text.SimpleDateFormat;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
-import android.widget.Adapter;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -23,36 +19,20 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.example.ungdungnhathuoc.Activity.BaseActivity;
 import com.example.ungdungnhathuoc.Data.SQLiteConnect;
-import com.example.ungdungnhathuoc.Model.Thuoc;
-import com.example.ungdungnhathuoc.Request.CreateProduceInput;
-import com.example.ungdungnhathuoc.Request.UpdateProfileInput;
-import com.example.ungdungnhathuoc.Request.UploadFileInput;
-import com.example.ungdungnhathuoc.Response.ResponceImageProduce;
-import com.google.firebase.storage.FirebaseStorage;
-import com.squareup.moshi.JsonAdapter;
-import com.squareup.moshi.Moshi;
 
-import java.io.ByteArrayOutputStream;
 //import java.io.File;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Collections;
-import java.util.List;
 import java.util.Random;
 import java.util.Date;
 

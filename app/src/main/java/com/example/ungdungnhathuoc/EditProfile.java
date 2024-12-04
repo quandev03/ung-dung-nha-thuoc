@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -17,13 +16,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.example.ungdungnhathuoc.Data.SQLiteConnect;
-import com.example.ungdungnhathuoc.Model.Account;
-import com.example.ungdungnhathuoc.Request.UpdateProfileInput;
-import com.example.ungdungnhathuoc.Response.ResponseData;
 
-import java.io.IOException;
-import java.lang.reflect.ParameterizedType;
-import java.util.List;
 import com.example.ungdungnhathuoc.Model.User;
 
 
