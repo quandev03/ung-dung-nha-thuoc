@@ -18,7 +18,6 @@ import com.example.ungdungnhathuoc.Activity.ThongTinDonHangNBActivity;
 import com.example.ungdungnhathuoc.Model.Order;
 import com.example.ungdungnhathuoc.Model.Thuoc;
 import com.example.ungdungnhathuoc.Model.User;
-import com.example.ungdungnhathuoc.Request.FilterOrder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -177,7 +176,26 @@ public class SQLiteConnect extends SQLiteOpenHelper {
         long result = myDB.insert("thuoc", null, contentValues);
         return result != -1;
     }
-
+    public boolean updateThuocById(
+            int id,
+            String tenThuoc,
+            String congDung,
+            int tonKho,
+            double donGia,
+            String hinhAnh,
+            String loai
+    ) {
+        SQLiteDatabase myDB = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put("tenThuoc", tenThuoc);
+        contentValues.put("congDung", congDung);
+        contentValues.put("tonKho", tonKho);
+        contentValues.put("donGia", donGia);
+        contentValues.put("hinhAnh", hinhAnh);
+        contentValues.put("loai", loai);
+        int rowsAffected = myDB.update("thuoc", contentValues, "id = ?", new String[]{String.valueOf(id)});
+        return rowsAffected > 0;
+    }
     public ArrayList<Thuoc> getAllThuoc() {
         SQLiteDatabase myDB = this.getReadableDatabase();
         ArrayList<Thuoc> thuocList = new ArrayList<>();
@@ -282,12 +300,13 @@ public class SQLiteConnect extends SQLiteOpenHelper {
             String email = cursor.getString(cursor.getColumnIndexOrThrow("email"));
             String phone = cursor.getString(cursor.getColumnIndexOrThrow("phone"));
             String role = cursor.getString(cursor.getColumnIndexOrThrow("role"));
+            String pass = "ACCC";
 
             // Đóng cursor
             cursor.close();
 
             // Trả về đối tượng User
-            return new User(userUsername,"pass",fullname, address, email, phone);
+            return new User(userUsername,pass,fullname, address, email, phone);
         }
         // Đóng cursor nếu null
         if (cursor != null) {
@@ -738,91 +757,11 @@ public class SQLiteConnect extends SQLiteOpenHelper {
         return order;
     }
 
-    public ArrayList<Order> getOrderUser (String username, int status) {
-        FilterOrder filterOrder = new FilterOrder(username, status);
-        return getDataOrder(filterOrder);
 
-    }
-    public ArrayList<Order> getOrderUser (String username) {
-        FilterOrder filterOrder = new FilterOrder(username);
-        return getDataOrder(filterOrder);
-    }
-    public ArrayList<Order> getDataOrder(FilterOrder filterOrder) {
-        String condition = filterOrder.buildCondition();
-        SQLiteDatabase myDB = this.getReadableDatabase();
-        ArrayList<Order> orderDetailsList = new ArrayList<>();
-
-        // Truy vấn kết hợp dữ liệu từ các bảng
-        String query =
-                "SELECT o.id AS orderId," +
-                        " o.createAt AS orderDate," +
-                        " o.status, o.total AS totalAmount, " +
-                        "o.so_mua AS quantity, " +
-                        "t.tenThuoc AS productName, " +
-                        "t.donGia AS donGiaThuoc, " +
-                        "t.id AS productId, " +
-                        "t.hinhAnh AS productImage, " +
-                        "u.username AS customerName, " +
-                        "u.phone AS customerPhone, " +
-                        "u.fullname AS customerFullName " +
-                        "FROM orderProduce o " +
-                        "INNER JOIN thuoc t ON o.id_produce = t.id " +
-                        "INNER JOIN users u ON o.id_user = u.username WHERE "
-                        + condition;
-
-
-        Cursor cursor = myDB.rawQuery(query, null);
-
-        if (cursor.moveToFirst()) {
-            do {
-                try {
-                    // Lấy thông tin đơn hàng
-                    int orderId = cursor.getInt(cursor.getColumnIndexOrThrow("orderId"));
-                    String orderDate = cursor.getString(cursor.getColumnIndexOrThrow("orderDate"));
-                    int status = cursor.getInt(cursor.getColumnIndexOrThrow("status"));
-                    int quantity = cursor.getInt(cursor.getColumnIndexOrThrow("quantity"));
-
-                    // Lấy thông tin đơn giá thuốc
-                    double donGiaThuoc = cursor.getDouble(cursor.getColumnIndexOrThrow("donGiaThuoc"));
-
-                    // Tính tổng tiền (nếu chưa có giá trị)
-                    double totalAmount = cursor.getDouble(cursor.getColumnIndexOrThrow("totalAmount"));
-                    if (totalAmount == 0) {
-                        totalAmount = donGiaThuoc * quantity;
-                    }
-
-                    // Lấy thông tin thuốc
-                    int productId = cursor.getInt(cursor.getColumnIndexOrThrow("productId"));
-                    String productName = cursor.getString(cursor.getColumnIndexOrThrow("productName"));
-                    String productImage = cursor.getString(cursor.getColumnIndexOrThrow("productImage"));
-                    Thuoc thuoc = new Thuoc(productName, "", productImage, 0, quantity, (float) donGiaThuoc, "", productId);
-
-                    // Lấy thông tin người dùng
-                    String customerName = cursor.getString(cursor.getColumnIndexOrThrow("customerName"));
-                    String customerPhone = cursor.getString(cursor.getColumnIndexOrThrow("customerPhone"));
-                    String customerFullName = cursor.getString(cursor.getColumnIndexOrThrow("customerFullName"));
-                    User user = new User(customerName, "", customerFullName, "", "", customerPhone);
-
-                    // Chuyển đổi trạng thái từ số nguyên sang chuỗi
-                    String statusString = getStatusString(status);
-
-                    // Tạo đối tượng Order và thêm vào danh sách
-                    Order orderDetails = new Order(orderId, statusString, totalAmount, orderDate, user, thuoc);
-                    Log.d("ORDER", "Data: " + orderDetails.toString());
-                    orderDetailsList.add(orderDetails);
-
-                } catch (Exception e) {
-                    Log.e("getAllOrderDetails", "Error parsing order details", e);
-                }
-            } while (cursor.moveToNext());
-        }
-
-        // Đóng con trỏ
-        if (cursor != null && !cursor.isClosed()) {
-            cursor.close();
-        }
-
-        return orderDetailsList;
+    public boolean deleteThuocById(int id) {
+        SQLiteDatabase myDB = this.getWritableDatabase();
+        int rowsDeleted = myDB.delete("thuoc", "id = ?", new String[]{String.valueOf(id)});
+        return rowsDeleted > 0;
     }
 }
 

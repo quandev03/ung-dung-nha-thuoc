@@ -17,90 +17,102 @@ import com.example.ungdungnhathuoc.Model.Thuoc;
 import com.example.ungdungnhathuoc.R;
 
 import java.util.ArrayList;
+import java.util.List;
 
-public class Adaptertimkiem extends ArrayAdapter {
-    Context context;
-    int resource;
-    ArrayList<Thuoc> listhuoc1,listthuocbackup,listthuocfilter;
-    public Adaptertimkiem(@NonNull Context context, int resource, ArrayList<Thuoc> listhuoc1) {
-        super(context, resource);
-        this.context=context;
-        this.resource=resource;
-        this.listhuoc1=this.listthuocbackup=listhuoc1;
+public class AdapterTimKiem extends ArrayAdapter<Thuoc> {
+    private Context context;
+    private int resource;
+    private List<Thuoc> listThuoc;
+    private List<Thuoc> listThuocBackup;
+
+    public AdapterTimKiem(@NonNull Context context, int resource, @NonNull List<Thuoc> listThuoc) {
+        super(context, resource, listThuoc);
+        this.context = context;
+        this.resource = resource;
+        this.listThuoc = new ArrayList<>(listThuoc);
+        this.listThuocBackup = new ArrayList<>(listThuoc);
     }
 
     @Override
     public int getCount() {
-        return this.listhuoc1.size();
-    }
-
-    public ArrayList<Thuoc> getListhuoc1() {
-        return listhuoc1;
+        return listThuoc.size();
     }
 
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-        LayoutInflater layoutInflater=LayoutInflater.from(context);
-        View customView= layoutInflater.inflate(resource,null);
-        // ánh xạ
-        ImageView imgthuoc=customView.findViewById(R.id.imgthuoc);
-        TextView tvtenthuoc=customView.findViewById(R.id.tvtenthuoc);
-        TextView tvcongdung=customView.findViewById(R.id.tvcongdung);
-        TextView tvslht=customView.findViewById(R.id.tvslht);
-        TextView tvsldb=customView.findViewById(R.id.tvsldb);
-        TextView tvdongia=customView.findViewById(R.id.tvdongia);
-        TextView tvloai=customView.findViewById(R.id.tvloai);
-        // thiết lập
-        Thuoc thuoc=listhuoc1.get(position);
-        tvtenthuoc.setText("Tên: "+thuoc.getTenthuoc());
-        tvloai.setText("Loại: "+thuoc.getLoai());
-        tvcongdung.setText("Công dụng: "+thuoc.getCongdung());
-        tvslht.setText("Số lượng: "+thuoc.getSlhientai());
-        tvsldb.setText("Đã bán "+thuoc.getSldb());
-        tvdongia.setText("Giá: "+thuoc.getDongia());
-        //hiển thị hình thuoc
-        String hinhanh= thuoc.getHinhanh();
-        Uri uri=Uri.parse(hinhanh);
-        imgthuoc.setImageURI(uri);
-        return customView;
+        ViewHolder holder;
+
+        if (convertView == null) {
+            convertView = LayoutInflater.from(context).inflate(resource, parent, false);
+            holder = new ViewHolder();
+            holder.imgThuoc = convertView.findViewById(R.id.imgthuoc);
+            holder.tvTenThuoc = convertView.findViewById(R.id.tvtenthuoc);
+            holder.tvCongDung = convertView.findViewById(R.id.tvcongdung);
+            holder.tvSlHt = convertView.findViewById(R.id.tvslht);
+            holder.tvSlDb = convertView.findViewById(R.id.tvsldb);
+            holder.tvDonGia = convertView.findViewById(R.id.tvdongia);
+            convertView.setTag(holder);
+        } else {
+            holder = (ViewHolder) convertView.getTag();
+        }
+
+        Thuoc thuoc = listThuoc.get(position);
+        if (thuoc != null) {
+            holder.tvTenThuoc.setText("Tên: " + thuoc.getTenthuoc());
+            holder.tvCongDung.setText("Công dụng: " + thuoc.getCongdung());
+            holder.tvSlHt.setText("Số lượng: " + thuoc.getSlhientai());
+            holder.tvSlDb.setText("Đã bán: " + thuoc.getSldb());
+            holder.tvDonGia.setText("Giá: " + thuoc.getDongia());
+
+            Uri imageUri = Uri.parse(thuoc.getHinhanh());
+            holder.imgThuoc.setImageURI(imageUri);
+        }
+
+        return convertView;
     }
-    // tìm kiếm
 
     @NonNull
     @Override
     public Filter getFilter() {
         return new Filter() {
             @Override
-            //lọc các tên thuốc trên các tiêu chí tìm kiếm tên thuốc,công dụng
             protected FilterResults performFiltering(CharSequence charSequence) {
-                FilterResults filterResults= new FilterResults();
-                String query = charSequence.toString().trim().toLowerCase();
-                if (query.length()<1){
-                    listthuocfilter=listthuocbackup;//bằng ds ban đầu
-                }else {
-                    listthuocfilter=new ArrayList<>();
-                    for(Thuoc thuoc:listthuocbackup){
-                        if(thuoc.getTenthuoc().toLowerCase().contains(query)||thuoc.getCongdung().toLowerCase().contains(query)||thuoc.getLoai().toLowerCase().contains(query)){
-                            listthuocfilter.add(thuoc);
+                FilterResults filterResults = new FilterResults();
+                String query = charSequence == null ? "" : charSequence.toString().trim().toLowerCase();
+
+                if (query.isEmpty()) {
+                    filterResults.values = new ArrayList<>(listThuocBackup);
+                } else {
+                    List<Thuoc> filteredList = new ArrayList<>();
+                    for (Thuoc thuoc : listThuocBackup) {
+                        if (thuoc.getTenthuoc().toLowerCase().contains(query) ||
+                                thuoc.getCongdung().toLowerCase().contains(query)) {
+                            filteredList.add(thuoc);
                         }
                     }
+                    filterResults.values = filteredList;
                 }
-                filterResults.values=listthuocfilter;
-                filterResults.count=listthuocfilter.size();
                 return filterResults;
             }
 
             @Override
             protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
-                    listhuoc1=(ArrayList<Thuoc>)filterResults.values;
-                    if(filterResults.count>0){
-                        notifyDataSetChanged();
-                    }else {
-                        notifyDataSetChanged();// Cập nhật lại giao diện nếu không có kết quả
-                    }
-
+                listThuoc.clear();
+                if (filterResults.values != null) {
+                    listThuoc.addAll((List<Thuoc>) filterResults.values);
+                }
+                notifyDataSetChanged();
             }
         };
+    }
+
+    private static class ViewHolder {
+        ImageView imgThuoc;
+        TextView tvTenThuoc;
+        TextView tvCongDung;
+        TextView tvSlHt;
+        TextView tvSlDb;
+        TextView tvDonGia;
     }
 }

@@ -14,6 +14,7 @@ import android.widget.Toast;
 
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.ungdungnhathuoc.Activity.ThongKeDonHangActivity;
 import com.example.ungdungnhathuoc.Activity.ThongTinDonHangNBActivity;
 import com.example.ungdungnhathuoc.Data.SQLiteConnect;
@@ -56,26 +57,38 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHol
     private void updateOrderDetails(OrderViewHolder holder, Order order) {
         // Update Order ID, Status, Total Price, Order Date
         holder.tvOrderId.setText(String.valueOf(order.getOrderId()));
-        String status = order.getStatus() != null && !order.getStatus().isEmpty() ? order.getStatus() : "Không xác định";
-        holder.tvStatus.setText("Trạng thái: " + status);
-        String toTien = order.getTongTien() != 0.0 ? String.format("%,.2f", order.getTongTien()) : "Chưa có giá";
-        holder.tvTotalPrice.setText("Tổng tiền: "  + toTien);
-        holder.tvOrderDate.setText("Thời gian đặt: "+order.getOrderDate() != null && !order.getOrderDate().isEmpty() ? order.getOrderDate() : "Ngày không xác định");
+        holder.tvStatus.setText(order.getStatus() != null && !order.getStatus().isEmpty() ? order.getStatus() : "Không xác định");
+        holder.tvTotalPrice.setText(order.getTongTien() != 0.0 ? String.format("%,.2f", order.getTongTien()) : "Chưa có giá");
+        holder.tvOrderDate.setText(order.getOrderDate() != null && !order.getOrderDate().isEmpty() ? order.getOrderDate() : "Ngày không xác định");
 
         // Update customer info
         if (order.getUser() != null) {
-            holder.tvCustomerName.setText("Tên KH: "+ order.getUser().getFullname());
-            holder.tvContactInfo.setText("SĐT: "+order.getUser().getPhone());
-            holder.tvAddress.setText("Địa chỉ nhận hàng"+order.getUser().getAddress());
+            holder.tvCustomerName.setText(order.getUser().getFullname());
+            holder.tvContactInfo.setText(order.getUser().getPhone());
+            holder.tvAddress.setText(order.getUser().getAddress());
         } else {
             holder.tvCustomerName.setText("Thông tin khách hàng không có");
             holder.tvContactInfo.setText("-");
             holder.tvAddress.setText("-");
         }
 
-        // Update product inf
+        // Update product info
+        if (order.getThuoc() != null) {
+            holder.tvItems.setText(order.getThuoc().getTenthuoc());
+            loadImage(holder.imgSanPham, order.getThuoc().getHinhanh());
+        } else {
+            holder.tvItems.setText("Không có sản phẩm");
+            loadImage(holder.imgSanPham, null);
+        }
     }
 
+    private void loadImage(ImageView imageView, String imageUrl) {
+        Glide.with(context)
+                .load(imageUrl != null && !imageUrl.isEmpty() ? imageUrl : R.drawable.app2)  // If image URL is null or empty, use default
+                .placeholder(R.drawable.app2)  // Placeholder when the image is loading
+                .override(300, 300)  // Image size
+                .into(imageView);  // Set image to ImageView
+    }
 
     private void handleOrderConfirm(Order order, int position) {
         SQLiteDatabase db = sqLiteConnect.getWritableDatabase();

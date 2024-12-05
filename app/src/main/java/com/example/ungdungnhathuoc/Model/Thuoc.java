@@ -1,8 +1,13 @@
 package com.example.ungdungnhathuoc.Model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import androidx.annotation.NonNull;
+
 import java.io.Serializable;
 
-public class Thuoc implements Serializable {
+public class Thuoc implements Parcelable {
     String tenthuoc,congdung, hinhanh, loai;
     int slhientai,sldb, id;
     float dongia;
@@ -18,6 +23,30 @@ public class Thuoc implements Serializable {
         this.loai = loai;
         this.id = id;
     }
+
+    protected Thuoc(Parcel in) {
+        tenthuoc = in.readString();
+        congdung = in.readString();
+        hinhanh = in.readString();
+        loai = in.readString();
+        slhientai = in.readInt();
+        sldb = in.readInt();
+        id = in.readInt();
+        dongia = in.readFloat();
+    }
+
+    public static final Creator<Thuoc> CREATOR = new Creator<Thuoc>() {
+        @Override
+        public Thuoc createFromParcel(Parcel in) {
+            return new Thuoc(in);
+        }
+
+        @Override
+        public Thuoc[] newArray(int size) {
+            return new Thuoc[size];
+        }
+    };
+
     public String getTenthuoc() {
         return tenthuoc;
     }
@@ -92,5 +121,22 @@ public class Thuoc implements Serializable {
                 ", id=" + id +
                 ", dongia=" + dongia +
                 '}';
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(@NonNull Parcel dest, int flags) {
+        dest.writeString(tenthuoc);
+        dest.writeString(congdung);
+        dest.writeString(hinhanh);
+        dest.writeString(loai);
+        dest.writeInt(slhientai);
+        dest.writeInt(sldb);
+        dest.writeInt(id);
+        dest.writeFloat(dongia);
     }
 }

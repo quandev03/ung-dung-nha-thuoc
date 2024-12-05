@@ -5,6 +5,10 @@
         android:title="Profile"
         android:icon="@drawable/baseline_document_scanner_24" />
     <item
+        android:id="@+id/menu_cart"
+        android:title="Giỏ hàng"
+        android:icon="@drawable/baseline_shopping_cart_24" />
+    <item
         android:id="@+id/menu_search"
         android:title="Tìm kiếm"
         android:icon="@drawable/baseline_manage_search_24" />

@@ -15,7 +15,6 @@ import com.example.ungdungnhathuoc.LoginActivity;
 import com.example.ungdungnhathuoc.MainActivity;
 import com.example.ungdungnhathuoc.Profile;
 import com.example.ungdungnhathuoc.R;
-
 import com.google.android.material.navigation.NavigationView;
 public abstract class BaseActivity extends AppCompatActivity {
     protected DrawerLayout drawerLayout;
@@ -78,7 +77,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         } else if (itemId == R.id.nav_statistic) {
             intent = new Intent(this, ThongKeDonHangActivity.class);
         } else if (itemId == R.id.nav_warehouse) {
-            intent = new Intent(this, WareHouseActivity.class);
+            intent = new Intent(this, ThuocKhoHangActivity.class);
         } else if (itemId == R.id.nav_logout) {
             logoutUser();
             return; // Kết thúc phương thức, không cần thực thi `startActivity(intent)`
@@ -92,7 +91,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         if (itemId == R.id.menu_profile) {
 //            showToast("Profile được chọn");
         } else if (itemId == R.id.menu_search) {
-            Intent intent = new Intent(this, timkiem.class);
+            Intent intent = new Intent(this, HomeActivity.class);
             startActivity(intent);
             overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
 //            showToast("Giỏ hàng được chọn");

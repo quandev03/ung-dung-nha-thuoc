@@ -81,7 +81,7 @@ public class HomeAdminActivity extends BaseActivity {
         // Set onClickListener for the "Quản lý kho hàng" button
         btnQLKhoHang.setOnClickListener(view -> {
             // Chuyển sang màn hình quản lý kho hàng
-            Intent intent = new Intent(HomeAdminActivity.this, ThongKeDonHangActivity.class);
+            Intent intent = new Intent(HomeAdminActivity.this, ThuocKhoHangActivity.class);
             startActivity(intent);
         });
 
