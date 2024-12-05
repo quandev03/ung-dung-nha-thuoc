@@ -2,7 +2,10 @@ package com.example.ungdungnhathuoc.Activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -13,47 +16,51 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.ungdungnhathuoc.Adapter.AdapterTimKiem;
+import com.example.ungdungnhathuoc.Adapter.Adaptertimkiem;
+import com.example.ungdungnhathuoc.Data.SQLiteConnect;
 import com.example.ungdungnhathuoc.Model.Thuoc;
 import com.example.ungdungnhathuoc.R;
+import com.example.ungdungnhathuoc.Xemchitiet;
 
 import java.util.ArrayList;
 
 public class timkiem extends AppCompatActivity {
-    ImageView app2;
     ListView lvtk;
-    Button search_button;
     EditText search_bar;
     TextView tvkq;
-    AdapterTimKiem adaptertimkiem;
+    Adaptertimkiem adaptertimkiem;
     ArrayList<Thuoc> listthuoc1;
+    String dataSearch;
+    SQLiteConnect sqLiteConnect;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.timkiem);
-        app2=findViewById(R.id.back);
         lvtk=findViewById(R.id.lvtk);
-        search_button=findViewById(R.id.search_button);
         search_bar=findViewById(R.id.search_bar);
+       sqLiteConnect = new SQLiteConnect(this);
         tvkq=findViewById(R.id.tvkq);
-        listthuoc1= new ArrayList<>();
-        String duongdananh="android.resource://"+R.class.getPackage().getName()+"/";
-        //chạy thử dữ liệu
-        listthuoc1.add(new Thuoc("Vitamin E","Thuốc bổ",duongdananh+R.drawable.thuoc2,30,20,250000, "loai", 1));
-        listthuoc1.add(new Thuoc("Vitamin tổng hợp","Thuốc bổ",duongdananh+R.drawable.thuoc1,50,45,500000, "loai", 1));
-        listthuoc1.add(new Thuoc("Vitamin C","Thuốc bổ",duongdananh+R.drawable.thuoc3,50,45,250000, "loai", 1));
-        adaptertimkiem= new AdapterTimKiem(timkiem.this, R.layout.thuoc,listthuoc1);
+        listthuoc1= sqLiteConnect.getAllThuoc();
+
+        adaptertimkiem= new Adaptertimkiem(timkiem.this, R.layout.thuoc,listthuoc1);
         lvtk.setAdapter(adaptertimkiem);
         // thết lập suwj kiện tiìm kiếm
-        search_button.setOnClickListener(new View.OnClickListener() {
+
+        search_bar.addTextChangedListener(new TextWatcher() {
             @Override
-            public void onClick(View view) {
-                String query = search_bar.getText().toString().trim(); // Lấy từ khóa tìm kiếm
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                String query = charSequence.toString(); // Lấy từ khóa tìm kiếm
                 adaptertimkiem.getFilter().filter(query);
+                dataSearch = query;
 
                 // Kiểm tra xem có kết quả phù hợp không
                 boolean hasResults = false;
-                for (int i = 0; i < adaptertimkiem.getCount(); i++) {
+                for (int index = 0; index < adaptertimkiem.getCount(); index++) {
                     hasResults = true;
                     break;
                 }
@@ -68,22 +75,28 @@ public class timkiem extends AppCompatActivity {
                     tvkq.setText("Không có kết quả phù hợp");
                     //tvkq.setVisibility(View.VISIBLE); // Hiển thị thông báo không có kết quả
                 }
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
 
             }
         });
         // thết laapj sự kiện khi nhấn vào app2 sẽ uqay trở về trang chủ
-        app2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent= new Intent(timkiem.this, HomeActivity.class);
-                startActivity(intent);
-                // Hiệu ứng chuyển đổi khi quay lại
-                overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
+//        lvtk.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//            @Override
+//            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+//                Intent xemchitietmh = new Intent(this, Xemchitiet.class);
+//                Bundle data = new Bundle();
+//                Thuoc thuoc=adaptertimkiem.getFilter().filter(dataSearch).getListhuoc().get(i);
+//                data.putParcelable("thuoc_value", thuoc);
+//                xemchitietmh.putExtras(data);
+//                startActivity(xemchitietmh);
+//
+//                Toast.makeText(HomeActivity.this, listthuoc.get(i).getTenthuoc(), Toast.LENGTH_SHORT).show();
+//            }
+//        });
 
-                // Kết thúc Activity hiện tại
-                finish();
-            }
-        });
     }
 }
 

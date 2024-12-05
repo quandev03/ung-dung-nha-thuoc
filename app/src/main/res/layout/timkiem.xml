@@ -25,13 +25,6 @@
             android:background="#FFFFFF"
             android:drawablePadding="10dp"
             android:drawableStart="@android:drawable/ic_menu_search" />
-        <Button
-            android:id="@+id/search_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Tìm kiếm"
-            android:backgroundTint="#00BCD4"
-            android:textColor="#FFFFFF" />
         <TextView
             android:id="@+id/tvkq"
             android:textColor="#F44336"
@@ -46,10 +39,5 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>
     </LinearLayout>
-    <ImageView
-        android:id="@+id/back"
-        android:src="@drawable/app2"
-        android:paddingRight="52dp"
-        android:layout_width="100dp"
-        android:layout_height="47dp"/>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -9,7 +9,6 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.Glide;
 import com.example.ungdungnhathuoc.Model.Thuoc;
 import com.example.ungdungnhathuoc.R;
 
@@ -41,10 +40,6 @@ public class ThuocAdapter extends RecyclerView.Adapter<ThuocAdapter.ThuocViewHol
         holder.textDongia.setText("Đơn giá: " + thuoc.getDongia() + " VND");
 
         // Load image (placeholder if no image URL)
-        Glide.with(holder.itemView.getContext())
-                .load(thuoc.getHinhanh())
-                .placeholder(R.drawable.ic_launcher_background)
-                .into(holder.imageThuoc);
 
         // Edit button click
         holder.buttonEdit.setOnClickListener(v -> editListener.onEdit(thuoc));

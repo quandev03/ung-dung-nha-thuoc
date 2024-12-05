@@ -14,7 +14,6 @@ import android.widget.Toast;
 
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.Glide;
 import com.example.ungdungnhathuoc.Activity.ThongKeDonHangActivity;
 import com.example.ungdungnhathuoc.Activity.ThongTinDonHangNBActivity;
 import com.example.ungdungnhathuoc.Data.SQLiteConnect;
@@ -73,22 +72,8 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHol
         }
 
         // Update product info
-        if (order.getThuoc() != null) {
-            holder.tvItems.setText(order.getThuoc().getTenthuoc());
-            loadImage(holder.imgSanPham, order.getThuoc().getHinhanh());
-        } else {
-            holder.tvItems.setText("Không có sản phẩm");
-            loadImage(holder.imgSanPham, null);
-        }
     }
 
-    private void loadImage(ImageView imageView, String imageUrl) {
-        Glide.with(context)
-                .load(imageUrl != null && !imageUrl.isEmpty() ? imageUrl : R.drawable.app2)  // If image URL is null or empty, use default
-                .placeholder(R.drawable.app2)  // Placeholder when the image is loading
-                .override(300, 300)  // Image size
-                .into(imageView);  // Set image to ImageView
-    }
 
     private void handleOrderConfirm(Order order, int position) {
         SQLiteDatabase db = sqLiteConnect.getWritableDatabase();

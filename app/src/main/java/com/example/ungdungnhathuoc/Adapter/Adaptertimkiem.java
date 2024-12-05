@@ -1,6 +1,7 @@
 package com.example.ungdungnhathuoc.Adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,13 +20,13 @@ import com.example.ungdungnhathuoc.R;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AdapterTimKiem extends ArrayAdapter<Thuoc> {
+public class Adaptertimkiem extends ArrayAdapter<Thuoc> {
     private Context context;
     private int resource;
     private List<Thuoc> listThuoc;
     private List<Thuoc> listThuocBackup;
 
-    public AdapterTimKiem(@NonNull Context context, int resource, @NonNull List<Thuoc> listThuoc) {
+    public Adaptertimkiem(@NonNull Context context, int resource, @NonNull List<Thuoc> listThuoc) {
         super(context, resource, listThuoc);
         this.context = context;
         this.resource = resource;
@@ -69,6 +70,14 @@ public class AdapterTimKiem extends ArrayAdapter<Thuoc> {
             holder.imgThuoc.setImageURI(imageUri);
         }
 
+//        holder.imgThuoc.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                Intent intent = new Intent(this, )
+//            }
+//        });
+
+
         return convertView;
     }
 
@@ -84,7 +93,7 @@ public class AdapterTimKiem extends ArrayAdapter<Thuoc> {
                 if (query.isEmpty()) {
                     filterResults.values = new ArrayList<>(listThuocBackup);
                 } else {
-                    List<Thuoc> filteredList = new ArrayList<>();
+                    ArrayList<Thuoc> filteredList = new ArrayList<>();
                     for (Thuoc thuoc : listThuocBackup) {
                         if (thuoc.getTenthuoc().toLowerCase().contains(query) ||
                                 thuoc.getCongdung().toLowerCase().contains(query)) {
