@@ -145,13 +145,13 @@ public class LichSuDonHangNguoiMuaActivity extends BaseActivity {
         listDonHang = new ArrayList<>();
         for (Order order : ordersFromDb) {
             // Chuyển chuỗi hình ảnh thành Bitmap
-            Bitmap image = decodeImage(order.getThuoc().getHinhanh());
+//            Bitmap image = decodeImage();
 
             // Tạo đối tượng `DonHang` từ dữ liệu `Order`
             DonHang donHang = new DonHang(
                     order.getThuoc().getTenthuoc(), // Tên thuốc
                     order.getTongTien(),            // Tổng tiền
-                    image,                          // Hình ảnh thuốc (Bitmap)
+                    order.getThuoc().getHinhanh(),                          // Hình ảnh thuốc (Bitmap)
                     String.valueOf(order.getOrderId()) // Mã đơn hàng
             );
             listDonHang.add(donHang);

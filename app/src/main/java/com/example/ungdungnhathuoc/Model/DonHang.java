@@ -5,13 +5,13 @@ import android.graphics.Bitmap;
 public class DonHang {
     String tenDH;
     double giaDH;
-    Bitmap logoDH;
+    String logoDH;
     String maDH;
     public DonHang(){
 
     }
 
-    public DonHang(String tenDH, double giaDH, Bitmap logoDH, String maDH) {
+    public DonHang(String tenDH, double giaDH, String logoDH, String maDH) {
         this.tenDH = tenDH;
         this.giaDH = giaDH;
         this.logoDH = logoDH;
@@ -34,11 +34,11 @@ public class DonHang {
         this.giaDH = giaDH;
     }
 
-    public Bitmap getLogoDH() {
+    public String getLogoDH() {
         return logoDH;
     }
 
-    public void setLogoDH(Bitmap logoDH) {
+    public void setLogoDH(String logoDH) {
         this.logoDH = logoDH;
     }
 

@@ -1,7 +1,12 @@
 package com.example.ungdungnhathuoc.Adapter;
 
+import static androidx.core.content.ContextCompat.startActivity;
+
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,12 +14,15 @@ import android.widget.ArrayAdapter;
 import android.widget.Filter;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.example.ungdungnhathuoc.Activity.HomeActivity;
 import com.example.ungdungnhathuoc.Model.Thuoc;
 import com.example.ungdungnhathuoc.R;
+import com.example.ungdungnhathuoc.Xemchitiet;
 
 import java.util.ArrayList;
 
@@ -63,6 +71,18 @@ public class Adaptertimkiem extends ArrayAdapter {
         String hinhanh= thuoc.getHinhanh();
         Uri uri=Uri.parse(hinhanh);
         imgthuoc.setImageURI(uri);
+        customView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent xemchitietmh = new Intent(context, Xemchitiet.class);
+                Bundle data = new Bundle();
+                data.putSerializable("thuoc_value", thuoc);
+                xemchitietmh.putExtras(data);
+                context.startActivity(xemchitietmh);
+
+//                Toast.makeText(HomeActivity.this, listthuoc.get(i).getTenthuoc(), Toast.LENGTH_SHORT).show();
+            }
+        });
         return customView;
     }
     // tìm kiếm
