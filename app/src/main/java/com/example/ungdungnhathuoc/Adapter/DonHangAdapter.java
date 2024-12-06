@@ -111,8 +111,8 @@ public class DonHangAdapter extends ArrayAdapter<DonHang> {
         } else {
             holder.imgLogo.setImageResource(R.drawable.giaikhat); // Nếu không có hình ảnh, hiển thị ảnh mặc định
         }
-        holder.tvID.setText(dh.getMaDH());
-        holder.tvName.setText(dh.getTenDH());
+        holder.tvID.setText("Mã sản phẩm: " + dh.getMaDH());
+        holder.tvName.setText("Tên sản phẩm: " + dh.getTenDH());
         holder.tvPrice.setText("Đơn giá: " + dh.getGiaDH() + " VNĐ");
 
         // Sự kiện khi người dùng bấm vào btnView

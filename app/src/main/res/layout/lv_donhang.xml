@@ -13,7 +13,7 @@
             android:layout_height="100dp"/>
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="100dp"
+            android:layout_height="wrap_content"
             android:orientation="vertical"
             android:gravity="center"
             android:layout_weight="1">
@@ -49,8 +49,7 @@
             <Button
                 android:backgroundTint="@color/blue2"
                 android:id="@+id/btnView"
-                android:text="Xem"
-                android:drawableEnd="@drawable/baseline_manage_search_24"
+                android:drawableEnd="@drawable/baseline_manage_search"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
         </LinearLayout>

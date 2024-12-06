@@ -35,7 +35,7 @@ public class LichSuDonHangNguoiMuaActivity extends AppCompatActivity {
     ListView lvDonHang;
     ArrayList<DonHang> listDonHang;
     DonHangAdapter adapterDonHang;
-    Button btnTatCa, btnChuaXacNhan, btnDaXacNhan;
+    Button btnTatCa, btnChuaXacNhan, btnDaXacNhan, btnHoanThanh;
     SQLiteConnect sqLiteConnect;
     @SuppressLint("MissingInflatedId")
     @Override
@@ -52,6 +52,7 @@ public class LichSuDonHangNguoiMuaActivity extends AppCompatActivity {
         btnTatCa = findViewById(R.id.btnTatCa);
         btnChuaXacNhan = findViewById(R.id.btnChuaXacNhan);
         btnDaXacNhan = findViewById(R.id.btnDaXacNhan);
+        btnHoanThanh = findViewById(R.id.btnHoanThanh);
         sqLiteConnect = new SQLiteConnect(this);
                 // Lấy userId từ SharedPreferences
         SharedPreferences preferences = this.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
@@ -67,6 +68,10 @@ public class LichSuDonHangNguoiMuaActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 loadOrderData(userId, -1);
+                btnTatCa.setBackgroundColor(getResources().getColor(R.color.red));
+                btnChuaXacNhan.setBackgroundColor(getResources().getColor(R.color.blue2));
+                btnDaXacNhan.setBackgroundColor(getResources().getColor(R.color.blue2));
+                btnHoanThanh.setBackgroundColor(getResources().getColor(R.color.blue2));
             }
         });
 
@@ -74,6 +79,10 @@ public class LichSuDonHangNguoiMuaActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 loadOrderData(userId, 0);
+                btnChuaXacNhan.setBackgroundColor(getResources().getColor(R.color.red));
+                btnTatCa.setBackgroundColor(getResources().getColor(R.color.blue2));
+                btnDaXacNhan.setBackgroundColor(getResources().getColor(R.color.blue2));
+                btnHoanThanh.setBackgroundColor(getResources().getColor(R.color.blue2));
             }
         });
 
@@ -81,6 +90,21 @@ public class LichSuDonHangNguoiMuaActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 loadOrderData(userId, 1);
+                btnDaXacNhan.setBackgroundColor(getResources().getColor(R.color.red));
+                btnChuaXacNhan.setBackgroundColor(getResources().getColor(R.color.blue2));
+                btnTatCa.setBackgroundColor(getResources().getColor(R.color.blue2));
+                btnHoanThanh.setBackgroundColor(getResources().getColor(R.color.blue2));
+            }
+        });
+
+        btnHoanThanh.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                loadOrderData(userId, 3);
+                btnHoanThanh.setBackgroundColor(getResources().getColor(R.color.red));
+                btnChuaXacNhan.setBackgroundColor(getResources().getColor(R.color.blue2));
+                btnDaXacNhan.setBackgroundColor(getResources().getColor(R.color.blue2));
+                btnTatCa.setBackgroundColor(getResources().getColor(R.color.blue2));
             }
         });
     }
@@ -126,6 +150,8 @@ public class LichSuDonHangNguoiMuaActivity extends AppCompatActivity {
     }
 
 
+    }
 
 
-}
+
+
