@@ -1,15 +1,17 @@
 package com.example.ungdungnhathuoc.Model;
 
+import android.graphics.Bitmap;
+
 public class DonHang {
     String tenDH;
     double giaDH;
-    int logoDH;
+    Bitmap logoDH;
     String maDH;
     public DonHang(){
 
     }
 
-    public DonHang(String tenDH, double giaDH, int logoDH, String maDH) {
+    public DonHang(String tenDH, double giaDH, Bitmap logoDH, String maDH) {
         this.tenDH = tenDH;
         this.giaDH = giaDH;
         this.logoDH = logoDH;
@@ -32,11 +34,11 @@ public class DonHang {
         this.giaDH = giaDH;
     }
 
-    public int getLogoDH() {
+    public Bitmap getLogoDH() {
         return logoDH;
     }
 
-    public void setLogoDH(int logoDH) {
+    public void setLogoDH(Bitmap logoDH) {
         this.logoDH = logoDH;
     }
 

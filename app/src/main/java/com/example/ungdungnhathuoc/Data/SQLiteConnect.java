@@ -752,7 +752,6 @@ public class SQLiteConnect extends SQLiteOpenHelper {
         SQLiteDatabase myDB = this.getReadableDatabase();
         ArrayList<Order> orderDetailsList = new ArrayList<>();
 
-        // Truy vấn kết hợp dữ liệu từ các bảng
         String query =
                 "SELECT o.id AS orderId," +
                         " o.createAt AS orderDate," +
@@ -769,7 +768,6 @@ public class SQLiteConnect extends SQLiteOpenHelper {
                         "INNER JOIN thuoc t ON o.id_produce = t.id " +
                         "INNER JOIN users u ON o.id_user = u.username WHERE "
                         + condition;
-
 
         Cursor cursor = myDB.rawQuery(query, null);
 
@@ -824,6 +822,9 @@ public class SQLiteConnect extends SQLiteOpenHelper {
 
         return orderDetailsList;
     }
+
+
+
 }
 
 

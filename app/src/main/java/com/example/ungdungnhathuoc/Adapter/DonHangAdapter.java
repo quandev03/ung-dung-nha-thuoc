@@ -45,6 +45,42 @@ public class DonHangAdapter extends ArrayAdapter<DonHang> {
     }
 
     @NonNull
+//    @Override
+//    public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+//        ViewHolder holder;
+//
+//        // Kiểm tra convertView, nếu null thì tạo mới
+//        if (convertView == null) {
+//            LayoutInflater inflater = context.getLayoutInflater();
+//            convertView = inflater.inflate(resource, parent, false);
+//
+//            // Gán các View vào ViewHolder
+//            holder = new ViewHolder();
+//
+//
+//            convertView.setTag(holder); // Lưu ViewHolder vào convertView
+//        } else {
+//            holder = (ViewHolder) convertView.getTag(); // Lấy lại ViewHolder
+//        }
+//
+//        DonHang dh = listDonHang.get(position);
+//
+//        // Thiết lập dữ liệu cho các View
+//        holder.imgLogo.setImageResource(dh.getLogoDH());
+//        holder.tvID.setText(dh.getMaDH());
+//        holder.tvName.setText(dh.getTenDH());
+//        holder.tvPrice.setText("Đơn giá: " + dh.getGiaDH() + " VNĐ");
+//
+//        // Sự kiện khi người dùng bấm vào btnView
+//        holder.btnView.setOnClickListener(view -> {
+//            String kq = "Mã sản phẩm: " + dh.getMaDH() + "\n"
+//                    + "Tên sản phẩm: " + dh.getTenDH() + "\n"
+//                    + "Giá: " + dh.getGiaDH();
+//            Toast.makeText(context, kq, Toast.LENGTH_SHORT).show();
+//        });
+//
+//        return convertView;
+//    }
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
         ViewHolder holder;
@@ -56,7 +92,11 @@ public class DonHangAdapter extends ArrayAdapter<DonHang> {
 
             // Gán các View vào ViewHolder
             holder = new ViewHolder();
-
+            holder.imgLogo = convertView.findViewById(R.id.imgLogo); // ImageView để hiển thị hình ảnh thuốc
+            holder.tvID = convertView.findViewById(R.id.tvID);
+            holder.tvName = convertView.findViewById(R.id.tvName);
+            holder.tvPrice = convertView.findViewById(R.id.tvPrice);
+            holder.btnView = convertView.findViewById(R.id.btnView);
 
             convertView.setTag(holder); // Lưu ViewHolder vào convertView
         } else {
@@ -66,7 +106,11 @@ public class DonHangAdapter extends ArrayAdapter<DonHang> {
         DonHang dh = listDonHang.get(position);
 
         // Thiết lập dữ liệu cho các View
-        holder.imgLogo.setImageResource(dh.getLogoDH());
+        if (dh.getLogoDH() != null) {
+            holder.imgLogo.setImageBitmap(dh.getLogoDH()); // Sử dụng Bitmap để hiển thị hình ảnh
+        } else {
+            holder.imgLogo.setImageResource(R.drawable.giaikhat); // Nếu không có hình ảnh, hiển thị ảnh mặc định
+        }
         holder.tvID.setText(dh.getMaDH());
         holder.tvName.setText(dh.getTenDH());
         holder.tvPrice.setText("Đơn giá: " + dh.getGiaDH() + " VNĐ");
