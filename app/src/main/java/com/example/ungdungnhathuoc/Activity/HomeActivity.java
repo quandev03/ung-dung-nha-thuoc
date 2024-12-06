@@ -48,9 +48,6 @@ public class HomeActivity extends BaseActivity {
         SharedPreferences sharedPref = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
         this.isPermissionUser();
         FilterOrder filterOrder,filterOrder1;
-        filterOrder = new FilterOrder(sharedPref.getString("accessToken", null));
-        filterOrder1 = new FilterOrder(sharedPref.getString("accessToken", null), 1);
-        Log.d("QUERY", "QUERY: " + sqLiteConnect.getOrderUser(sharedPref.getString("accessToken", null),0).toString());
 
 
         // Ánh xạ các view

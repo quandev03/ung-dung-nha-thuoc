@@ -27,7 +27,7 @@
         android:theme="@style/Theme.UngDungNhaThuoc"
         tools:targetApi="31">
         <activity
-            android:name=".timkiem"
+            android:name=".Activity.LichSuDonHangNguoiMuaActivity"
             android:exported="false" />
         <activity
             android:name=".Xemchitiet"
