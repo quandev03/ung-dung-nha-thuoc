@@ -30,6 +30,9 @@
             android:name=".Activity.LichSuDonHangNguoiMuaActivity"
             android:exported="false" />
         <activity
+            android:name=".Activity.ThongTinDonHangNMActivity"
+            android:exported="false" />
+        <activity
             android:name=".Xemchitiet"
             android:exported="false" />
         <activity

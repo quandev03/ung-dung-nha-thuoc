@@ -1,7 +1,9 @@
 package com.example.ungdungnhathuoc.Adapter;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.net.Uri;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +17,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.example.ungdungnhathuoc.Activity.ThongTinDonHangNMActivity;
 import com.example.ungdungnhathuoc.Model.DonHang;
 import com.example.ungdungnhathuoc.R;
 
@@ -85,6 +88,10 @@ public class DonHangAdapter extends ArrayAdapter<DonHang> {
 
         // Sự kiện khi người dùng bấm vào btnView
         holder.btnView.setOnClickListener(view -> {
+            Intent intent = new Intent(context, ThongTinDonHangNMActivity.class);
+            intent.putExtra("order_id", dh.getMaDH());
+            context.startActivity(intent);
+
             String kq = "Mã sản phẩm: " + dh.getMaDH() + "\n"
                     + "Tên sản phẩm: " + dh.getTenDH() + "\n"
                     + "Giá: " + dh.getGiaDH();

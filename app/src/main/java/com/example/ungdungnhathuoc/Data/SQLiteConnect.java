@@ -550,45 +550,54 @@ public class SQLiteConnect extends SQLiteOpenHelper {
         }
     }
 
-    public boolean completeOrder(int orderId) {
+    public boolean complateOrder(int orderId) {
         SQLiteDatabase myDB = this.getWritableDatabase();
         Cursor cursor = null;
+        Cursor produce = null;
 
         try {
             // Query to get the current status of the order
-            cursor = myDB.rawQuery("SELECT status, so_mua, idProduce FROM orderProduce WHERE id = ?", new String[]{String.valueOf(orderId)});
+            cursor = myDB.rawQuery("SELECT status, so_mua, id_produce FROM orderProduce WHERE id = ?",
+                    new String[]{String.valueOf(orderId)});
 
             if (cursor != null && cursor.moveToFirst()) {
-                int statusIndex = cursor.getColumnIndex("status");
-                int status = cursor.getInt(statusIndex);
-                int so_mua = cursor.getColumnIndex("so_mua");
-                int soLuong = cursor.getInt(so_mua);
-                int idProduce = cursor.getColumnIndex("idProduce");
-                int idThuoc = cursor.getInt(idProduce);
-                Cursor produce = myDB.rawQuery("SELECT * FROM thuoc WHERE id = ?", new String[]{String.valueOf(idThuoc)});
-                int daBan = produce.getColumnIndex("daBan");
-                int daBanValue = produce.getInt(daBan);
-                int currentDaBan = daBanValue + soLuong;
+                int status = cursor.getInt(cursor.getColumnIndex("status"));
+                int soLuong = cursor.getInt(cursor.getColumnIndex("so_mua"));
+                int idThuoc = cursor.getInt(cursor.getColumnIndex("id_produce"));
 
+                Log.d("STATUS", "Status: " + status);
 
+                // Check if the status is 1
+                if (status == 1) {
+                    // Fetch current daBan value
+                    produce = myDB.rawQuery("SELECT daBan FROM thuoc WHERE id = ?",
+                            new String[]{String.valueOf(idThuoc)});
+                    if (produce != null && produce.moveToFirst()) {
+                        int daBanValue = produce.getInt(produce.getColumnIndex("daBan"));
+                        int currentDaBan = daBanValue + soLuong;
 
-                // Check if the status is 2
-                if (status == 2) {
-                    ContentValues contentValues = new ContentValues();
-                    contentValues.put("status", 3); // Update status to 3 (completed)
+                        ContentValues contentValues = new ContentValues();
+                        contentValues.put("status", 3); // Update status to 3 (completed)
 
-                    // Update the order status
-                    int rowsUpdated = myDB.update("orderProduce", contentValues, "id = ?", new String[]{String.valueOf(orderId)});
-                    myDB.execSQL("UPDATE thuoc SET daBan = ? WHERE id = ?", new Object[]{currentDaBan, idThuoc});
+                        // Update the order status
+                        int rowsUpdated = myDB.update("orderProduce", contentValues, "id = ?",
+                                new String[]{String.valueOf(orderId)});
+                        myDB.execSQL("UPDATE thuoc SET daBan = ? WHERE id = ?",
+                                new Object[]{currentDaBan, idThuoc});
 
-                    // Check if the update was successful
-                    return rowsUpdated > 0;
+                        Log.d("Database", "Order " + orderId + " completed successfully.");
+
+                        return rowsUpdated > 0;
+                    } else {
+                        Log.e("Database", "Thuoc not found for id: " + idThuoc);
+                    }
                 } else {
-                    return false; // Status is not 2, order cannot be completed
+                    Log.e("Database", "Order cannot be completed, current status: " + status);
                 }
+            } else {
+                Log.e("Database", "Order not found for id: " + orderId);
             }
-
-            return false; // Order not found
+            return false;
         } catch (Exception e) {
             // Handle any exceptions (e.g., log the error)
             e.printStackTrace();
@@ -596,6 +605,9 @@ public class SQLiteConnect extends SQLiteOpenHelper {
         } finally {
             if (cursor != null) {
                 cursor.close(); // Close the cursor to free resources
+            }
+            if (produce != null) {
+                produce.close(); // Close the second cursor
             }
         }
     }
