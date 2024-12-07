@@ -157,8 +157,6 @@ public class ThongTinDonHangNMActivity extends AppCompatActivity {
                 .setNegativeButton("Không", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int id) {
-                        // Handle the "No" button click
-                        // For example, dismissing the dialog
                         dialog.dismiss();
                     }
                 });

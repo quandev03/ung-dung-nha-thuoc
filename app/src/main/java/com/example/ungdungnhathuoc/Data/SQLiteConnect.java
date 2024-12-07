@@ -561,11 +561,12 @@ public class SQLiteConnect extends SQLiteOpenHelper {
                     new String[]{String.valueOf(orderId)});
 
             if (cursor != null && cursor.moveToFirst()) {
-                int status = cursor.getInt(cursor.getColumnIndex("status"));
-                int soLuong = cursor.getInt(cursor.getColumnIndex("so_mua"));
-                int idThuoc = cursor.getInt(cursor.getColumnIndex("id_produce"));
-
-                Log.d("STATUS", "Status: " + status);
+                int statusIndex = cursor.getColumnIndex("status");
+                int status = cursor.getInt(statusIndex);
+                int soMuaIndex = cursor.getColumnIndex("so_mua");
+                int soLuong = cursor.getInt(soMuaIndex);
+                int idProduceIndex = cursor.getColumnIndex("id_produce");
+                int idThuoc = cursor.getInt(idProduceIndex);
 
                 // Check if the status is 1
                 if (status == 1) {
@@ -573,7 +574,8 @@ public class SQLiteConnect extends SQLiteOpenHelper {
                     produce = myDB.rawQuery("SELECT daBan FROM thuoc WHERE id = ?",
                             new String[]{String.valueOf(idThuoc)});
                     if (produce != null && produce.moveToFirst()) {
-                        int daBanValue = produce.getInt(produce.getColumnIndex("daBan"));
+                        int daBanIndex = produce.getColumnIndex("daBan");
+                        int daBanValue = produce.getInt(daBanIndex);
                         int currentDaBan = daBanValue + soLuong;
 
                         ContentValues contentValues = new ContentValues();

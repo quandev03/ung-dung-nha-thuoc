@@ -106,18 +106,10 @@ public class RegisterActivity extends AppCompatActivity {
                         } else if (dbHelper.checkEmail(email)) {
                             Toast.makeText(RegisterActivity.this, "Email đã tồn tại", Toast.LENGTH_SHORT).show();
                             return;
-                        } else if (dbHelper.checkPassword(password)) {
-                            Toast.makeText(RegisterActivity.this, "Mật khẩu đã tồn tại", Toast.LENGTH_SHORT).show();
-                            return;
-                        } else if (dbHelper.checkFullname(fullname)) {
-                            Toast.makeText(RegisterActivity.this, "Tên người dùng đã tồn tại", Toast.LENGTH_SHORT).show();
-                            return;
                         } else if (dbHelper.checkPhone(phone)) {
                             Toast.makeText(RegisterActivity.this, "Số điện thoại đã tồn tại", Toast.LENGTH_SHORT).show();
                             return;
                         }
-
-
                         // Lưu thông tin vào cơ sở dữ liệu
                         boolean registerSuccess = dbHelper.insertData(username, password, fullname, address, phone, email);
                         if (registerSuccess) {
