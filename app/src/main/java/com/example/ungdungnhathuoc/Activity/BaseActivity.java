@@ -91,7 +91,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     protected void handleNavigatioUser(int itemId) {
         if (itemId == R.id.menu_profile) {
 //            showToast("Profile được chọn");
-        } else if (itemId == R.id.menu_order_info) {
+        } else if (itemId == R.id.menu_order_history) {
             Intent intent = new Intent(this, LichSuDonHangNguoiMuaActivity.class);
             startActivity(intent);
             overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
