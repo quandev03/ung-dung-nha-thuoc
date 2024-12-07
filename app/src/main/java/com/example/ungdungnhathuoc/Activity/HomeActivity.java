@@ -46,6 +46,7 @@ public class HomeActivity extends BaseActivity {
         // Check access token first, if not present redirect to login
         SharedPreferences sharedPref = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
         this.isPermissionUser();
+        Log.d( "Role","Role" + sharedPref.getBoolean("role", false));
 
         // Ánh xạ các view
         lvmh = findViewById(R.id.lvmh);

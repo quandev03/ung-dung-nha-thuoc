@@ -154,7 +154,7 @@ public class SQLiteConnect extends SQLiteOpenHelper {
         contentValues.put("address", address);
         contentValues.put("email", email);
         contentValues.put("phone", phone);
-        contentValues.put("role", true); // Mặc định là user
+        contentValues.put("role", false); // Mặc định là user
         long result = myDB.insert("users", null, contentValues);
         if(result == -1) return false;
         else return true;
@@ -269,7 +269,7 @@ public class SQLiteConnect extends SQLiteOpenHelper {
             contentValues.put("address", "Admin Address");
             contentValues.put("email", "admin@example.com");
             contentValues.put("phone", "123456789");
-            contentValues.put("role", "admin"); // Thiết lập role cho admin
+            contentValues.put("role", true); // Thiết lập role cho admin
             // Chèn dữ liệu vào bảng
             sqLiteDatabase.insert("users", null, contentValues);
 
@@ -335,14 +335,13 @@ public class SQLiteConnect extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery("SELECT role FROM users WHERE username = ? AND password = ?", new String[]{username, password});
         if (cursor != null && cursor.moveToFirst()) {
-            @SuppressLint("Range") String role = cursor.getString(cursor.getColumnIndex("role"));
+            @SuppressLint("Range") int role = cursor.getInt(cursor.getColumnIndex("role"));
             cursor.close();
-            if (role.equals("admin")) {
-                return true;
-            }else return false;
+            return role == 1;
         }
         if (cursor != null) cursor.close();
-        return false; // Mặc định là user nếu không tìm thấy
+//        return false; // Mặc định là user nếu không tìm thấy
+        return false;
     }
 
 

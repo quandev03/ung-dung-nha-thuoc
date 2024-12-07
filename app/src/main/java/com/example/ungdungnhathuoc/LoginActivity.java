@@ -56,8 +56,6 @@ public class LoginActivity extends AppCompatActivity {
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
-                startActivity(intent);
                 String username = usernameLogin.getText().toString().trim();
                 String password = passwordLogin.getText().toString().trim();
                 if (TextUtils.isEmpty(username) || TextUtils.isEmpty(password)) {
@@ -66,23 +64,22 @@ public class LoginActivity extends AppCompatActivity {
                 }
                 HashPass hashPass = new HashPass(password);
                 boolean isLoggedId = dbHelper.checkUser(username, hashPass.getHashPass());
-                String fullname = dbHelper.getFullnameByUsernameAndPassword(username, password);
-                boolean role = dbHelper.getUserRole(username, password); // Lấy quyền của người dùng từ SQLite
-                Log.d("LoginActivity", "Role: " + role);
-                if (isLoggedId) {
+                String fullname = dbHelper.getFullnameByUsernameAndPassword(username, hashPass.getHashPass());
+                boolean role = dbHelper.getUserRole(username, hashPass.getHashPass()); // Lấy quyền của người dùng từ SQLite
+                if (fullname != null) {
                     // Lưu accessToken vào SharedPreferences
                     SharedPreferences.Editor editor = sharedPref.edit();
                     editor.putString("accessToken", username);
                     editor.putBoolean("role", role);
                     editor.apply();
                     Toast.makeText(LoginActivity.this, "Đăng nhập thành công!\nChào mừng " + fullname, Toast.LENGTH_SHORT).show();
-//                    if (false) {
-//                        Intent intent = new Intent(LoginActivity.this, HomeAdminActivity.class);
-//                        startActivity(intent);
-//                    } else {
-//                        Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
-//                        startActivity(intent);
-//                    }
+                    if (role) {
+                        Intent intent = new Intent(LoginActivity.this, HomeAdminActivity.class);
+                        startActivity(intent);
+                    } else {
+                        Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
+                        startActivity(intent);
+                    }
                     finish();
                 } else {
                     Toast.makeText(LoginActivity.this, "Đăng nhập thất bại", Toast.LENGTH_SHORT).show();
