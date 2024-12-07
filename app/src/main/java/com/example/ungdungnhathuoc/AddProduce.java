@@ -1,17 +1,24 @@
 package com.example.ungdungnhathuoc;
 
+import android.annotation.SuppressLint;
+import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.icu.text.SimpleDateFormat;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.MediaStore;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.Adapter;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -19,34 +26,59 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.example.ungdungnhathuoc.Activity.BaseActivity;
+import com.example.ungdungnhathuoc.Activity.ThuocKhoHangActivity;
 import com.example.ungdungnhathuoc.Data.SQLiteConnect;
+import com.example.ungdungnhathuoc.Model.Thuoc;
+import com.example.ungdungnhathuoc.Request.CreateProduceInput;
+import com.example.ungdungnhathuoc.Request.UpdateProfileInput;
+import com.example.ungdungnhathuoc.Request.UploadFileInput;
+import com.example.ungdungnhathuoc.Response.ResponceImageProduce;
+import com.google.firebase.storage.FirebaseStorage;
+import com.squareup.moshi.JsonAdapter;
+import com.squareup.moshi.Moshi;
 
+import java.io.ByteArrayOutputStream;
 //import java.io.File;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
 import java.util.Random;
 import java.util.Date;
-
+import java.util.stream.Collectors;
 
 
 public class AddProduce extends BaseActivity {
+    public static final String IS_ADD = "IS_ADD";
+    public static final String THUOC = "THUOC";
     Button btnUploadFile, btnAdd, btnCancel;
     ImageView imageView;
     EditText edtTenThuoc, edtCongDung, edtDonGia, slThuoc;
     Spinner spinner;
     Uri fileUriG;
-//    String dataImage;
-
-
+    Toolbar toolbar;
+    //    String dataImage;
+    boolean isAdd = false;
+    Thuoc thuocCurrent ;
+    int index = 0;
+    String path ;
     // Declare ActivityResultLauncher to handle file picking
     ActivityResultLauncher<Intent> filePickerLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
@@ -61,12 +93,13 @@ public class AddProduce extends BaseActivity {
             }
     );
 
+    @SuppressLint({"SetTextI18n", "MissingInflatedId"})
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_produce);
         SQLiteConnect sqLiteConnect = new SQLiteConnect(this);
-
+        isAdd = getIntent().getBooleanExtra(IS_ADD, true);
         btnUploadFile = findViewById(R.id.uploadFile);
         btnAdd = findViewById(R.id.add);
         btnCancel = findViewById(R.id.cancel);
@@ -76,12 +109,47 @@ public class AddProduce extends BaseActivity {
         edtDonGia = findViewById(R.id.edtDonGia);
         slThuoc = findViewById(R.id.slThuoc);
         spinner = findViewById(R.id.spinner);
+        toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
+
+        if (isAdd){
+            getSupportActionBar().setTitle("Thêm sản phẩm thuốc");
+            btnAdd.setText("Thêm");
+        }else {
+            getSupportActionBar().setTitle("Sửa sản phẩm thuốc");
+
+            btnAdd.setText("Sửa");
+        }
+
+        Bundle bundle = getIntent().getExtras();
+        if (bundle != null){
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                thuocCurrent = bundle.getParcelable(THUOC, Thuoc.class);
+            }else {
+                thuocCurrent = bundle.getParcelable(THUOC);
+            }
+        }
+
+        if (thuocCurrent != null){
+            edtTenThuoc.setText(thuocCurrent.getTenthuoc());
+            edtCongDung.setText(thuocCurrent.getCongdung());
+            edtDonGia.setText((int)(thuocCurrent.getDongia())+"");
+            slThuoc.setText(thuocCurrent.getSlhientai()+"");
+            List<String> dataList = Arrays.stream(getResources().getStringArray(R.array.options_array)).collect(Collectors.toList());
+            String loai = thuocCurrent.getLoai();
+            index = dataList.indexOf(loai);
+            path = thuocCurrent.getHinhanh();
+            Log.d("TAG", "onCreate: ===> image "+path);
+            imageView.setImageURI(Uri.parse(path));
+        }
 
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
                 R.array.options_array, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
-
+        if (index == -1 ) spinner.setSelection(0);
+        else spinner.setSelection(index);
         // get accessToken
         SharedPreferences sharedPref = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
         String accessToken = sharedPref.getString("accessToken", null);
@@ -109,26 +177,48 @@ public class AddProduce extends BaseActivity {
 //                byte[] imageData = readFileToBufferFromPath(pathToFile);
 //                UploadFileInput uploadFile = new UploadFileInput(fileBuffer);
                 Log.d("DATA IMAGE", "DATA IMAGE: " + fileUriG);
-                String Path = saveImageFromUri(AddProduce.this, fileUriG, generateRandomFileName());
+                if (isAdd) {
+                    String Path = saveImageFromUri(AddProduce.this, fileUriG, generateRandomFileName());
+                    Log.d("AddProduce", "Add button clicked");
+                    String tenThuoc = edtTenThuoc.getText().toString().trim();
+                    String congDung = edtCongDung.getText().toString().trim();
+                    String gia = edtDonGia.getText().toString();
+                    String sl = slThuoc.getText().toString();
+                    Integer soLuong = Integer.parseInt(sl);
+                    String loaiThuoc = spinner.getSelectedItem() != null ? spinner.getSelectedItem().toString() : "";
+                    Integer donGia = Integer.parseInt(gia);
 
+                    boolean result = sqLiteConnect.createNewThuoc(tenThuoc, congDung, soLuong, donGia, Path, loaiThuoc);
+                    Toast.makeText(AddProduce.this, (result)?"Cập nhật thành công" : "Cập nhật thất bại", Toast.LENGTH_SHORT).show();
 
-//                Log.d("Data", dataImage);
+                }else {
+                    if (fileUriG != null && !fileUriG.toString().isEmpty()) {
+                        path = saveImageFromUri(AddProduce.this, fileUriG, generateRandomFileName());
+                    }
+                    Log.d("AddProduce", "Add button clicked");
+                    String tenThuoc = edtTenThuoc.getText().toString().trim();
+                    String congDung = edtCongDung.getText().toString().trim();
+                    String gia = edtDonGia.getText().toString();
+                    String sl = slThuoc.getText().toString();
+                    Integer soLuong = Integer.parseInt(sl);
+                    String loaiThuoc = spinner.getSelectedItem() != null ? spinner.getSelectedItem().toString() : "";
+                    Integer donGia = Integer.parseInt(gia);
 
-                Log.d("AddProduce", "Add button clicked");
-                String tenThuoc = edtTenThuoc.getText().toString().trim();
-                String congDung = edtCongDung.getText().toString().trim();
-                String gia = edtDonGia.getText().toString();
-                String sl = slThuoc.getText().toString();
-                Integer soLuong = Integer.parseInt(sl);
-                String loaiThuoc = spinner.getSelectedItem() != null ? spinner.getSelectedItem().toString() : "";
-                Integer donGia = Integer.parseInt(gia);
-
-                sqLiteConnect.createNewThuoc(tenThuoc, congDung, soLuong, donGia, Path, loaiThuoc);
-                Toast.makeText(AddProduce.this, "Thêm thành công", Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(AddProduce.this, MainActivity.class);
-                startActivity(intent);
+                    boolean result = sqLiteConnect.updateThuocById(thuocCurrent.getId(),tenThuoc,congDung,soLuong,donGia,path,loaiThuoc);
+                    Toast.makeText(AddProduce.this, (result)?"Cập nhật thành công" : "Cập nhật thất bại", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(AddProduce.this, ThuocKhoHangActivity.class);
+                    startActivity(intent);
+                }
             }
         });
+    }
+
+    public void resetUI(){
+        edtTenThuoc.setText("");
+        edtDonGia.setText("");
+        edtCongDung.setText("");
+        slThuoc.setText("");
+        spinner.setSelection(0);
     }
 
     // Method to trigger file chooser
@@ -228,5 +318,13 @@ public class AddProduce extends BaseActivity {
     @Override
     protected void handleNavigation(int itemId) {
         super.handleNavigation(itemId);
+    }
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            this.finish();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

@@ -177,7 +177,26 @@ public class SQLiteConnect extends SQLiteOpenHelper {
         long result = myDB.insert("thuoc", null, contentValues);
         return result != -1;
     }
-
+    public boolean updateThuocById(
+            int id,
+            String tenThuoc,
+            String congDung,
+            int tonKho,
+            double donGia,
+            String hinhAnh,
+            String loai
+    ) {
+        SQLiteDatabase myDB = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put("tenThuoc", tenThuoc);
+        contentValues.put("congDung", congDung);
+        contentValues.put("tonKho", tonKho);
+        contentValues.put("donGia", donGia);
+        contentValues.put("hinhAnh", hinhAnh);
+        contentValues.put("loai", loai);
+        int rowsAffected = myDB.update("thuoc", contentValues, "id = ?", new String[]{String.valueOf(id)});
+        return rowsAffected > 0;
+    }
     public ArrayList<Thuoc> getAllThuoc() {
         SQLiteDatabase myDB = this.getReadableDatabase();
         ArrayList<Thuoc> thuocList = new ArrayList<>();
@@ -282,12 +301,13 @@ public class SQLiteConnect extends SQLiteOpenHelper {
             String email = cursor.getString(cursor.getColumnIndexOrThrow("email"));
             String phone = cursor.getString(cursor.getColumnIndexOrThrow("phone"));
             String role = cursor.getString(cursor.getColumnIndexOrThrow("role"));
+            String pass = "ACCC";
 
             // Đóng cursor
             cursor.close();
 
             // Trả về đối tượng User
-            return new User(userUsername,"pass",fullname, address, email, phone);
+            return new User(userUsername,pass,fullname, address, email, phone);
         }
         // Đóng cursor nếu null
         if (cursor != null) {
@@ -835,6 +855,12 @@ public class SQLiteConnect extends SQLiteOpenHelper {
         }
 
         return orderDetailsList;
+
+    }
+    public boolean deleteThuocById(int id) {
+        SQLiteDatabase myDB = this.getWritableDatabase();
+        int rowsDeleted = myDB.delete("thuoc", "id = ?", new String[]{String.valueOf(id)});
+        return rowsDeleted > 0;
     }
 
 

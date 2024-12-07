@@ -4,8 +4,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -14,46 +14,64 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.example.ungdungnhathuoc.Adapter.Adaptertimkiem;
 import com.example.ungdungnhathuoc.Data.SQLiteConnect;
 import com.example.ungdungnhathuoc.Model.Thuoc;
 import com.example.ungdungnhathuoc.R;
+import com.example.ungdungnhathuoc.Xemchitiet;
+import com.google.android.material.navigation.NavigationView;
 
 import java.util.ArrayList;
 
-public class timkiem extends AppCompatActivity {
-    ImageView app2;
+public class timkiem extends BaseActivity {
     ListView lvtk;
     EditText search_bar;
     TextView tvkq;
     Adaptertimkiem adaptertimkiem;
     ArrayList<Thuoc> listthuoc1;
+    String dataSearch;
     SQLiteConnect sqLiteConnect;
+    private DrawerLayout drawerLayout;
+    private NavigationView navigationView;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.timkiem);
-        app2=findViewById(R.id.back);
         lvtk=findViewById(R.id.lvtk);
         search_bar=findViewById(R.id.search_bar);
+       sqLiteConnect = new SQLiteConnect(this);
         tvkq=findViewById(R.id.tvkq);
-        sqLiteConnect=new SQLiteConnect(this);
         listthuoc1= sqLiteConnect.getAllThuoc();
+
+        drawerLayout = findViewById(R.id.drawerLayout);
+        navigationView = findViewById(R.id.navigationView);
+
+        // Set up Toolbar
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        // Set up DrawerToggle
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawerLayout.addDrawerListener(toggle);
+        toggle.syncState();
+
+        // Xử lý sự kiện chọn item từ NavigationView
+        navigationView.setNavigationItemSelectedListener(item -> {
+            handleNavigation(item.getItemId());
+            drawerLayout.closeDrawers();
+            return true;
+        });
+
         adaptertimkiem= new Adaptertimkiem(timkiem.this, R.layout.thuoc,listthuoc1);
         lvtk.setAdapter(adaptertimkiem);
+        // thết lập suwj kiện tiìm kiếm
 
-        app2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent= new Intent(timkiem.this, HomeActivity.class);
-                startActivity(intent);
-                overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
-
-                finish();
-            }
-        });
         search_bar.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -62,9 +80,10 @@ public class timkiem extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                String query = charSequence.toString();
-                Log.d("Text", "Text: " + query);
+                String query = charSequence.toString(); // Lấy từ khóa tìm kiếm
                 adaptertimkiem.getFilter().filter(query);
+                dataSearch = query;
+
                 // Kiểm tra xem có kết quả phù hợp không
                 boolean hasResults = false;
                 for (int index = 0; index < adaptertimkiem.getCount(); index++) {
@@ -75,12 +94,11 @@ public class timkiem extends AppCompatActivity {
                 if (query.isEmpty()) {
                     tvkq.setVisibility(View.GONE); // Ẩn thông báo khi không nhập từ khóa
                     Toast.makeText(timkiem.this, "Từ khóa tìm kiếm chưa được nhập...", Toast.LENGTH_SHORT).show();
-                } else if (hasResults) {  // Nếu có kết quả
+                } else if (hasResults) {  // Nếu không có kết quả
                     tvkq.setVisibility(View.GONE); // Ẩn thông báo khi có kết quả
                 } else {
-                    tvkq.setText("Không có kết quả phù hợp");
                     tvkq.setVisibility(View.VISIBLE); // Hiển thị thông báo không có kết quả
-
+                    tvkq.setText("Không có kết quả phù hợp");
                     //tvkq.setVisibility(View.VISIBLE); // Hiển thị thông báo không có kết quả
                 }
             }
@@ -91,6 +109,25 @@ public class timkiem extends AppCompatActivity {
 
             }
         });
+        // thết laapj sự kiện khi nhấn vào app2 sẽ uqay trở về trang chủ
+//        lvtk.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//            @Override
+//            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+//                Intent xemchitietmh = new Intent(this, Xemchitiet.class);
+//                Bundle data = new Bundle();
+//                Thuoc thuoc=adaptertimkiem.getFilter().filter(dataSearch).getListhuoc().get(i);
+//                data.putParcelable("thuoc_value", thuoc);
+//                xemchitietmh.putExtras(data);
+//                startActivity(xemchitietmh);
+//
+//                Toast.makeText(HomeActivity.this, listthuoc.get(i).getTenthuoc(), Toast.LENGTH_SHORT).show();
+//            }
+//        });
+
+
+    }
+    protected void handleNavigation(int itemId) {
+        super.handleNavigatioUser(itemId);
     }
 }
 

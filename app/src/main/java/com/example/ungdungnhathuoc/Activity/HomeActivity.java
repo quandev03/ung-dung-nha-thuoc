@@ -24,7 +24,6 @@ import com.example.ungdungnhathuoc.LoginActivity;
 import com.example.ungdungnhathuoc.Model.Thuoc;
 import com.example.ungdungnhathuoc.Profile;
 import com.example.ungdungnhathuoc.R;
-import com.example.ungdungnhathuoc.Request.FilterOrder;
 import com.example.ungdungnhathuoc.Xemchitiet;
 import com.google.android.material.navigation.NavigationView;
 
@@ -47,8 +46,6 @@ public class HomeActivity extends BaseActivity {
         // Check access token first, if not present redirect to login
         SharedPreferences sharedPref = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
         this.isPermissionUser();
-        FilterOrder filterOrder,filterOrder1;
-
 
         // Ánh xạ các view
         lvmh = findViewById(R.id.lvmh);
@@ -84,7 +81,7 @@ public class HomeActivity extends BaseActivity {
                 Intent xemchitietmh = new Intent(HomeActivity.this, Xemchitiet.class);
                 Bundle data = new Bundle();
                 Thuoc thuoc=adaptertrangchunm.getListhuoc().get(i);
-                data.putSerializable("thuoc_value", thuoc);
+                data.putParcelable("thuoc_value", thuoc);
                 xemchitietmh.putExtras(data);
                 startActivity(xemchitietmh);
 

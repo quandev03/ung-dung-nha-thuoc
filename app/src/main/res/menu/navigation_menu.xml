@@ -1,9 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
-        android:id="@+id/menu_profile"
-        android:title="Profile"
-        android:icon="@drawable/baseline_document_scanner_24" />
+        android:id="@+id/menu_home"
+        android:title="Home"
+        android:icon="@drawable/baseline_home_filled_24" />
+    <item
+        android:id="@+id/menu_cart"
+        android:title="Giỏ hàng"
+        android:icon="@drawable/baseline_shopping_cart_24" />
     <item
         android:id="@+id/menu_search"
         android:title="Tìm kiếm"
