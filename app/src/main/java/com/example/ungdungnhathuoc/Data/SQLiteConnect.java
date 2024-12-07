@@ -14,6 +14,7 @@ import android.util.Log;
 
 import androidx.annotation.Nullable;
 
+import com.example.ungdungnhathuoc.API.HashPass;
 import com.example.ungdungnhathuoc.Activity.ThongTinDonHangNBActivity;
 import com.example.ungdungnhathuoc.Model.Order;
 import com.example.ungdungnhathuoc.Model.Thuoc;
@@ -24,7 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SQLiteConnect extends SQLiteOpenHelper {
-    public static final String DBName = "banthuoc.db";
+    public static final String DBName = "banThuoc.db";
     private Context context;
 
     // ACCOUNT COLUMN
@@ -256,16 +257,14 @@ public class SQLiteConnect extends SQLiteOpenHelper {
     }
     // Hàm thêm tài khoản quản trị viên vào cơ sở dữ liệu
     private void addAdminAccount(SQLiteDatabase sqLiteDatabase) {
-//        String adminUsername = "admin";
-//        String adminPassword = hashPassword("admin123"); // Mã hóa mật khẩu trước khi lưu
-//        String adminFullname = "Admin";
-        // Kiểm tra xem tài khoản admin đã có chưa
+
         Cursor cursor = sqLiteDatabase.rawQuery("SELECT * FROM users WHERE username = ?", new String[]{"admin"});
+        HashPass pass = new HashPass("admin123");
         if (cursor.getCount() == 0) {
             // Thêm tài khoản admin vào cơ sở dữ liệu nếu chưa có
             ContentValues contentValues = new ContentValues();
             contentValues.put("username", "admin");
-            contentValues.put("password", "admin123");
+            contentValues.put("password", pass.getHashPass());
             contentValues.put("fullname", "Admin");
             contentValues.put("address", "Admin Address");
             contentValues.put("email", "admin@example.com");
@@ -862,9 +861,6 @@ public class SQLiteConnect extends SQLiteOpenHelper {
         int rowsDeleted = myDB.delete("thuoc", "id = ?", new String[]{String.valueOf(id)});
         return rowsDeleted > 0;
     }
-
-
-
 }
 
 

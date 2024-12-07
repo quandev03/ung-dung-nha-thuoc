@@ -14,6 +14,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.ungdungnhathuoc.API.HashPass;
 import com.example.ungdungnhathuoc.Activity.HomeActivity;
 import com.example.ungdungnhathuoc.Activity.HomeAdminActivity;
 import com.example.ungdungnhathuoc.Data.SQLiteConnect;
@@ -63,12 +64,8 @@ public class LoginActivity extends AppCompatActivity {
                     Toast.makeText(LoginActivity.this, "Vui lòng nhập tên đăng nhập và mật khẩu", Toast.LENGTH_SHORT).show();
                     return;
                 }
-//                String hashedPassword = hashPassword(password);
-//                if (hashedPassword == null) {
-//                    Toast.makeText(LoginActivity.this, "Đã có lỗi trong quá trình mã hóa mật khẩu", Toast.LENGTH_SHORT).show();
-//                    return;
-//                }
-                boolean isLoggedId = dbHelper.checkUser(username, password);
+                HashPass hashPass = new HashPass(password);
+                boolean isLoggedId = dbHelper.checkUser(username, hashPass.getHashPass());
                 String fullname = dbHelper.getFullnameByUsernameAndPassword(username, password);
                 boolean role = dbHelper.getUserRole(username, password); // Lấy quyền của người dùng từ SQLite
                 Log.d("LoginActivity", "Role: " + role);

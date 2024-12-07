@@ -48,7 +48,7 @@ public class Profile extends BaseActivity {
         SharedPreferences sharedPref = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
 //        this.isLogin();
         SQLiteConnect sqLiteConnect = new SQLiteConnect(this);
-        User user = sqLiteConnect.userDetail(sharedPref.getString("username", null));
+        User user = sqLiteConnect.userDetail(sharedPref.getString("accessToken", null));
         Log.d("User", "User: "+ user.getFullname());
         btnEditProfile = findViewById(R.id.btnEditProfile);
         tvFullname = findViewById(R.id.fullname);

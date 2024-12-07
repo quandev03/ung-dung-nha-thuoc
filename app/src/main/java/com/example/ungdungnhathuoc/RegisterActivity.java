@@ -3,6 +3,7 @@ package com.example.ungdungnhathuoc;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -15,6 +16,7 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.example.ungdungnhathuoc.API.HashPass;
 import com.example.ungdungnhathuoc.Data.SQLiteConnect;
 
 public class RegisterActivity extends AppCompatActivity {
@@ -111,7 +113,8 @@ public class RegisterActivity extends AppCompatActivity {
                             return;
                         }
                         // Lưu thông tin vào cơ sở dữ liệu
-                        boolean registerSuccess = dbHelper.insertData(username, password, fullname, address, phone, email);
+                        HashPass hashPass = new HashPass(password);
+                        boolean registerSuccess = dbHelper.insertData(username, hashPass.getHashPass(), fullname, address, email, phone);
                         if (registerSuccess) {
                             Toast.makeText(RegisterActivity.this, "Đăng ký thành công", Toast.LENGTH_SHORT).show();
 

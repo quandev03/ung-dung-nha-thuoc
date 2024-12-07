@@ -57,7 +57,7 @@ public class EditProfile extends AppCompatActivity {
         });
 
         SQLiteConnect sqLiteConnect = new SQLiteConnect(this);
-        User user = sqLiteConnect.userDetail(sharedPref.getString("username", null));
+        User user = sqLiteConnect.userDetail(sharedPref.getString("accessToken", null));
         edtFullname.setText(user.getFullname());
         edtEmail.setText(user.getEmail());
         edtPhone.setText(user.getPhone());
