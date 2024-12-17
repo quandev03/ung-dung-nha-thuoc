@@ -25,7 +25,7 @@ import com.google.android.material.navigation.NavigationView;
 
 public class HomeAdminActivity extends BaseActivity {
 
-    Button btnQLDonHang, btnQLKhoHang, btnThongBaoNB, btnDangXuatNB;
+    Button btnQLDonHang, btnQLKhoHang, btnDangXuatNB;
     SharedPreferences sharedPre;
 
     private DrawerLayout drawerLayout;
@@ -68,7 +68,6 @@ public class HomeAdminActivity extends BaseActivity {
         // Initialize buttons
         btnQLDonHang = findViewById(R.id.btnQLDonHang);
         btnQLKhoHang = findViewById(R.id.btnQLKhoHang);
-        btnThongBaoNB = findViewById(R.id.btnThongBaoNB);
 //        btnDangXuatNB = findViewById(R.id.btnDangXuatNB);
 
         // Set onClickListener for the "Quản lý đơn hàng" button
@@ -86,11 +85,6 @@ public class HomeAdminActivity extends BaseActivity {
         });
 
         // Set onClickListener for the "Thông báo" button
-        btnThongBaoNB.setOnClickListener(view -> {
-            // Chuyển sang màn hình thông báo
-            Intent intent = new Intent(HomeAdminActivity.this, ThongKeDonHangActivity.class);
-            startActivity(intent);
-        });
 
         // Set onClickListener for the "Đăng xuất" button
 //        btnDangXuatNB.setOnClickListener(view -> showExitDialog());

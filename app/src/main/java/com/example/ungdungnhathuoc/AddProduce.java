@@ -87,8 +87,7 @@ public class AddProduce extends BaseActivity {
                     Uri fileUri = result.getData().getData();  // Get URI from result data
                     fileUriG =  fileUri;
                     displayImage(fileUri);  // This is your custom method to display the image, if needed
-                    imageView.setImageURI(fileUri);  // Set the URI to ImageView
-                    getImageMetadata(fileUri);
+                    imageView.setImageURI(fileUri);  // Set the URI to ImageVie
                 }
             }
     );
@@ -243,22 +242,7 @@ public class AddProduce extends BaseActivity {
     }
 
     // Optional: Get additional metadata (like MIME type or file size)
-    private void getImageMetadata(Uri imageUri) {
-        try {
-            ContentResolver resolver = getContentResolver();
 
-            // Get MIME type (e.g., image/jpeg, image/png)
-            String mimeType = resolver.getType(imageUri);
-            Log.d("Image Metadata", "MIME type: " + mimeType);
-
-            // Get the file path (this can be tricky because not all URIs have a direct file path)
-            String filePath = imageUri.getPath();
-//            pathToFile = filePath;
-            Log.d("Image Metadata", "File path: " + filePath);
-        } catch (Exception e) {
-            Log.e("Error", "Failed to get metadata", e);
-        }
-    }
 
 
 

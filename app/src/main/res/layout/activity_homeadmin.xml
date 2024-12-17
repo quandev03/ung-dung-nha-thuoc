@@ -68,13 +68,6 @@
                         android:text="Quản lý kho hàng"
                         android:layout_weight="1"
                         android:backgroundTint="#2196F3"/>
-                    <Button
-                        android:id="@+id/btnThongBaoNB"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Thông báo"
-                        android:layout_weight="1"
-                        android:backgroundTint="#2196F3"/>
                 </LinearLayout>
 
                 <!-- Image display -->
